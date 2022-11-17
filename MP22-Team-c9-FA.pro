@@ -13,7 +13,11 @@ SOURCES += \
     mainwindow.cpp
 
 HEADERS += \
-    mainwindow.h
+    lib/world.h \
+    lib/world_global.h \
+    mainwindow.h \
+    world.h \
+    world_global.h
 
 FORMS += \
     mainwindow.ui
@@ -22,3 +26,14 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/release/ -lworld
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/debug/ -lworld
+else:unix: LIBS += -L$$PWD/lib/ -lworld
+
+INCLUDEPATH += $$PWD/.
+DEPENDPATH += $$PWD/.
+
+RESOURCES += \
+    resources.qrc
