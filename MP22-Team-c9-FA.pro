@@ -10,12 +10,15 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    textview.cpp
 
 HEADERS += \
     lib/world.h \
     lib/world_global.h \
     mainwindow.h \
+    textview.h \
+    view.h \
     world.h \
     world_global.h
 
