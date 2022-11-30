@@ -12,8 +12,9 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
-     QString init_worldmap = ":/images/world_images/maze1.png";
+
+     QString init_worldmap = ":/images/world_images/maze2.png";
+     MainWindow w = MainWindow(NULL,init_worldmap);
      World test;
      test.createWorld(init_worldmap, 5,5,0.25);
      //scene->addItem(test);
