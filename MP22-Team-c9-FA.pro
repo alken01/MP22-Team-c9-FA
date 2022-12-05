@@ -9,14 +9,20 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    astar.cpp \
     main.cpp \
     mainwindow.cpp \
+    node.cpp \
     textview.cpp
 
 HEADERS += \
+    PathAlgorithm.h \
+    PathFinder.h \
+    astar.h \
     lib/world.h \
     lib/world_global.h \
     mainwindow.h \
+    node.h \
     textview.h \
     view.h \
     world.h \

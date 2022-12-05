@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QLabel>
+#include <QComboBox>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -14,6 +16,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr, QString init_worldmap = ":/images/world_images/maze1.png");
     ~MainWindow();
+    void updateImage(int, QComboBox *comboBox, QLabel *label);
 
 private:
     Ui::MainWindow *ui;
