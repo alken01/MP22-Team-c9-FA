@@ -12,7 +12,6 @@ SOURCES += \
     astar.cpp \
     main.cpp \
     mainwindow.cpp \
-    node.cpp \
 
 
 HEADERS += \
@@ -20,7 +19,6 @@ HEADERS += \
     lib/world.h \
     lib/world_global.h \
     mainwindow.h \
-    node.h \
     view.h \
     world.h \
     world_global.h
