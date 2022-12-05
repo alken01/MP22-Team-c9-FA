@@ -13,17 +13,14 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     node.cpp \
-    textview.cpp
+
 
 HEADERS += \
-    PathAlgorithm.h \
-    PathFinder.h \
     astar.h \
     lib/world.h \
     lib/world_global.h \
     mainwindow.h \
     node.h \
-    textview.h \
     view.h \
     world.h \
     world_global.h
