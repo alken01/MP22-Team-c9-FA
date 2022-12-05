@@ -1,6 +1,6 @@
 #include "astar.h"
 
-// A* search function that returns the minimum cost to reach the end position from the start position
+// A* search function that returns a path to the end position from the start position
 vector<pair<int, int> > astar(vector<vector<int> >& grid, int sx, int sy, int ex, int ey){
     int n = grid.size(); // Number of rows in the grid
     int m = grid[0].size(); // Number of columns in the grid

@@ -20,6 +20,6 @@ struct NodeComparator {
     }
 };
 
-vector<pair<int, int> > astar(vector<vector<int> >& grid, int sx, int sy, int ex, int ey);
+vector<pair<int, int> > astar(vector<vector<int> >&, int, int, int, int);
 
 #endif
