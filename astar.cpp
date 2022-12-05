@@ -1,4 +1,5 @@
 #include "astar.h"
+#include <iostream>
 
 // A* search function that returns a path to the end position from the start position
 //vector<pair<int, int> > astar(vector<vector<int> >& grid, int sx, int sy, int ex, int ey){
@@ -8,10 +9,11 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
     vector<vector<int> > grid(rows, vector<int>(cols));
 
     // Set the grid elements
-    for(unsigned long i=0;i<world_grid.size();i++){
-        grid[i%cols][i%rows] = world_grid[i]->getValue();
+    for (int row = 0; row < rows; row++){
+        for (int col = 0; col < cols; col++){
+            grid[row][col] = world_grid[row * cols + col]->getValue();
+        }
     }
-
     // TODO:
     // check if having the end and start positions as variables is quicker than calling them
     int sx = start.getXPos();
@@ -26,6 +28,8 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
     // Initialize the priority queue with the start position and its cost
     pq.push(Node(sx, sy, grid[sx][sy]));
     dist[sx][sy] = grid[sx][sy];
+
+    cout<< "Searching";
 
     // While the priority queue is not empty
     while(!pq.empty()){
@@ -63,5 +67,6 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
     }
 
     // If we reach here, it means that there is no path from the start position to the end position
+    std::cout<< "No path found" << std::endl;
     return {};
 }
