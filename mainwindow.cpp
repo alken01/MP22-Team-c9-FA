@@ -13,10 +13,10 @@ MainWindow::MainWindow(QWidget *parent, QString init_worldmap )
     ui->setupUi(this);
     QGraphicsScene* scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
-     scene->addPixmap(QPixmap(init_worldmap));
-     auto rect = scene->addRect(10, 50, 50, 120);
-     rect->setZValue(1.1);
-     rect->setFlag(QGraphicsItem::ItemIsMovable, true);
+    scene->addPixmap(QPixmap(init_worldmap));
+    auto rect = scene->addRect(10, 50, 50, 120);
+    rect->setZValue(1.1);
+    rect->setFlag(QGraphicsItem::ItemIsMovable, true);
 
 }
 
