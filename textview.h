@@ -9,7 +9,7 @@ public:
     TextView();
 
  void changeSignAtCoord( unsigned long x,  unsigned long y, QChar input);
- void draw(int width,int height,std::vector<std::unique_ptr<Enemy>> enemies,std::vector<std::unique_ptr<Tile>> healthPacks) overload;
+ void draw(int width,int height,std::vector<std::unique_ptr<Enemy>> enemies,std::vector<std::unique_ptr<Tile>> healthPacks);
  void createMap();
  void movProtagonist();
 

@@ -12,7 +12,7 @@ public:
     GraphicalView();
     void handleInput();
     void update();
-    void draw(int width,int height,std::vector<std::unique_ptr<Enemy>> enemies,std::vector<std::unique_ptr<Tile>> healthPacks) overload;
+    void draw(int width,int height,std::vector<std::unique_ptr<Enemy>> enemies,std::vector<std::unique_ptr<Tile>> healthPacks);
 };
 
 #endif // GRAPHICALVIEW_H
