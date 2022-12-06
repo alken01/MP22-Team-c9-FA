@@ -66,7 +66,7 @@ protected:
         painter.scale(scaledImage.width() / image.width(), scaledImage.height() / image.height());
 
         // Draw the path
-        painter.setPen(QPen(Qt::blue, 3));
+        painter.setPen(QPen(Qt::blue, 30));
         for (auto point : path){
             painter.drawPoint(point.first, point.second);
         }

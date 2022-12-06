@@ -4,9 +4,28 @@
 // A* search function that returns a path to the end position from the start position
 //vector<pair<int, int> > astar(vector<vector<int> >& grid, int sx, int sy, int ex, int ey){
 vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, int cols, Tile start, Tile end){
+    cout<< "Starting algo..."<<endl;
+    // TODO:
+    // check if having the end and start positions as variables is quicker than calling them
+    int sx = start.getXPos();
+    int sy = start.getYPos();
+    int ex = end.getXPos();
+    int ey = end.getYPos();
 
+    if(sx < 0 || sx >= rows || sy < 0 || sy >= cols){
+        cout<< "Start value out of bounds"<<endl;
+        return {};
+    }
+    if(ex < 0 || ex >= rows || ey < 0 || ey >= cols){
+        cout<< "End value out of bounds"<<endl;
+        return {};
+    }
+    cout<< "Start: ("<<sx<<", "<<sy<<", "<<start.getValue() << ")"<<endl;
+    cout<< "End: ("<<ex<<", "<<ey<<", "<<end.getValue() << ")"<<endl;
+    cout<< "Rows:\t"  <<rows<<endl;
+    cout<< "Cols:\t"  <<cols<<endl;
 
-    vector<vector<float> > grid(rows, vector<float>(cols));
+    vector<vector<float> > grid(cols, vector<float>(rows));
 
     // Set the grid elements
     for (int row = 0; row < rows; row++){
@@ -14,13 +33,6 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
             grid[col][row] = world_grid[row * cols + col]->getValue();
         }
     }
-
-    // TODO:
-    // check if having the end and start positions as variables is quicker than calling them
-    int sx = start.getXPos();
-    int sy = start.getYPos();
-    int ex = end.getXPos();
-    int ey = end.getYPos();
 
     vector<vector<float> > dist(rows, vector<float>(cols, -1)); // distances of each cell from the start position
     vector<vector<pair<int, int> > > path(rows, vector<pair<int, int> >(cols)); // path to reach each cell from the start position
@@ -33,10 +45,9 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
     // Explore the four possible moves from the current position (right, left, up, down)
     vector<pair<int, int> > moves = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
 
+
     // While the priority queue is not empty
     while(!pq.empty()){
-//        cout<< "Searching..."<<endl;
-
         // Get the top node (node with the lowest cost) from the queue
         Node curr = pq.top();
         pq.pop();
