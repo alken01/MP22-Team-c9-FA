@@ -21,7 +21,7 @@ struct NodeComparator {
     }
 };
 
-//vector<pair<int, int> > astar(vector<vector<int> >& grid, int sx, int sy, int ex, int ey);
 vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, int cols, Tile start, Tile end);
+//vector<pair<int, int> > astar(vector<vector<float> > grid, int rows, int cols, Tile start, Tile end){
 
 #endif

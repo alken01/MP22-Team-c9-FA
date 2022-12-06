@@ -6,12 +6,22 @@
 vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, int cols, Tile start, Tile end){
 
 
-    vector<vector<int> > grid(rows, vector<int>(cols));
+    vector<vector<float> > grid(rows, vector<float>(cols));
 
     // Set the grid elements
+    float max = 0;
     for (int row = 0; row < rows; row++){
         for (int col = 0; col < cols; col++){
             grid[row][col] = world_grid[row * cols + col]->getValue();
+            if(grid[row][col]>max){
+                max = grid[row][col];
+            }
+        }
+    }
+
+    for (int row = 0; row < rows; row++){
+        for (int col = 0; col < cols; col++){
+            grid[row][col] = grid[row][col]/max;
         }
     }
     // TODO:
@@ -29,10 +39,13 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
     pq.push(Node(sx, sy, grid[sx][sy]));
     dist[sx][sy] = grid[sx][sy];
 
-    cout<< "Searching";
+    // Explore the four possible moves from the current position (right, left, up, down)
+    vector<pair<int, int> > moves = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
 
     // While the priority queue is not empty
     while(!pq.empty()){
+        cout<< "Searching..."<<endl;
+
         // Get the top node (node with the lowest cost) from the queue
         Node curr = pq.top();
         pq.pop();
@@ -40,23 +53,23 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
         // If the current node is the end position, return the path to the end position
         if(curr.x == ex && curr.y == ey){
             vector<pair<int, int> > result;
-            while(curr.x != sx || curr.y != sy){
-                result.push_back(make_pair(curr.x, curr.y));
-                curr = Node(path[curr.x][curr.y].first, path[curr.x][curr.y].second,
-                        grid[path[curr.x][curr.y].first][path[curr.x][curr.y].second]);
+            pair<int, int> start = make_pair(curr.x,curr.y);
+            while(start.first != sx || start.second != sy){
+                result.push_back(start);
+                start = make_pair(path[start.first][start.second].first, path[start.first][start.second].second);
             }
             result.push_back(make_pair(sx, sy));
             reverse(result.begin(), result.end());
             return result;
         }
 
-        // Explore the four possible moves from the current position (right, left, up, down)
-        vector<pair<int, int> > moves = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
         for(auto move : moves){
             int nx = curr.x + move.first; // New x-coordinate
             int ny = curr.y + move.second; // New y-coordinate
+
             // Skip the move if the new position is outside the grid
             if(nx < 0 || nx >= rows || ny < 0 || ny >= cols) continue;
+
             // Update the minimum cost and the priority queue if the new position has a lower cost
             if(dist[nx][ny] == -1 || dist[nx][ny] > dist[curr.x][curr.y] + grid[nx][ny]){
                 dist[nx][ny] = dist[curr.x][curr.y] + grid[nx][ny];

@@ -15,6 +15,7 @@ SOURCES += \
 
 
 HEADERS += \
+    ImageWidget.h \
     astar.h \
     lib/world.h \
     lib/world_global.h \
