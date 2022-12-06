@@ -2,6 +2,9 @@
 #include "QtWidgets/qgraphicsview.h"
 #include "mainwindow.h"
 #include "world.h"
+#include "controller.h"
+#include "graphicalview.h"
+#include "textview.h"
 #include <iostream>
 #include <Qt>
 #include <QApplication>
@@ -13,19 +16,17 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-     QString init_worldmap = ":/images/world_images/maze2.png";
-     MainWindow w = MainWindow(NULL,init_worldmap);
-     World test;
-     test.createWorld(init_worldmap, 5,5,0.25);
-     //scene->addItem(test);
+    QString init_worldmap = ":/images/world_images/maze2.png";
+    MainWindow w = MainWindow(NULL,init_worldmap);
 
-     std::cout << "Columns:" << test.getCols() << "Rows:" << test.getRows() << std::endl;
-     std::cout << "health:" << test.getProtagonist()->getHealth() << "x:" << test.getProtagonist()->getXPos() << "y:" << test.getProtagonist()->getYPos() << std::endl;
 
-     // Initialise the world, graphics_view and the text_view
-     // Initialise the controller with the above as arguments.
 
-     w.show();
+
+
+    // Initialise the world, graphics_view and the text_view
+    // Initialise the controller with the above as arguments.
+
+    w.show();
     return a.exec();
 
 

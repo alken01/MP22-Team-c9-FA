@@ -18,7 +18,7 @@ TextView::TextView()
 //    this->protagonist = wo->getProtagonist();
 //}
 
-void TextView::draw(int width,int height,std::unique_ptr<Tile> protagonist,std::vector<std::unique_ptr<Enemy>> enemies,std::vector<std::unique_ptr<Tile>> healthPacks,std::shared_ptr<QGraphicsScene> scene){
+void TextView::draw(int width,int height,std::unique_ptr<Tile>& protagonist,std::vector<std::unique_ptr<Enemy>>& enemies,std::vector<std::unique_ptr<Tile>>& healthPacks,QGraphicsScene scene,std::vector<std::unique_ptr<Tile>>& tiles){
 
     //Qstring = stores a string of 16-bit QChars --> implicit sharing: reduce memory usage and to avoid the needless copying of data
     auto w = QString("+"); //Create Qstring for width

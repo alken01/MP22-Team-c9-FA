@@ -14,15 +14,22 @@ public:
   void autoPlay(); // implement a*
 
 
+  QGraphicsScene* getScene() const;
+
+public slots:
+  void switchToGraphic();
+  void switchToText();
+
 private:
   std::shared_ptr<World> world;
   std::shared_ptr<GraphicalView> graphical_view;
   std::shared_ptr<TextView> text_view;
+  std::vector<std::unique_ptr<Tile>> tiles;
   int width;
   int height;
   QVector<QString> qVec;
   std::shared_ptr<QString> stringWorld;
-  std::shared_ptr<QGraphicsScene> scene;
+  QGraphicsScene* scene;
   std::vector<std::unique_ptr<Enemy>> enemies;
   std::vector<std::unique_ptr<Tile>> healthPacks;
   std::unique_ptr<Tile> protagonist;
