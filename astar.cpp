@@ -9,21 +9,12 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
     vector<vector<float> > grid(rows, vector<float>(cols));
 
     // Set the grid elements
-    float max = 0;
     for (int row = 0; row < rows; row++){
         for (int col = 0; col < cols; col++){
-            grid[row][col] = world_grid[row * cols + col]->getValue();
-            if(grid[row][col]>max){
-                max = grid[row][col];
-            }
+            grid[col][row] = world_grid[row * cols + col]->getValue();
         }
     }
 
-    for (int row = 0; row < rows; row++){
-        for (int col = 0; col < cols; col++){
-            grid[row][col] = grid[row][col]/max;
-        }
-    }
     // TODO:
     // check if having the end and start positions as variables is quicker than calling them
     int sx = start.getXPos();
@@ -31,7 +22,7 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
     int ex = end.getXPos();
     int ey = end.getYPos();
 
-    vector<vector<int> > dist(rows, vector<int>(cols, -1)); // distances of each cell from the start position
+    vector<vector<float> > dist(rows, vector<float>(cols, -1)); // distances of each cell from the start position
     vector<vector<pair<int, int> > > path(rows, vector<pair<int, int> >(cols)); // path to reach each cell from the start position
     priority_queue<Node, vector<Node>, NodeComparator> pq; // priority queue of Node objects
 
@@ -44,7 +35,7 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
 
     // While the priority queue is not empty
     while(!pq.empty()){
-        cout<< "Searching..."<<endl;
+//        cout<< "Searching..."<<endl;
 
         // Get the top node (node with the lowest cost) from the queue
         Node curr = pq.top();
@@ -69,6 +60,7 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
 
             // Skip the move if the new position is outside the grid
             if(nx < 0 || nx >= rows || ny < 0 || ny >= cols) continue;
+            if(grid[nx][ny]>1) continue;
 
             // Update the minimum cost and the priority queue if the new position has a lower cost
             if(dist[nx][ny] == -1 || dist[nx][ny] > dist[curr.x][curr.y] + grid[nx][ny]){
