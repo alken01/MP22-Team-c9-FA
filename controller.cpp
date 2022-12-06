@@ -3,7 +3,7 @@
 Controller::Controller(std::shared_ptr<World> w, std::shared_ptr<GraphicalView> g, std::shared_ptr<TextView> t):
     world(w),graphical_view(g),text_view(t)
 {
-    QGraphicsScene* scene = new QGraphicsScene();
+    QGraphicsScene scene;
     this->width = w->getCols();
     this->height = w->getRows();
     this->qVec.clear();
