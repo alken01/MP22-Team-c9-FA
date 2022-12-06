@@ -7,18 +7,18 @@ TextView::TextView()
 
 
 
-void TextView::initTextView(std::shared_ptr<QGraphicsScene> sc, std::shared_ptr<World> wo){
-    this->width = wo->getCols();
-    this->height = wo->getRows();
-    this->sc = sc;
-    this->qVec.clear();
-    this->world = wo;
-    this->enemies = wo->getEnemies();
-    this->healthPacks = wo->getHealthPacks();
-    this->protagonist = wo->getProtagonist();
-}
+//void TextView::initTextView(std::shared_ptr<QGraphicsScene> sc, std::shared_ptr<World> wo){
+//    this->width = wo->getCols();
+//    this->height = wo->getRows();
+//    this->sc = sc;
+//    this->qVec.clear();
+//    this->world = wo;
+//    this->enemies = wo->getEnemies();
+//    this->healthPacks = wo->getHealthPacks();
+//    this->protagonist = wo->getProtagonist();
+//}
 
-void TextView::createMap(){
+void TextView::draw(int width,int height,std::unique_ptr<Tile> protagonist,std::vector<std::unique_ptr<Enemy>> enemies,std::vector<std::unique_ptr<Tile>> healthPacks){
 
     //Qstring = stores a string of 16-bit QChars --> implicit sharing: reduce memory usage and to avoid the needless copying of data
     auto w = QString("+"); //Create Qstring for width
@@ -71,6 +71,8 @@ void TextView::createMap(){
        this->sc->addText(*stringWorld,QFont("Monospace"));
 }
 
+
+// This code will be used in controller / changed so it gets input from controller
 void TextView::movProtagonist(){
      unsigned long x= protagonist->getXPos();
      unsigned long y = protagonist->getYPos();

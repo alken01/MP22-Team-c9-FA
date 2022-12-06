@@ -21,6 +21,10 @@ int main(int argc, char *argv[])
 
      std::cout << "Columns:" << test.getCols() << "Rows:" << test.getRows() << std::endl;
      std::cout << "health:" << test.getProtagonist()->getHealth() << "x:" << test.getProtagonist()->getXPos() << "y:" << test.getProtagonist()->getYPos() << std::endl;
+
+     // Initialise the world, graphics_view and the text_view
+     // Initialise the controller with the above as arguments.
+
      w.show();
     return a.exec();
 

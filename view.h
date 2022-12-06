@@ -11,7 +11,7 @@ class View : public QGraphicsView{
     Q_OBJECT
 public:
     ~View(){};
-    virtual void draw(int width,int height,std::vector<std::unique_ptr<Enemy>> enemies,std::vector<std::unique_ptr<Tile>> healthPacks) = 0;
+    virtual void draw(int width,int height,std::unique_ptr<Tile> protagonist,std::vector<std::unique_ptr<Enemy>> enemies,std::vector<std::unique_ptr<Tile>> healthPacks) = 0;
 };
 
 
