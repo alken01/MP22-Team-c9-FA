@@ -11,7 +11,7 @@ public:
   Controller(std::shared_ptr<World> world, std::shared_ptr<GraphicalView> graphical_view, std::shared_ptr<TextView> text_view);
   void handleInput();
   void update();
-  void autoPlay();
+  void autoPlay(); // implement a*
 
 
 private:
@@ -26,5 +26,6 @@ private:
   std::vector<std::unique_ptr<Enemy>> enemies;
   std::vector<std::unique_ptr<Tile>> healthPacks;
   std::unique_ptr<Tile> protagonist;
+  bool graph_or_text;
 };
 #endif // CONTROLLER_H
