@@ -22,8 +22,9 @@ int main(int argc, char *argv[])
     test->createWorld(init_worldmap, 5,5,0.25);
     auto gview = std::make_shared<GraphicalView>();
     auto tview = std::make_shared<TextView>();
-    Controller* controller = new Controller(&w,test,gview,tview);
-
+    auto c= std::make_shared<Controller>(&w,test,gview,tview);
+    c->initWorlds();
+    w.setController(c);
 
 
     w.show();

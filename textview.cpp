@@ -6,20 +6,10 @@ TextView::TextView()
 {}
 
 
+void TextView::draw(int width,int height,std::unique_ptr<Tile>& protagonist,std::vector<std::unique_ptr<Enemy>>& enemies,std::vector<std::unique_ptr<Tile>>& healthPacks, std::shared_ptr<QGraphicsScene> scene,std::vector<std::unique_ptr<Tile>>& tiles){
 
-//void TextView::initTextView(std::shared_ptr<QGraphicsScene> sc, std::shared_ptr<World> wo){
-//    this->width = wo->getCols();
-//    this->height = wo->getRows();
-//    this->sc = sc;
-//    this->qVec.clear();
-//    this->world = wo;
-//    this->enemies = wo->getEnemies();
-//    this->healthPacks = wo->getHealthPacks();
-//    this->protagonist = wo->getProtagonist();
-//}
-
-void TextView::draw(int width,int height,std::unique_ptr<Tile>& protagonist,std::vector<std::unique_ptr<Enemy>>& enemies,std::vector<std::unique_ptr<Tile>>& healthPacks,QGraphicsScene scene,std::vector<std::unique_ptr<Tile>>& tiles){
-
+    this->height=height;
+    this->width=width;
     //Qstring = stores a string of 16-bit QChars --> implicit sharing: reduce memory usage and to avoid the needless copying of data
     auto w = QString("+"); //Create Qstring for width
     auto h = QString("|"); //Create Qstring for height
@@ -68,17 +58,17 @@ void TextView::draw(int width,int height,std::unique_ptr<Tile>& protagonist,std:
        unsigned long y = protagonist->getYPos();
        changeSignAtCoord(x,y,'$');
 
-       this->sc->addText(*stringWorld,QFont("Monospace"));
+       scene->addText(*stringWorld,QFont("Monospace"));
 }
 
 
 // This code will be used in controller / changed so it gets input from controller
-void TextView::movProtagonist(){
+void TextView::movProtagonist(std::unique_ptr<Tile>& protagonist, std::shared_ptr<QGraphicsScene> scene){
      unsigned long x= protagonist->getXPos();
      unsigned long y = protagonist->getYPos();
     changeSignAtCoord(x,y,'$');
-    sc->clear();
-    sc->addText(*stringWorld,QFont("Monospace"));
+    scene->clear();
+    scene->addText(*stringWorld,QFont("Monospace"));
 }
 
 void TextView::changeSignAtCoord( unsigned long x,  unsigned long y, QChar input){

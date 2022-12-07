@@ -40,9 +40,6 @@ MainWindow::MainWindow(QWidget *parent, QString init_worldmap )
     textInput = new QLineEdit(this);
     textInput->setGeometry(QRect(QPoint(10, 575), QSize(400, 30)));
 
-    //commit text button
-    QPushButton* textButton = new QPushButton("Enter", this);
-    textButton->setGeometry(QRect(QPoint(420, 575), QSize(200, 50)));
 
     // Create a button
     QPushButton* button = new QPushButton("Change View", this);

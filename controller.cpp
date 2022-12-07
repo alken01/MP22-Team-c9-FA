@@ -3,7 +3,6 @@
 Controller::Controller(QMainWindow* mw,std::shared_ptr<World> w, std::shared_ptr<GraphicalView> g, std::shared_ptr<TextView> t):
     world(w),graphical_view(g),text_view(t),window(mw)
 {
-    QGraphicsScene scene;
     this->width = w->getCols();
     this->height = w->getRows();
     this->qVec.clear();
@@ -11,6 +10,9 @@ Controller::Controller(QMainWindow* mw,std::shared_ptr<World> w, std::shared_ptr
     this->healthPacks = w->getHealthPacks();
     this->protagonist = w->getProtagonist();
     this->tiles = w->getTiles();
+    this->text_view = t;
+    this->graphical_view =g;
+    scene =std::make_shared<QGraphicsScene>();
 }
 
 
@@ -20,6 +22,10 @@ void Controller::handleInput() {
 
 void Controller::update(){
 
+}
+
+void Controller::initWorlds(){
+    this->text_view->draw(width,height,protagonist,enemies,healthPacks,scene,tiles);
 }
 
 void Controller::switchViews()
@@ -36,7 +42,7 @@ void Controller::switchViews()
         }
 }
 
-QGraphicsScene* Controller::getScene() const
+std::shared_ptr<QGraphicsScene> Controller::getScene() const
 {
     return scene;
 }
