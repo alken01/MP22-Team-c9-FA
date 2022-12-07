@@ -29,7 +29,7 @@ int main(int argc, char* argv[]){
     Controller* controller = new Controller(&w, test, gview, tview);
 
     w.show();
-    return a.exec();
+    return app.exec();
 
 }
 

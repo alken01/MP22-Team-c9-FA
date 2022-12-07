@@ -68,7 +68,8 @@ void TextView::draw(int width,int height,std::unique_ptr<Tile>& protagonist,std:
        unsigned long y = protagonist->getYPos();
        changeSignAtCoord(x,y,'$');
 
-       this->sc->addText(*stringWorld,QFont("Monospace"));
+       //Commenting this out since it wouldnt compile
+//       this->sc->addText(*stringWorld,QFont("Monospace"));
 }
 
 
@@ -77,8 +78,9 @@ void TextView::movProtagonist(){
      unsigned long x= protagonist->getXPos();
      unsigned long y = protagonist->getYPos();
     changeSignAtCoord(x,y,'$');
-    sc->clear();
-    sc->addText(*stringWorld,QFont("Monospace"));
+    //Commenting this out because it wouldnt compile
+//    sc->clear();
+//    sc->addText(*stringWorld,QFont("Monospace"));
 }
 
 void TextView::changeSignAtCoord( unsigned long x,  unsigned long y, QChar input){
