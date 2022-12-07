@@ -1,7 +1,6 @@
 #ifndef WORLDMODEL_H
 #define WORLDMODEL_H
 
-#include "textview.h"
 #include "world.h"
 #include <QObject>
 #include <QWidget>
@@ -11,17 +10,31 @@ class WorldModel
 public:
     WorldModel(std::shared_ptr<World> w);
 
+    const std::vector<std::shared_ptr<Tile> > &getTiles() const;
+    void setTiles(const std::vector<std::shared_ptr<Tile> > &newTiles);
+
+    int getWidth() const;
+    void setWidth(int newWidth);
+
+    int getHeight() const;
+    void setHeight(int newHeight);
+
+    const std::vector<std::shared_ptr<Enemy> > &getEnemies() const;
+    void setEnemies(const std::vector<std::shared_ptr<Enemy> > &newEnemies);
+
+    const std::vector<std::shared_ptr<Tile> > &getHealthPacks() const;
+    void setHealthPacks(const std::vector<std::shared_ptr<Tile> > &newHealthPacks);
+
+    Tile*getProtagonist() const;
+    void setProtagonist(std::shared_ptr<Tile> newProtagonist);
+
 private:
-  std::shared_ptr<World> world;
-  std::shared_ptr<TextView> text_view;
-  std::vector<std::unique_ptr<Tile>> tiles;
+  std::vector<std::shared_ptr<Tile>> tiles;
   int width;
   int height;
-  QVector<QString> qVec;
-  std::shared_ptr<QString> stringWorld;
-  std::vector<std::unique_ptr<Enemy>> enemies;
-  std::vector<std::unique_ptr<Tile>> healthPacks;
-  std::unique_ptr<Tile> protagonist;
+  std::vector<std::shared_ptr<Enemy>> enemies;
+  std::vector<std::shared_ptr<Tile>> healthPacks;
+  std::shared_ptr<Tile> protagonist;
 
 };
 

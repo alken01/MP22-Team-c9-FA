@@ -29,8 +29,6 @@ int main(int argc, char* argv[]){
     auto c= std::make_shared<Controller>(&w,test,gview,tview);
     c->initWorlds();
     w.setController(c);
-    Controller* controller = new Controller(&w, gview, tview);
-
 
     w.show();
     return app.exec();

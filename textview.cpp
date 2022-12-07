@@ -6,17 +6,20 @@ TextView::TextView()
 {}
 
 
-void TextView::draw(int width,int height,std::unique_ptr<Tile>& protagonist,std::vector<std::unique_ptr<Enemy>>& enemies,std::vector<std::unique_ptr<Tile>>& healthPacks, std::shared_ptr<QGraphicsScene> scene,std::vector<std::unique_ptr<Tile>>& tiles){
+void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView> textView ){
 
-    this->height=height;
-    this->width=width;
+    this->height=w->getHeight();
+    this->width=w->getWidth();
+    auto enemies=w->getEnemies();
+    auto healthPacks=w->getHealthPacks();
+    auto protagonist=w->getProtagonist();
     //Qstring = stores a string of 16-bit QChars --> implicit sharing: reduce memory usage and to avoid the needless copying of data
-    auto w = QString("+"); //Create Qstring for width
+    auto wi = QString("+"); //Create Qstring for width
     auto h = QString("|"); //Create Qstring for height
 
     //for each column +---+ x width
        for(int i = 0; i < width; i++){
-           w.append("---+");
+           wi.append("---+");
        }
        //for each column |   | x width
        for(int i = 0; i < width; i++){
@@ -25,13 +28,13 @@ void TextView::draw(int width,int height,std::unique_ptr<Tile>& protagonist,std:
 
        //for each row repeat shape x height
        for(int q = 0; q < height; q++){
-           qVec.push_back(w);
+           qVec.push_back(wi);
            qVec.append("\n");
            qVec.push_back(h);
            qVec.append("\n");
        }
        //close map bottom line
-       qVec.push_back(w);
+       qVec.push_back(wi);
 
        //couldn't make newline characters work when printing text seperately --> combine all first into single string
        this->stringWorld = std::make_shared<QString>();
@@ -58,17 +61,18 @@ void TextView::draw(int width,int height,std::unique_ptr<Tile>& protagonist,std:
        unsigned long y = protagonist->getYPos();
        changeSignAtCoord(x,y,'$');
 
-       scene->addText(*stringWorld,QFont("Monospace"));
+       this->textscene->addText(*stringWorld,QFont("Monospace"));
+       textView->setScene(this->textscene);
 }
 
 
 // This code will be used in controller / changed so it gets input from controller
-void TextView::movProtagonist(std::unique_ptr<Tile>& protagonist, std::shared_ptr<QGraphicsScene> scene){
+void TextView::movProtagonist(std::unique_ptr<Tile>& protagonist){
      unsigned long x= protagonist->getXPos();
      unsigned long y = protagonist->getYPos();
     changeSignAtCoord(x,y,'$');
-    scene->clear();
-    scene->addText(*stringWorld,QFont("Monospace"));
+    this->textscene->clear();
+    this->textscene->addText(*stringWorld,QFont("Monospace"));
 }
 
 void TextView::changeSignAtCoord( unsigned long x,  unsigned long y, QChar input){
@@ -77,4 +81,7 @@ void TextView::changeSignAtCoord( unsigned long x,  unsigned long y, QChar input
     this->stringWorld->replace(indexCount, 1,input);
 }
 
+void TextView::updateView(std::shared_ptr<QGraphicsView> textView){
+    textView->setScene(this->textscene);
+}
 

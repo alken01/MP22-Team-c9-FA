@@ -29,7 +29,7 @@ HEADERS += \
     view.h \
     world.h \
     world_global.h \
-    textview.cpp \
+    textview.h \
     worldmodel.h
 
 FORMS += \
