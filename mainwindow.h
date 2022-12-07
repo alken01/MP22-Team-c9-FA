@@ -14,6 +14,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr, QString init_worldmap = ":/images/world_images/maze1.png");
     ~MainWindow();
+    void changeScene();
+
 
 private:
     Ui::MainWindow *ui;
