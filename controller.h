@@ -17,8 +17,7 @@ public:
   QGraphicsScene* getScene() const;
 
 public slots:
-  void switchToGraphic();
-  void switchToText();
+  void switchViews();
 
 private:
   std::shared_ptr<World> world;

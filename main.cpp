@@ -19,8 +19,7 @@ int main(int argc, char *argv[])
     QString init_worldmap = ":/images/world_images/maze2.png";
     MainWindow w = MainWindow(NULL,init_worldmap);
 
-    // Initialise the world, graphics_view and the text_view
-    // Initialise the controller with the above as arguments.
+
 
     w.show();
     return a.exec();

@@ -22,19 +22,18 @@ void Controller::update(){
 
 }
 
-void Controller::switchToGraphic()
+void Controller::switchViews()
 {
-    // Make view 1 visible
-    //graphical_view->draw(width,height,protagonist,enemies,healthPacks,scene,tiles);
-    graphical_view->setVisible(true);
-    text_view->setVisible(false);
-}
-
-void Controller::switchToText()
-{
-    // Make view 2 visible
-    graphical_view->setVisible(false);
-    text_view->setVisible(true);
+    if (graphical_view->isVisible())
+        {
+            graphical_view->hide();
+            text_view->show();
+        }
+        else
+        {
+            graphical_view->hide();
+            text_view->show();
+        }
 }
 
 QGraphicsScene* Controller::getScene() const
