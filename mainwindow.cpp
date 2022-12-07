@@ -18,6 +18,10 @@
 #include <QtGui>
 #include <QTimer>
 #include <QVBoxLayout>
+#include "controller.h"
+#include "world.h"
+#include "graphicalview.h"
+#include "textview.h"
 
 
 MainWindow::MainWindow(QWidget *parent, QString init_worldmap )
@@ -28,6 +32,10 @@ MainWindow::MainWindow(QWidget *parent, QString init_worldmap )
     QGraphicsScene* scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
     scene->addPixmap(QPixmap(init_worldmap));
+
+
+
+
 
     // Create a text input field
     QLineEdit* textInput = new QLineEdit(this);

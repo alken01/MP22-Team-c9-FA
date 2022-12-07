@@ -1,7 +1,7 @@
 #include "controller.h"
 
-Controller::Controller(std::shared_ptr<World> w, std::shared_ptr<GraphicalView> g, std::shared_ptr<TextView> t):
-    world(w),graphical_view(g),text_view(t)
+Controller::Controller(QMainWindow* mw,std::shared_ptr<World> w, std::shared_ptr<GraphicalView> g, std::shared_ptr<TextView> t):
+    world(w),graphical_view(g),text_view(t),window(mw)
 {
     QGraphicsScene scene;
     this->width = w->getCols();
