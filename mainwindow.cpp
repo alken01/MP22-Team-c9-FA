@@ -10,7 +10,6 @@
 #include <QApplication>
 #include <QGraphicsRectItem>
 #include <QGraphicsScene>
-#include <QLineEdit>
 #include <QPainter>
 #include <QPixmap>
 #include <QPushButton>
@@ -30,26 +29,20 @@ MainWindow::MainWindow(QWidget *parent, QString init_worldmap )
     scene->addPixmap(QPixmap(init_worldmap));
 
     // Create a text input field
-    QLineEdit* textInput = new QLineEdit(this);
+    textInput = new QLineEdit(this);
+    textInput->setGeometry(QRect(QPoint(10, 575), QSize(400, 30)));
+
+    //commit text button
+    QPushButton* textButton = new QPushButton("Enter", this);
+    textButton->setGeometry(QRect(QPoint(420, 575), QSize(200, 50)));
 
     // Create a button
     QPushButton* button = new QPushButton("Change View", this);
-
-    // Create a vertical layout to arrange the widgets
-    QVBoxLayout* layout = new QVBoxLayout;
-
-    // Add the graphicsView and the text input field to the layout
-    layout->addWidget(ui->graphicsView);
-    layout->addWidget(textInput);
-
-    // Set the layout for the main window
-    this->setLayout(layout);
-
-    // Add the button to the toolbar
-//    ui->mainToolBar->addWidget(button);
+    button->setGeometry(QRect(QPoint(900,0), QSize(200, 50)));
 
     // Connect the button's clicked signal to the changeScene slot
     connect(button, &QPushButton::clicked, this, &MainWindow::changeScene);
+    connect(textInput, &QLineEdit::textChanged, this, &MainWindow::textEntered);
 }
 
 
@@ -72,3 +65,30 @@ void MainWindow::changeScene()
     ui->graphicsView->setScene(newScene);
 }
 
+void MainWindow::textEntered(){
+    QString input = this->textInput->text();
+    if(input=="up"){
+        this->controller->movePlayer("up");
+        this->textInput->clear();
+    }
+
+    if(input=="down"){
+        this->controller->movePlayer("down");
+        this->textInput->clear();
+    }
+
+    if(input=="left"){
+        this->controller->movePlayer("left");
+        this->textInput->clear();
+    }
+
+    if(input=="right"){
+        this->controller->movePlayer("right");
+        this->textInput->clear();
+    }
+}
+
+void MainWindow::setController(std::shared_ptr<Controller> &c)
+{
+    this->controller = c;
+}

@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QLineEdit>
+#include "controller.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -15,9 +17,13 @@ public:
     MainWindow(QWidget *parent = nullptr, QString init_worldmap = ":/images/world_images/maze1.png");
     ~MainWindow();
     void changeScene();
+    void setController(std::shared_ptr<Controller> &c);
 
 
 private:
     Ui::MainWindow *ui;
+    QLineEdit* textInput;
+    void textEntered();
+    std::shared_ptr<Controller> controller;
 };
 #endif // MAINWINDOW_H

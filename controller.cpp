@@ -41,3 +41,28 @@ QGraphicsScene* Controller::getScene() const
 {
     return scene;
 }
+
+void Controller::movePlayer(QString a){
+    int x=this->protagonist->getXPos();
+    int y=this->protagonist->getYPos();
+
+    if(a=="up"){
+        this->protagonist->setYPos(y++);
+        return;
+    }
+
+    if(a=="right"){
+        this->protagonist->setXPos(x++);
+        return;
+    }
+
+    if(a=="left"){
+        this->protagonist->setXPos(x--);
+        return;
+    }
+
+    if(a=="down"){
+        this->protagonist->setYPos(y--);
+        return;
+    }
+}

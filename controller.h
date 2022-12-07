@@ -19,6 +19,7 @@ public:
 public slots:
   void switchToGraphic();
   void switchToText();
+  void movePlayer(QString direction);
 
 private:
   std::shared_ptr<World> world;
