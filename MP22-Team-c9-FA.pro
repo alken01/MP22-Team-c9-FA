@@ -14,7 +14,8 @@ SOURCES += \
     astar.cpp \
     main.cpp \
     mainwindow.cpp \
-    textview.cpp
+    textview.cpp \
+    worldmodel.cpp
 
 
 HEADERS += \
@@ -28,7 +29,8 @@ HEADERS += \
     view.h \
     world.h \
     world_global.h \
-    textview.cpp
+    textview.cpp \
+    worldmodel.h
 
 FORMS += \
     mainwindow.ui

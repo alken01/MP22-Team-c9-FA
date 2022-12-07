@@ -27,6 +27,7 @@ int main(int argc, char* argv[]){
     auto gview = std::make_shared<GraphicalView>();
     auto tview = std::make_shared<TextView>();
     Controller* controller = new Controller(&w, test, gview, tview);
+    auto gscene = new QGraphicsScene(0,0,300,300,gview);
 
     w.show();
     return app.exec();
