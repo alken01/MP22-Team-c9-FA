@@ -18,7 +18,7 @@ private:
  int height;
  QVector<QString> qVec;
  std::shared_ptr<QString> stringWorld;
- std::shared_ptr<QGraphicsScene> sc;
+ std::shared_ptr<QGraphicsScene> textscene;
  std::shared_ptr<World> world;
  std::vector<std::unique_ptr<Enemy>> enemies;
  std::vector<std::unique_ptr<Tile>> healthPacks;

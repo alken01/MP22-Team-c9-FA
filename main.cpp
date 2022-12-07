@@ -18,9 +18,13 @@ int main(int argc, char *argv[])
 
     QString init_worldmap = ":/images/world_images/maze2.png";
     MainWindow w = MainWindow(NULL,init_worldmap);
+    auto test = std::make_shared<World>();
+    test->createWorld(init_worldmap, 5,5,0.25);
+    auto gview = std::make_shared<GraphicalView>();
+    auto tview = std::make_shared<TextView>();
+    Controller* controller = new Controller(&w,test,gview,tview);
 
-    // Initialise the world, graphics_view and the text_view
-    // Initialise the controller with the above as arguments.
+
 
     w.show();
     return a.exec();
