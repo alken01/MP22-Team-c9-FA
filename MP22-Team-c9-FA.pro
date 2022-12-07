@@ -11,17 +11,19 @@ CONFIG += c++17
 SOURCES += \
     controller.cpp \
     graphicalview.cpp \
+    astar.cpp \
     main.cpp \
     mainwindow.cpp \
-    textview.cpp
+
 
 HEADERS += \
     controller.h \
     graphicalview.h \
+    ImageWidget.h \
+    astar.h \
     lib/world.h \
     lib/world_global.h \
     mainwindow.h \
-    textview.h \
     view.h \
     world.h \
     world_global.h
