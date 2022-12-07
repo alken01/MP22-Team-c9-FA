@@ -27,7 +27,7 @@ int main(int argc, char* argv[]){
     auto gview = std::make_shared<GraphicalView>();
     auto tview = std::make_shared<TextView>();
     auto wm = std::make_shared<WorldModel>(test);
-    auto c= std::make_shared<Controller>(wm,test,gview,tview);
+    auto c= std::make_shared<Controller>(wm,gview,tview);
     c->initWorlds();
     w.setController(c);
 

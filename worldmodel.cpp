@@ -4,10 +4,15 @@ WorldModel::WorldModel(std::shared_ptr<World> w)
 {
     this->width = w->getCols();
     this->height = w->getRows();
-    this->enemies = w->getEnemies();
-    this->healthPacks = w->getHealthPacks();
+    auto enemyUnique = w->getEnemies();
+    auto healthUnique = w->getHealthPacks();
     this->protagonist = w->getProtagonist();
-    this->tiles = w->getTiles();
+    auto tilesUnique = w->getTiles();
+
+    std::move(enemyUnique.begin(), enemyUnique.end(), std::back_inserter(this->enemies));
+    std::move(healthUnique.begin(), healthUnique.end(), std::back_inserter(this->healthPacks));
+    std::move(tilesUnique.begin(), tilesUnique.end(), std::back_inserter(this->tiles));
+
 }
 
 const std::vector<std::shared_ptr<Tile> > &WorldModel::getTiles() const
