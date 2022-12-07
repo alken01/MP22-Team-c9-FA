@@ -38,26 +38,26 @@ void Controller::switchViews()
 
 
 void Controller::movePlayer(QString a){
-    int x=world->getProtagonist()->getXPos();
-    int y=world->getProtagonist()->getYPos();
+//    int x=this->protagonist->getXPos();
+//    int y=this->protagonist->getYPos();
 
-    if(a=="up"){
-        world->getProtagonist()->setYPos(y++);
-        return;
-    }
+//    if(a=="up"){
+//        this->protagonist->setYPos(y++);
+//        return;
+//    }
 
-    if(a=="right"){
-        world->getProtagonist()->setXPos(x++);
-        return;
-    }
+//    if(a=="right"){
+//        this->protagonist->setXPos(x++);
+//        return;
+//    }
 
-    if(a=="left"){
-        world->getProtagonist()->setXPos(x--);
-        return;
-    }
+//    if(a=="left"){
+//        this->protagonist->setXPos(x--);
+//        return;
+//    }
 
-    if(a=="down"){
-        world->getProtagonist()->setYPos(y--);
-        return;
-    }
+//    if(a=="down"){
+//        this->protagonist->setYPos(y--);
+//        return;
+//    }
 }
