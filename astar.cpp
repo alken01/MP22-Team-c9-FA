@@ -46,6 +46,10 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
 
     // Explore the four possible moves from the current position (right, left, up, down)
     vector<pair<int, int> > moves = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
+    
+    // TODO: try how it looks with diagonal moves
+    // vector<pair<int, int> > moves = { {0, 1}, {0, -1}, {1, 0}, {-1, 0}, 
+    //                                  {-1, -1}, {1, 1}, {-1, 1}, {1, -1}  };
 
 
     // While the priority queue is not empty
