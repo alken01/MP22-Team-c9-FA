@@ -1,4 +1,5 @@
 #include "worldmodel.h"
+#include <iostream>
 
 WorldModel::WorldModel(std::shared_ptr<World> w)
 {

@@ -7,9 +7,10 @@ TextView::TextView()
 
 
 void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView> textView ){
-
     this->height=w->getHeight();
     this->width=w->getWidth();
+    std::cout.flush();
+    std::cout << "height:" << this->height << "width:"<< this->width << std::endl;
     auto enemies=w->getEnemies();
     auto healthPacks=w->getHealthPacks();
     auto protagonist=w->getProtagonist();
@@ -48,7 +49,18 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
        for (unsigned long i = 0; i <enemies.size(); ++i) {
            unsigned long x = enemies.at(i)->getXPos();
            unsigned long y = enemies.at(i)->getYPos();
-           changeSignAtCoord(x,y,'E');
+
+           auto temp=std::dynamic_pointer_cast<PEnemy>(enemies.at(i));
+
+           if(temp != nullptr){
+            changeSignAtCoord(x,y,'P');
+            std::cout.flush();
+            std::cout << "P enemy at Y:" << y << "X:"<< x <<"added" << std::endl;
+           }
+           else {
+               changeSignAtCoord(x,y,'E');
+           std::cout << "Normal enemy at Y:" << y << "X:"<< x <<"added" << std::endl;
+           }
        }
 
        //add health
@@ -56,6 +68,9 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
            int x =healthPacks.at(i)->getXPos();
            int y =healthPacks.at(i)->getYPos();
            changeSignAtCoord(x,y,'H');
+           std::cout.flush();
+           std::cout << "Health added at Y:" << y << "X:"<< x <<"added" << std::endl;
+
        }
 
        //add prot
