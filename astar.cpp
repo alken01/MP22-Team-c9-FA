@@ -3,7 +3,7 @@
 
 // A* search function that returns a path to the end position from the start position
 //vector<pair<int, int> > astar(vector<vector<int> >& grid, int sx, int sy, int ex, int ey){
-vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, int cols, Tile start, Tile end){
+vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, int cols, Tile start, Tile end, float white_value){
     cout<< "Starting algo..."<<endl;
     // TODO:
     // check if having the end and start positions as variables is quicker than calling them
@@ -12,24 +12,26 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
     int ex = end.getXPos();
     int ey = end.getYPos();
 
-    if(sx < 0 || sx >= rows || sy < 0 || sy >= cols){
-        cout<< "Start value out of bounds"<<endl;
-        return {};
-    }
-    if(ex < 0 || ex >= rows || ey < 0 || ey >= cols){
-        cout<< "End value out of bounds"<<endl;
-        return {};
-    }
     cout<< "Start: ("<<sx<<", "<<sy<<", "<<start.getValue() << ")"<<endl;
     cout<< "End: ("<<ex<<", "<<ey<<", "<<end.getValue() << ")"<<endl;
-    cout<< "Rows:\t"  <<rows<<endl;
-    cout<< "Cols:\t"  <<cols<<endl;
+    cout<< "Rows/Y:\t"  <<rows<<endl;
+    cout<< "Cols/X:\t"  <<cols<<endl;
+
+//    if(sx < 0 || sx >= cols || sy < 0 || sy >= rows){
+//        cout<< "Start value out of bounds"<<endl;
+//        return {};
+//    }
+//    if(ex < 0 || ex >= cols || ey < 0 || ey >= rows){
+//        cout<< "End value out of bounds"<<endl;
+//        return {};
+//    }
+
 
     vector<vector<float> > grid(cols, vector<float>(rows));
 
     // Set the grid elements
-    for (int row = 0; row < rows; row++){
-        for (int col = 0; col < cols; col++){
+    for (int col = 0; col < cols; col++){
+        for (int row = 0; row < rows; row++){
             grid[col][row] = world_grid[row * cols + col]->getValue();
         }
     }
@@ -44,10 +46,15 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
 
     // Explore the four possible moves from the current position (right, left, up, down)
     vector<pair<int, int> > moves = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
+    
+    // TODO: try how it looks with diagonal moves
+    // vector<pair<int, int> > moves = { {0, 1}, {0, -1}, {1, 0}, {-1, 0}, 
+    //                                  {-1, -1}, {1, 1}, {-1, 1}, {1, -1}  };
 
 
     // While the priority queue is not empty
     while(!pq.empty()){
+//        cout<< "Searching..." << endl;
         // Get the top node (node with the lowest cost) from the queue
         Node curr = pq.top();
         pq.pop();
@@ -71,7 +78,8 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
 
             // Skip the move if the new position is outside the grid
             if(nx < 0 || nx >= rows || ny < 0 || ny >= cols) continue;
-            if(grid[nx][ny]>1) continue;
+            if(grid[nx][ny]>1.1) continue;
+            if(grid[nx][ny]==1.0) grid[nx][ny] = white_value;
 
             // Update the minimum cost and the priority queue if the new position has a lower cost
             if(dist[nx][ny] == -1 || dist[nx][ny] > dist[curr.x][curr.y] + grid[nx][ny]){
