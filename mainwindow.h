@@ -16,7 +16,7 @@ class MainWindow: public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget* parent = nullptr, QString init_worldmap = ":/images/world_images/maze1.png");
+    MainWindow(QWidget* parent, QString init_worldmap, std::shared_ptr<Controller> c);
     ~MainWindow();
     void changeScene();
     void setController(std::shared_ptr<Controller>& c);
@@ -27,5 +27,6 @@ private:
     QLineEdit* textInput;
     void textEntered();
     std::shared_ptr<Controller> controller;
+    QGraphicsView textView;
 };
 #endif // MAINWINDOW_H

@@ -12,7 +12,7 @@ public:
  void changeSignAtCoord( unsigned long x,  unsigned long y, QChar input);
  void draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView> textView);
  void createMap();
- void movProtagonist(std::unique_ptr<Tile>& protagonist);
+ void movProtagonist(int x1, int y1, int x2, int y2);
  void updateView(std::shared_ptr<QGraphicsView> textView);
 
 private:

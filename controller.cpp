@@ -6,6 +6,7 @@ Controller::Controller(std::shared_ptr<WorldModel> w,std::shared_ptr<GraphicalVi
     this->world=w;
     this->graphical_view=g;
     this->text_view=t;
+    this->Qtext_view=std::make_shared<QGraphicsView>();
 }
 
 
@@ -18,7 +19,29 @@ void Controller::update(){
 }
 
 void Controller::initWorlds(){
-    this->text_view->draw(this->world, this->text_view);
+    this->world->getProtagonist()->setXPos(1);
+     this->world->getProtagonist()->setYPos(1);
+    this->text_view->draw(this->world, this->Qtext_view);
+}
+
+const std::shared_ptr<QGraphicsView> &Controller::getQtext_view() const
+{
+    return Qtext_view;
+}
+
+void Controller::setQtext_view(const std::shared_ptr<QGraphicsView> &newQtext_view)
+{
+    Qtext_view = newQtext_view;
+}
+
+const std::shared_ptr<TextView> &Controller::getText_view() const
+{
+    return text_view;
+}
+
+void Controller::setText_view(const std::shared_ptr<TextView> &newText_view)
+{
+    text_view = newText_view;
 }
 
 void Controller::switchViews()
@@ -37,27 +60,26 @@ void Controller::switchViews()
 
 
 
-void Controller::movePlayer(QString a){
+void Controller::movePlayer(int a){
     int x=world->getProtagonist()->getXPos();
     int y=world->getProtagonist()->getYPos();
 
-    if(a=="up"){
-        world->getProtagonist()->setYPos(y++);
-        return;
+    if(a==1){
+        world->getProtagonist()->setYPos(y+1);
     }
 
-    if(a=="right"){
-        world->getProtagonist()->setXPos(x++);
-        return;
+    if(a==2){
+        world->getProtagonist()->setXPos(x+1);
     }
 
-    if(a=="left"){
-        world->getProtagonist()->setXPos(x--);
-        return;
+    if(a==3){
+        world->getProtagonist()->setXPos(x-1);
     }
 
-    if(a=="down"){
-        world->getProtagonist()->setYPos(y--);
-        return;
+    if(a==4){
+        world->getProtagonist()->setYPos(y-1);
     }
+
+    this->text_view->movProtagonist(x,y,world->getProtagonist()->getXPos(), world->getProtagonist()->getYPos());
+    this->text_view->updateView(this->Qtext_view);
 }

@@ -34,6 +34,7 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
            qVec.push_back(h);
            qVec.append("\n");
        }
+
        //close map bottom line
        qVec.push_back(wi);
 
@@ -59,7 +60,7 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
 
        //add prot
        unsigned long x= protagonist->getXPos();
-       unsigned long y = protagonist->getYPos();
+       unsigned long y =protagonist->getYPos();
        changeSignAtCoord(x,y,'$');
 
        this->textscene->addText(*stringWorld,QFont("Monospace"));
@@ -68,10 +69,9 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
 
 
 // This code will be used in controller / changed so it gets input from controller
-void TextView::movProtagonist(std::unique_ptr<Tile>& protagonist){
-     unsigned long x= protagonist->getXPos();
-     unsigned long y = protagonist->getYPos();
-    changeSignAtCoord(x,y,'$');
+void TextView::movProtagonist(int x1, int y1, int x2, int y2){
+    changeSignAtCoord(x1,y1,' ');
+    changeSignAtCoord(x2,y2,'$');
     this->textscene->clear();
     this->textscene->addText(*stringWorld,QFont("Monospace"));
 }

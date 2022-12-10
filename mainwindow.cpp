@@ -23,13 +23,20 @@
 #include "textview.h"
 
 
-MainWindow::MainWindow(QWidget* parent, QString init_worldmap)
+MainWindow::MainWindow(QWidget* parent, QString init_worldmap, std::shared_ptr<Controller> c)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow){
     ui->setupUi(this);
-    QGraphicsScene* scene = new QGraphicsScene(this);
-    ui->graphicsView->setScene(scene);
-    scene->addPixmap(QPixmap(init_worldmap));
+    this->controller=c;
+    //QGraphicsScene* scene = new QGraphicsScene(this);
+    //ui->graphicsView->setScene(scene);
+    //scene->addPixmap(QPixmap(init_worldmap));
+
+    auto view = new QGraphicsView(ui->centralwidget);
+    view =c->getQtext_view().get();
+    setCentralWidget(view);
+
+
 
 
     // Create a text input field
@@ -109,23 +116,27 @@ void MainWindow::changeScene(){
 void MainWindow::textEntered(){
     QString input = this->textInput->text();
     if(input == "up"){
-        this->controller->movePlayer("up");
+        this->controller->movePlayer(4);
         this->textInput->clear();
+
     }
 
     if(input == "down"){
-        this->controller->movePlayer("down");
+        this->controller->movePlayer(1);
         this->textInput->clear();
+
     }
 
     if(input == "left"){
-        this->controller->movePlayer("left");
+        this->controller->movePlayer(3);
         this->textInput->clear();
+
     }
 
     if(input == "right"){
-        this->controller->movePlayer("right");
+        this->controller->movePlayer(2);
         this->textInput->clear();
+
     }
 }
 

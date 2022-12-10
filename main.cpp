@@ -21,7 +21,6 @@ int main(int argc, char* argv[]){
 
     QApplication app(argc, argv);
     QString init_worldmap = ":/images/world_images/maze2.png";
-    MainWindow w = MainWindow(NULL, init_worldmap);
     auto test = std::make_shared<World>();
     test->createWorld(init_worldmap, 5, 5, 0.25);
     auto gview = std::make_shared<GraphicalView>();
@@ -29,8 +28,7 @@ int main(int argc, char* argv[]){
     auto wm = std::make_shared<WorldModel>(test);
     auto c= std::make_shared<Controller>(wm,gview,tview);
     c->initWorlds();
-    w.setController(c);
-
+    MainWindow w = MainWindow(NULL, init_worldmap, c);
     w.show();
     return app.exec();
 
