@@ -45,11 +45,12 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
     dist[sx][sy] = grid[sx][sy];
 
     // Explore the four possible moves from the current position (right, left, up, down)
-    vector<pair<int, int> > moves = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
+    vector<pair<int, int> > result = {};
     
     // TODO: try how it looks with diagonal moves
     // vector<pair<int, int> > moves = { {0, 1}, {0, -1}, {1, 0}, {-1, 0}, 
     //                                  {-1, -1}, {1, 1}, {-1, 1}, {1, -1}  };
+    vector<pair<int, int> > moves = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
 
 
     // While the priority queue is not empty
@@ -61,7 +62,7 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
 
         // If the current node is the end position, return the path to the end position
         if(curr.x == ex && curr.y == ey){
-            vector<pair<int, int> > result;
+
             pair<int, int> start = make_pair(curr.x,curr.y);
             while(start.first != sx || start.second != sy){
                 result.push_back(start);
@@ -69,7 +70,7 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
             }
             result.push_back(make_pair(sx, sy));
             reverse(result.begin(), result.end());
-            return result;
+            break;
         }
 
         for(auto move : moves){
@@ -91,6 +92,7 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
     }
 
     // If we reach here, it means that there is no path from the start position to the end position
-    std::cout<< "No path found" << std::endl;
-    return {};
+    if(result.size()==0) cout<< "No path found" << endl;
+
+    return result;
 }
