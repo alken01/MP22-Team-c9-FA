@@ -25,8 +25,9 @@ public:
     const std::vector<std::shared_ptr<Tile> > &getHealthPacks() const;
     void setHealthPacks(const std::vector<std::shared_ptr<Tile> > &newHealthPacks);
 
-    Tile*getProtagonist() const;
-    void setProtagonist(std::shared_ptr<Tile> newProtagonist);
+
+    const std::shared_ptr<Protagonist> &getProtagonist() const;
+    void setProtagonist(const std::shared_ptr<Protagonist> &newProtagonist);
 
 private:
   std::vector<std::shared_ptr<Tile>> tiles;
@@ -34,7 +35,7 @@ private:
   int height;
   std::vector<std::shared_ptr<Enemy>> enemies;
   std::vector<std::shared_ptr<Tile>> healthPacks;
-  std::shared_ptr<Tile> protagonist;
+  std::shared_ptr<Protagonist> protagonist;
 
 };
 

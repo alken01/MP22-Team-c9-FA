@@ -7,9 +7,10 @@ TextView::TextView()
 
 
 void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView> textView ){
-
     this->height=w->getHeight();
     this->width=w->getWidth();
+    std::cout.flush();
+    std::cout << "height:" << this->height << "width:"<< this->width << std::endl;
     auto enemies=w->getEnemies();
     auto healthPacks=w->getHealthPacks();
     auto protagonist=w->getProtagonist();
@@ -34,6 +35,7 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
            qVec.push_back(h);
            qVec.append("\n");
        }
+
        //close map bottom line
        qVec.push_back(wi);
 
@@ -47,7 +49,18 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
        for (unsigned long i = 0; i <enemies.size(); ++i) {
            unsigned long x = enemies.at(i)->getXPos();
            unsigned long y = enemies.at(i)->getYPos();
-           changeSignAtCoord(x,y,'E');
+
+           auto temp=std::dynamic_pointer_cast<PEnemy>(enemies.at(i));
+
+           if(temp != nullptr){
+            changeSignAtCoord(x,y,'P');
+            std::cout.flush();
+            std::cout << "P enemy at Y:" << y << "X:"<< x <<"added" << std::endl;
+           }
+           else {
+               changeSignAtCoord(x,y,'E');
+           std::cout << "Normal enemy at Y:" << y << "X:"<< x <<"added" << std::endl;
+           }
        }
 
        //add health
@@ -55,11 +68,14 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
            int x =healthPacks.at(i)->getXPos();
            int y =healthPacks.at(i)->getYPos();
            changeSignAtCoord(x,y,'H');
+           std::cout.flush();
+           std::cout << "Health added at Y:" << y << "X:"<< x <<"added" << std::endl;
+
        }
 
        //add prot
        unsigned long x= protagonist->getXPos();
-       unsigned long y = protagonist->getYPos();
+       unsigned long y =protagonist->getYPos();
        changeSignAtCoord(x,y,'$');
 
        this->textscene->addText(*stringWorld,QFont("Monospace"));
@@ -68,10 +84,9 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
 
 
 // This code will be used in controller / changed so it gets input from controller
-void TextView::movProtagonist(std::unique_ptr<Tile>& protagonist){
-     unsigned long x= protagonist->getXPos();
-     unsigned long y = protagonist->getYPos();
-    changeSignAtCoord(x,y,'$');
+void TextView::movProtagonist(int x1, int y1, int x2, int y2){
+    changeSignAtCoord(x1,y1,' ');
+    changeSignAtCoord(x2,y2,'$');
     this->textscene->clear();
     this->textscene->addText(*stringWorld,QFont("Monospace"));
 }

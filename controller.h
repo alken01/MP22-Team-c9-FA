@@ -17,10 +17,16 @@ public:
 
 std::shared_ptr<QGraphicsScene> getScene() const;
 
+const std::shared_ptr<TextView> &getText_view() const;
+void setText_view(const std::shared_ptr<TextView> &newText_view);
+
+const std::shared_ptr<QGraphicsView> &getQtext_view() const;
+void setQtext_view(const std::shared_ptr<QGraphicsView> &newQtext_view);
+
 public slots:
   void switchToGraphic();
   void switchToText();
-  void movePlayer(QString direction);
+  void movePlayer(int direction);
   void switchViews();
   void initWorlds();
 
@@ -29,5 +35,7 @@ private:
   std::shared_ptr<WorldModel> world;
   std::shared_ptr<GraphicalView> graphical_view;
   std::shared_ptr<TextView> text_view;
+  std::shared_ptr<QGraphicsView> Qtext_view;
+
 };
 #endif // CONTROLLER_H

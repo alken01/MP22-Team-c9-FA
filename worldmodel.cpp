@@ -1,4 +1,5 @@
 #include "worldmodel.h"
+#include <iostream>
 
 WorldModel::WorldModel(std::shared_ptr<World> w)
 {
@@ -6,7 +7,8 @@ WorldModel::WorldModel(std::shared_ptr<World> w)
     this->height = w->getRows();
     auto enemyUnique = w->getEnemies();
     auto healthUnique = w->getHealthPacks();
-    this->protagonist = w->getProtagonist();
+    auto prot = w->getProtagonist();
+    this->protagonist = std::move(prot);
     auto tilesUnique = w->getTiles();
 
     std::move(enemyUnique.begin(), enemyUnique.end(), std::back_inserter(this->enemies));
@@ -65,13 +67,14 @@ void WorldModel::setHealthPacks(const std::vector<std::shared_ptr<Tile> > &newHe
     healthPacks = newHealthPacks;
 }
 
-Tile*WorldModel::getProtagonist() const
+const std::shared_ptr<Protagonist> &WorldModel::getProtagonist() const
 {
-    return protagonist.get();
+    return protagonist;
 }
 
-void WorldModel::setProtagonist(std::shared_ptr<Tile> newProtagonist)
+void WorldModel::setProtagonist(const std::shared_ptr<Protagonist> &newProtagonist)
 {
-    protagonist = std::move(newProtagonist);
+    protagonist = newProtagonist;
 }
+
 
