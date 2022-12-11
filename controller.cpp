@@ -1,4 +1,5 @@
 #include "controller.h"
+#include <iostream>
 
 Controller::Controller(std::shared_ptr<WorldModel> w,std::shared_ptr<GraphicalView> g, std::shared_ptr<TextView> t):
     graphical_view(g),text_view(t)
@@ -22,6 +23,16 @@ void Controller::initWorlds(){
     this->world->getProtagonist()->setXPos(1);
      this->world->getProtagonist()->setYPos(1);
     this->text_view->draw(this->world, this->Qtext_view);
+}
+
+const std::shared_ptr<WorldModel> &Controller::getWorld() const
+{
+    return world;
+}
+
+void Controller::setWorld(const std::shared_ptr<WorldModel> &newWorld)
+{
+    world = newWorld;
 }
 
 const std::shared_ptr<QGraphicsView> &Controller::getQtext_view() const

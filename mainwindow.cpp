@@ -27,13 +27,13 @@ MainWindow::MainWindow(QWidget* parent, QString init_worldmap, std::shared_ptr<C
     : QMainWindow(parent)
     , ui(new Ui::MainWindow){
     ui->setupUi(this);
+
     this->controller=c;
     //QGraphicsScene* scene = new QGraphicsScene(this);
     //ui->graphicsView->setScene(scene);
     //scene->addPixmap(QPixmap(init_worldmap));
+    auto view =c->getQtext_view().get();
 
-    auto view = new QGraphicsView(ui->centralwidget);
-    view =c->getQtext_view().get();
     setCentralWidget(view);
 
 

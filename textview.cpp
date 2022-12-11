@@ -14,6 +14,7 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
     auto enemies=w->getEnemies();
     auto healthPacks=w->getHealthPacks();
     auto protagonist=w->getProtagonist();
+    auto tiles=w->getTiles();
     this->textscene =new QGraphicsScene();
     //Qstring = stores a string of 16-bit QChars --> implicit sharing: reduce memory usage and to avoid the needless copying of data
     auto wi = QString("+"); //Create Qstring for width
@@ -70,6 +71,16 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
            changeSignAtCoord(x,y,'H');
            std::cout.flush();
            std::cout << "Health added at Y:" << y << "X:"<< x <<"added" << std::endl;
+
+       }
+
+       //add walls
+       for (unsigned long i = 0; i < tiles.size(); ++i) {
+           if(tiles.at(i)->getValue()==1){
+               int x =tiles.at(i)->getXPos();
+               int y =tiles.at(i)->getYPos();
+               changeSignAtCoord(x,y,'@');
+           }
 
        }
 

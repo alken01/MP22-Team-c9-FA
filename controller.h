@@ -23,6 +23,9 @@ void setText_view(const std::shared_ptr<TextView> &newText_view);
 const std::shared_ptr<QGraphicsView> &getQtext_view() const;
 void setQtext_view(const std::shared_ptr<QGraphicsView> &newQtext_view);
 
+const std::shared_ptr<WorldModel> &getWorld() const;
+void setWorld(const std::shared_ptr<WorldModel> &newWorld);
+
 public slots:
   void switchToGraphic();
   void switchToText();
