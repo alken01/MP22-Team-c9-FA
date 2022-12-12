@@ -20,8 +20,8 @@ void Controller::update(){
 }
 
 void Controller::initWorlds(){
-    this->world->getProtagonist()->setXPos(1);
-     this->world->getProtagonist()->setYPos(1);
+    this->world->getProtagonist()->setXPos(3);
+     this->world->getProtagonist()->setYPos(3);
     this->text_view->draw(this->world, this->Qtext_view);
 }
 
@@ -72,25 +72,86 @@ void Controller::switchViews()
 
 
 void Controller::movePlayer(int a){
+    //store old coordinate
     int x=world->getProtagonist()->getXPos();
     int y=world->getProtagonist()->getYPos();
 
-    if(a==1){
-        world->getProtagonist()->setYPos(y+1);
+    //new coordinate
+    int x2=x;
+    int y2=y;
+
+    if(a==1){ //up
+        y2++;
     }
 
-    if(a==2){
-        world->getProtagonist()->setXPos(x+1);
+    if(a==2){ //right
+        x2++;
     }
 
-    if(a==3){
-        world->getProtagonist()->setXPos(x-1);
+    if(a==3){ //left
+        x2--;
     }
 
-    if(a==4){
-        world->getProtagonist()->setYPos(y-1);
+    if(a==4){ //down
+       y2--;
     }
+
+    // 0 health,1 enemy, 2 poison enemy, 3 wall, 4 tile
+    auto test=checkMove(x2, y2);
+
+    if(test==3){
+        std::cout.flush();
+        std::cout << "you can't walk through walls" << std::endl;
+        return;
+    }
+
+    if(test==2){
+        std::cout.flush();
+        std::cout << "encountered poison enemy" << std::endl;
+    }
+
+    if(test==1){
+        std::cout.flush();
+        std::cout << "encountered enemy" << std::endl;
+    }
+
+    if(test==0){
+        std::cout.flush();
+        std::cout << "got healt yay" << std::endl;
+    }
+
+    world->getProtagonist()->setXPos(x2);
+    world->getProtagonist()->setYPos(y2);
 
     this->text_view->movProtagonist(x,y,world->getProtagonist()->getXPos(), world->getProtagonist()->getYPos());
     this->text_view->updateView(this->Qtext_view);
+}
+
+int Controller::checkMove(int x, int y){
+    auto tile = world->getWorldMap().at(x).at(y);
+
+    for (unsigned long i = 0; i < world->getHealthPacks().size(); ++i) {
+        int x =world->getHealthPacks().at(i)->getXPos();
+        int y =world->getHealthPacks().at(i)->getYPos();
+        if(tile->getXPos()==x && tile->getYPos()==y){
+            return 0; // is health
+        }
+    }
+
+
+    std::shared_ptr<Enemy> temp=std::dynamic_pointer_cast<PEnemy>(tile);
+    if(temp != 0){
+        return 2;
+      }
+
+    auto temp2 = std::dynamic_pointer_cast<Enemy>(tile);
+    if(temp2 != 0){
+        return 1; //is normal enemy
+    }
+
+    if(tile->getValue()==1){
+        return 3; //is wall
+    }
+    return 4;
+
 }

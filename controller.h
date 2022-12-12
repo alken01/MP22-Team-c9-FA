@@ -39,6 +39,7 @@ private:
   std::shared_ptr<GraphicalView> graphical_view;
   std::shared_ptr<TextView> text_view;
   std::shared_ptr<QGraphicsView> Qtext_view;
+  int checkMove(int x, int y);
 
 };
 #endif // CONTROLLER_H

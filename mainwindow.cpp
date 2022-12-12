@@ -32,12 +32,9 @@ MainWindow::MainWindow(QWidget* parent, QString init_worldmap, std::shared_ptr<C
     //QGraphicsScene* scene = new QGraphicsScene(this);
     //ui->graphicsView->setScene(scene);
     //scene->addPixmap(QPixmap(init_worldmap));
-    auto view =c->getQtext_view().get();
-
+    auto view = new QGraphicsView(ui->centralwidget);
+    view =c->getQtext_view().get();
     setCentralWidget(view);
-
-
-
 
     // Create a text input field
     textInput = new QLineEdit(this);

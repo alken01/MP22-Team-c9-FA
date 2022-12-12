@@ -44,7 +44,7 @@ int main(int argc, char* argv[]){
     QApplication app(argc, argv);
     QString init_worldmap = ":/images/world_images/maze2.png";
     auto test = std::make_shared<World>();
-    test->createWorld(init_worldmap, 10, 10, 0.50);
+    test->createWorld(init_worldmap, 3000, 10, 0.50);
     auto gview = std::make_shared<GraphicalView>();
     auto tview = std::make_shared<TextView>();
     auto wm = std::make_shared<WorldModel>(test);
@@ -52,6 +52,7 @@ int main(int argc, char* argv[]){
     c->initWorlds();
     MainWindow w = MainWindow(NULL, init_worldmap, c);
     w.show();
+    return app.exec();
 }
 
 // // main for astar testing

@@ -15,6 +15,30 @@ WorldModel::WorldModel(std::shared_ptr<World> w)
     std::move(healthUnique.begin(), healthUnique.end(), std::back_inserter(this->healthPacks));
     std::move(tilesUnique.begin(), tilesUnique.end(), std::back_inserter(this->tiles));
 
+
+    //initialise 2D array of map tiles
+    initMapVec();
+
+    //health
+    for (unsigned long i = 0; i < healthPacks.size(); ++i) {
+        int x =healthPacks.at(i)->getXPos();
+        int y =healthPacks.at(i)->getYPos();
+        worldMap.at(x).at(y)=healthPacks.at(i);
+    }
+
+    for (unsigned long i = 0; i < enemies.size(); ++i) {
+        int x =enemies.at(i)->getXPos();
+        int y =enemies.at(i)->getYPos();
+        worldMap.at(x).at(y)=enemies.at(i);
+    }
+
+    //tiles
+    for (unsigned long i = 0; i < tiles.size(); ++i) {
+        int x =tiles.at(i)->getXPos();
+        int y =tiles.at(i)->getYPos();
+        worldMap.at(x).at(y)=tiles.at(i);
+    }
+
 }
 
 const std::vector<std::shared_ptr<Tile> > &WorldModel::getTiles() const
@@ -77,4 +101,25 @@ void WorldModel::setProtagonist(const std::shared_ptr<Protagonist> &newProtagoni
     protagonist = newProtagonist;
 }
 
+const std::vector<std::vector<std::shared_ptr<Tile> > > &WorldModel::getWorldMap() const
+{
+    return worldMap;
+}
 
+void WorldModel::setWorldMap(const std::vector<std::vector<std::shared_ptr<Tile> > > &newWorldMap)
+{
+    worldMap = newWorldMap;
+}
+
+void WorldModel::initMapVec(){
+    //init 2D array/check poison enemies
+
+    std::vector<std::shared_ptr<Tile>> col;
+    for(int i=0; i<this->height; i++){
+        col.push_back(nullptr);
+    }
+
+    for(int i=0; i<this->width; i++){
+        worldMap.push_back(col);
+    }
+}

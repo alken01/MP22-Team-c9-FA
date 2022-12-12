@@ -29,6 +29,10 @@ public:
     const std::shared_ptr<Protagonist> &getProtagonist() const;
     void setProtagonist(const std::shared_ptr<Protagonist> &newProtagonist);
 
+
+    const std::vector<std::vector<std::shared_ptr<Tile> > > &getWorldMap() const;
+    void setWorldMap(const std::vector<std::vector<std::shared_ptr<Tile> > > &newWorldMap);
+
 private:
   std::vector<std::shared_ptr<Tile>> tiles;
   int width;
@@ -36,7 +40,8 @@ private:
   std::vector<std::shared_ptr<Enemy>> enemies;
   std::vector<std::shared_ptr<Tile>> healthPacks;
   std::shared_ptr<Protagonist> protagonist;
-
+  std::vector<std::vector<std::shared_ptr<Tile>>> worldMap;
+  void initMapVec();
 };
 
 #endif // WORLDMODEL_H
