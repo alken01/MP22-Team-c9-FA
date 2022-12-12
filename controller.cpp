@@ -20,8 +20,8 @@ void Controller::update(){
 }
 
 void Controller::initWorlds(){
-    this->world->getProtagonist()->setXPos(3);
-     this->world->getProtagonist()->setYPos(3);
+    this->world->getProtagonist()->setXPos(4);
+     this->world->getProtagonist()->setYPos(4);
     this->text_view->draw(this->world, this->Qtext_view);
 }
 
@@ -120,6 +120,11 @@ void Controller::movePlayer(int a){
         std::cout << "got healt yay" << std::endl;
     }
 
+    if(test==-1){
+        std::cout.flush();
+        std::cout << "error occured: tile not found" << std::endl;
+    }
+
     world->getProtagonist()->setXPos(x2);
     world->getProtagonist()->setYPos(y2);
 
@@ -128,30 +133,31 @@ void Controller::movePlayer(int a){
 }
 
 int Controller::checkMove(int x, int y){
-    auto tile = world->getWorldMap().at(x).at(y);
+    auto test = world.get()->getWorldMap().at(x).at(y);
+
+    if(test->getValue()==1){
+        return 4; //is tile
+    }
+
+    if(test->getValue()==INFINITY){
+        return 3; //is wall
+    }
 
     for (unsigned long i = 0; i < world->getHealthPacks().size(); ++i) {
         int x =world->getHealthPacks().at(i)->getXPos();
         int y =world->getHealthPacks().at(i)->getYPos();
-        if(tile->getXPos()==x && tile->getYPos()==y){
+        if(test->getXPos()==x && test->getYPos()==y){
             return 0; // is health
         }
     }
 
-
-    std::shared_ptr<Enemy> temp=std::dynamic_pointer_cast<PEnemy>(tile);
-    if(temp != 0){
-        return 2;
+    if(std::dynamic_pointer_cast<PEnemy>(test)){
+        return 2; //is poison enemy
       }
 
-    auto temp2 = std::dynamic_pointer_cast<Enemy>(tile);
-    if(temp2 != 0){
+
+    if(std::dynamic_pointer_cast<Enemy>(test)){
         return 1; //is normal enemy
     }
-
-    if(tile->getValue()==1){
-        return 3; //is wall
-    }
-    return 4;
-
+    return -1;
 }

@@ -76,7 +76,7 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
 
        //add walls
        for (unsigned long i = 0; i < tiles.size(); ++i) {
-           if(tiles.at(i)->getValue()==1){
+           if(tiles.at(i)->getValue()==INFINITY){
                int x =tiles.at(i)->getXPos();
                int y =tiles.at(i)->getYPos();
                changeSignAtCoord(x,y,'@');

@@ -19,6 +19,13 @@ WorldModel::WorldModel(std::shared_ptr<World> w)
     //initialise 2D array of map tiles
     initMapVec();
 
+    //tiles
+    for (unsigned long i = 0; i < tiles.size(); ++i) {
+        int x =tiles.at(i)->getXPos();
+        int y =tiles.at(i)->getYPos();
+        worldMap.at(x).at(y)=tiles.at(i);
+    }
+
     //health
     for (unsigned long i = 0; i < healthPacks.size(); ++i) {
         int x =healthPacks.at(i)->getXPos();
@@ -26,17 +33,11 @@ WorldModel::WorldModel(std::shared_ptr<World> w)
         worldMap.at(x).at(y)=healthPacks.at(i);
     }
 
+    //enemies
     for (unsigned long i = 0; i < enemies.size(); ++i) {
         int x =enemies.at(i)->getXPos();
         int y =enemies.at(i)->getYPos();
         worldMap.at(x).at(y)=enemies.at(i);
-    }
-
-    //tiles
-    for (unsigned long i = 0; i < tiles.size(); ++i) {
-        int x =tiles.at(i)->getXPos();
-        int y =tiles.at(i)->getYPos();
-        worldMap.at(x).at(y)=tiles.at(i);
     }
 
 }
