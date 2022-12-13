@@ -6,6 +6,7 @@
 #include "controller.h"
 #include <QLabel>
 #include <QComboBox>
+#include <QProgressBar>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -21,6 +22,7 @@ public:
     void changeScene();
     void setController(std::shared_ptr<Controller>& c);
     void updateImage(int, QComboBox* comboBox, QLabel* label);
+    void setScroll();
 
 private:
     Ui::MainWindow* ui;
@@ -28,5 +30,8 @@ private:
     void textEntered();
     std::shared_ptr<Controller> controller;
     QGraphicsView textView;
+    QProgressBar* health, * energy;
+    int scrollMarginY;
+    int scrollMarginX;
 };
 #endif // MAINWINDOW_H

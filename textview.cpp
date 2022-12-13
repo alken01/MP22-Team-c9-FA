@@ -9,6 +9,7 @@ TextView::TextView()
 void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView> textView ){
     this->height=w->getHeight();
     this->width=w->getWidth();
+    this->outputView=textView;
     std::cout.flush();
     std::cout << "height:" << this->height << "width:"<< this->width << std::endl;
     auto enemies=w->getEnemies();
@@ -108,7 +109,15 @@ void TextView::changeSignAtCoord( unsigned long x,  unsigned long y, QChar input
     this->stringWorld->replace(indexCount, 1,input);
 }
 
-void TextView::updateView(std::shared_ptr<QGraphicsView> textView){
-    textView->setScene(this->textscene);
+void TextView::updateView(){
+    this->outputView->setScene(this->textscene);
 }
+
+void TextView::protDead(int x, int y){
+    changeSignAtCoord(x,y,'D');
+    this->textscene->clear();
+    this->textscene->addText(*stringWorld,QFont("Monospace"));
+
+}
+
 

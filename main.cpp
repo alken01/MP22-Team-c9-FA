@@ -52,6 +52,7 @@ int main(int argc, char* argv[]){
     c->initWorlds();
     MainWindow w = MainWindow(NULL, init_worldmap, c);
     w.show();
+    w.setScroll();
     return app.exec();
 }
 

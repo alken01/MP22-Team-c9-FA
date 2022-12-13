@@ -21,6 +21,7 @@
 #include "world.h"
 #include "graphicalview.h"
 #include "textview.h"
+#include <QScrollBar>
 
 
 MainWindow::MainWindow(QWidget* parent, QString init_worldmap, std::shared_ptr<Controller> c)
@@ -32,22 +33,42 @@ MainWindow::MainWindow(QWidget* parent, QString init_worldmap, std::shared_ptr<C
     //QGraphicsScene* scene = new QGraphicsScene(this);
     //ui->graphicsView->setScene(scene);
     //scene->addPixmap(QPixmap(init_worldmap));
-    auto view = new QGraphicsView(ui->centralwidget);
-    view =c->getQtext_view().get();
-    setCentralWidget(view);
+
+    //ui -> graphicsGridLayout ->addWidget(c->get().get());
+
+    //ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    //ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    ui->graphicsView->setScene((c->getQtext_view().get())->scene());
 
     // Create a text input field
-    textInput = new QLineEdit(this);
+    textInput = ui->lineEdit;
     textInput->setGeometry(QRect(QPoint(10, 575), QSize(400, 30)));
 
 
     // Create a button
-    QPushButton* button = new QPushButton("Change View", this);
+    QPushButton* button = ui->pushButton;
     button->setGeometry(QRect(QPoint(900, 0), QSize(200, 50)));
+
+
+    //progressBar health
+    health = ui->progressBar;
+    health->setRange(0,100);
+    health->setValue(c->getWorld()->getProtagonist()->getHealth());
+
+    //progressBar energy
+    energy = ui->progressBar_2;
+    energy->setRange(0,100);
+    energy->setValue(c->getWorld()->getProtagonist()->getEnergy());
 
     // Connect the button's clicked signal to the changeScene slot
     connect(button, &QPushButton::clicked, this, &MainWindow::changeScene);
     connect(textInput, &QLineEdit::textChanged, this, &MainWindow::textEntered);
+
+    scrollMarginY = this->controller->getWorld()->getHeight()/20;
+    scrollMarginX=  this->controller->getWorld()->getWidth()/20;
+    int ratio = scrollMarginX/scrollMarginY;
+    scrollMarginY = scrollMarginY*ratio;
 }
 
 class ImageAndSelector
@@ -111,32 +132,47 @@ void MainWindow::changeScene(){
 }
 
 void MainWindow::textEntered(){
+    QScrollBar* yPos=ui->graphicsView->verticalScrollBar();
+    QScrollBar* xPos=ui->graphicsView->horizontalScrollBar();
+
     QString input = this->textInput->text();
-    if(input == "up"){
+    if(input == "u"){
         this->controller->movePlayer(4);
         this->textInput->clear();
 
+        yPos->setValue(yPos->value()-this->scrollMarginY);
     }
 
-    if(input == "down"){
+    if(input == "d"){
         this->controller->movePlayer(1);
         this->textInput->clear();
 
+        yPos->setValue(yPos->value()+this->scrollMarginY);
     }
 
-    if(input == "left"){
+    if(input == "l"){
         this->controller->movePlayer(3);
         this->textInput->clear();
 
+        xPos->setValue(xPos->value()-this->scrollMarginX);
     }
 
-    if(input == "right"){
+    if(input == "r"){
         this->controller->movePlayer(2);
         this->textInput->clear();
 
+        xPos->setValue(xPos->value()+this->scrollMarginX);
+
     }
+    health->setValue(this->controller->getWorld()->getProtagonist()->getHealth());
+    energy->setValue(this->controller->getWorld()->getProtagonist()->getEnergy());
 }
 
 void MainWindow::setController(std::shared_ptr<Controller>& c){
     this->controller = c;
+}
+
+void MainWindow::setScroll(){
+    ui->graphicsView->verticalScrollBar()->setValue(0);
+     ui->graphicsView->horizontalScrollBar()->setValue(0);
 }

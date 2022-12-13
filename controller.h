@@ -40,6 +40,7 @@ private:
   std::shared_ptr<TextView> text_view;
   std::shared_ptr<QGraphicsView> Qtext_view;
   int checkMove(int x, int y);
-
+  void dead(int x, int y);
+  int alive=1;
 };
 #endif // CONTROLLER_H
