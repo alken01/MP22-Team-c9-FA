@@ -60,10 +60,13 @@ MainWindow::MainWindow(QWidget* parent, QString init_worldmap, std::shared_ptr<C
 
 
     //textview scrolling
-    scrollMarginY = this->controller->getWorld()->getHeight()/15;
-    scrollMarginX=  this->controller->getWorld()->getWidth()/15;
+    scrollMarginY = this->controller->getWorld()->getHeight()/10;
+    scrollMarginX=  this->controller->getWorld()->getWidth()/10;
     int ratio = scrollMarginX/scrollMarginY;
     scrollMarginY = scrollMarginY*ratio;
+    ui->graphicsView->verticalScrollBar()->setSingleStep(scrollMarginY);
+    ui->graphicsView->horizontalScrollBar()->setSingleStep(scrollMarginX);
+
 
 
     // Connect all
