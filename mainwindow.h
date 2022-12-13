@@ -7,6 +7,8 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QProgressBar>
+#include <QTimer>
+#include <QLCDNumber>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -27,6 +29,7 @@ public:
     vector<QString> pathToText(vector<pair<int, int> > path);
     void updatePath(QString input);
 
+
 private:
     Ui::MainWindow* ui;
     QLineEdit* textInput;
@@ -36,5 +39,6 @@ private:
     QProgressBar* health, * energy;
     int scrollMarginY;
     int scrollMarginX;
+
 };
 #endif // MAINWINDOW_H
