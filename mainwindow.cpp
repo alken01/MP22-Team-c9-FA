@@ -23,9 +23,6 @@
 #include "textview.h"
 #include <QScrollBar>
 #include "astar.h"
-#include <iostream>
-#include <thread>
-#include <chrono>
 
 MainWindow::MainWindow(QWidget* parent, QString init_worldmap, std::shared_ptr<Controller> c)
     : QMainWindow(parent)
