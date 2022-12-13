@@ -16,6 +16,11 @@ public:
  void movProtagonist(int x1, int y1, int x2, int y2);
  void updateView();
  void protDead(int x, int y);
+ void togglePoisoned();
+ void activatePoisoned();
+ void startTimer();
+ void stopTimer();
+
 
 private:
  QVector<QString> qVec;
@@ -24,6 +29,8 @@ private:
  int width;
  int height;
  QGraphicsScene* textscene;
+ QTimer timer;
+ int toggle;
 
  };
 

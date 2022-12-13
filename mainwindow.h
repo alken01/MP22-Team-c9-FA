@@ -7,6 +7,8 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QProgressBar>
+#include <QTimer>
+#include <QLCDNumber>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -24,6 +26,7 @@ public:
     void updateImage(int, QComboBox* comboBox, QLabel* label);
     void setScroll();
 
+
 private:
     Ui::MainWindow* ui;
     QLineEdit* textInput;
@@ -33,5 +36,6 @@ private:
     QProgressBar* health, * energy;
     int scrollMarginY;
     int scrollMarginX;
+
 };
 #endif // MAINWINDOW_H

@@ -26,6 +26,12 @@ void setQtext_view(const std::shared_ptr<QGraphicsView> &newQtext_view);
 const std::shared_ptr<WorldModel> &getWorld() const;
 void setWorld(const std::shared_ptr<WorldModel> &newWorld);
 
+int getAlive() const;
+void setAlive(int newAlive);
+
+int getPoisoned() const;
+void setPoisoned(int newPoisoned);
+
 public slots:
   void switchToGraphic();
   void switchToText();
@@ -42,5 +48,6 @@ private:
   int checkMove(int x, int y);
   void dead(int x, int y);
   int alive=1;
+  int poisoned=0;
 };
 #endif // CONTROLLER_H

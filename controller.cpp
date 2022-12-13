@@ -121,15 +121,17 @@ void Controller::movePlayer(int a){
             std::cout << "got healt yay" << std::endl;
         }
 
-
         world->getProtagonist()->setXPos(x2);
         world->getProtagonist()->setYPos(y2);
 
         this->text_view->movProtagonist(x,y,world->getProtagonist()->getXPos(), world->getProtagonist()->getYPos());
 
-        if(test==-1){
-            std::cout.flush();
-            std::cout << "player died" << std::endl;
+        //check if alive
+        if(world->getProtagonist()->getHealth()==0){
+            dead(x2,y2);
+        }
+
+        if(world->getProtagonist()->getEnergy()==0){
             dead(x2,y2);
         }
 
@@ -140,22 +142,27 @@ void Controller::movePlayer(int a){
 int Controller::checkMove(int x, int y){
     auto test = world.get()->getWorldMap().at(x).at(y);
 
-    if(test->getValue()==1){
-
-        //reduce energy
-        auto energy= world->getProtagonist()->getEnergy();
-        if(energy-1==0){
-            return -1;
-        }
-        else world->getProtagonist()->setEnergy(energy-1);
-
-        return 4; //is tilethis->textscene->addText(*stringWorld,QFont("Monospace"));
-    }
-
+    //WALL
     if(test->getValue()==INFINITY){
         return 3; //is wall
     }
 
+    //POISONED
+    if(poisoned>0){
+        poisoned--; //one tile less poisoned
+        world->getProtagonist()->setHealth(world->getProtagonist()->getHealth()-1);
+    }
+    else text_view->stopTimer(); //stop poison effect
+
+    //TILE + beaten enemy = -1
+    if(test->getValue()==1 || test->getValue()==-1){
+        world->getProtagonist()->setEnergy(world->getProtagonist()->getEnergy()-1);
+
+        return 4; //is tilethis->textscene->addText(*stringWorld,QFont("Monospace"));
+    }
+
+
+    //HEALTHPACK
     for (unsigned long i = 0; i < world->getHealthPacks().size(); ++i) {
         int x =world->getHealthPacks().at(i)->getXPos();
         int y =world->getHealthPacks().at(i)->getYPos();
@@ -176,49 +183,62 @@ int Controller::checkMove(int x, int y){
         }
     }
 
+    //POISON ENEMY
     if(std::dynamic_pointer_cast<PEnemy>(test)){
 
         std::cout.flush();
-        std::cout << "damage added "<< test->getValue() << std::endl;
+        std::cout << "Poisoned for:"<< test->getValue() << std::endl;
 
-        //removing health
-        auto health = world->getProtagonist()->getHealth();
-        if(health-test->getValue()<=0){
-            return -1;
-        }
-        else {
-            world->getProtagonist()->setHealth(health-test->getValue());
-            world->getProtagonist()->setEnergy(100);
-        }
+        poisoned+=test->getValue();
+        world->getProtagonist()->setEnergy(100);
+        test->setValue(-1);
+
+        //start poison textview animation
+        text_view->startTimer();
 
         return 2; //is poison enemy
       }
 
 
+    //NORMAL ENEMY
     if(std::dynamic_pointer_cast<Enemy>(test)){
 
         std::cout.flush();
         std::cout << "damage added "<< test->getValue() << std::endl;
 
-
-        //removing health
-        auto health = world->getProtagonist()->getHealth();
-        if(health-test->getValue()<=0){
-            world->getProtagonist()->setHealth(0);
-            return -1;
-        }
-        else {
-            world->getProtagonist()->setHealth(health-test->getValue());
-            world->getProtagonist()->setEnergy(100);
+        //damage done
+         world->getProtagonist()->setHealth( world->getProtagonist()->getHealth()-test->getValue());
+         world->getProtagonist()->setEnergy(100);
+         test->setValue(-1);
+         return 1; //is normal enemy
         }
 
-
-        return 1; //is normal enemy
-    }
-    return -1;
+    else return -2;
 }
 
 void Controller::dead(int x, int y){
     this->text_view->protDead(x,y);
+
+    text_view->stopTimer();
     this->alive=0;
+}
+
+int Controller::getPoisoned() const
+{
+    return poisoned;
+}
+
+void Controller::setPoisoned(int newPoisoned)
+{
+    poisoned = newPoisoned;
+}
+
+int Controller::getAlive() const
+{
+    return alive;
+}
+
+void Controller::setAlive(int newAlive)
+{
+    alive = newAlive;
 }

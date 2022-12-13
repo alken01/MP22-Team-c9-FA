@@ -3,7 +3,11 @@
 #include <iostream>
 
 TextView::TextView()
-{}
+{
+    //poison timer
+    timer.setInterval(1000);
+    toggle = 1;
+}
 
 
 void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView> textView ){
@@ -92,6 +96,9 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
 
        this->textscene->addText(*stringWorld,QFont("Monospace"));
        textView->setScene(this->textscene);
+
+       //poison timer
+       connect(&timer,&QTimer::timeout,this,&TextView::togglePoisoned);
 }
 
 
@@ -119,5 +126,28 @@ void TextView::protDead(int x, int y){
     this->textscene->addText(*stringWorld,QFont("Monospace"));
 
 }
+
+//code for poison flashing
+void TextView::togglePoisoned(){
+    if(toggle==1){
+        this->textscene->setBackgroundBrush(QColor("purple"));
+        toggle=0;
+    }
+    else{
+         this->textscene->setBackgroundBrush(QColor("base"));
+         toggle=1;
+    }
+    timer.start();
+}
+
+void TextView::startTimer(){
+    timer.start();
+}
+
+void TextView::stopTimer(){
+    timer.stop();
+    this->textscene->setBackgroundBrush(QColor("base"));
+}
+
 
 
