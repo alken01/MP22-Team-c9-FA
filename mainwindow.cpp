@@ -142,7 +142,6 @@ void MainWindow::goToPath(int x, int y){
     vector<QString> textPath = pathToText(path);
     for (const auto& input : textPath) {
         updatePath(input);
-        cout<< "moving" << input.toStdString() <<endl;
     }
 }
 
