@@ -82,7 +82,6 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
                int y =tiles.at(i)->getYPos();
                changeSignAtCoord(x,y,'@');
            }
-
        }
 
        //add prot
@@ -90,7 +89,7 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
        unsigned long y =protagonist->getYPos();
        changeSignAtCoord(x,y,'$');
 
-       this->textscene->addText(*stringWorld,QFont("Monospace"));
+       this->textscene->addText(*stringWorld,QFont("SF Mono"));
        textView->setScene(this->textscene);
 }
 
@@ -100,11 +99,11 @@ void TextView::movProtagonist(int x1, int y1, int x2, int y2){
     changeSignAtCoord(x1,y1,' ');
     changeSignAtCoord(x2,y2,'$');
     this->textscene->clear();
-    this->textscene->addText(*stringWorld,QFont("Monospace"));
+    this->textscene->addText(*stringWorld,QFont("SF Mono"));
 }
 
 void TextView::changeSignAtCoord( unsigned long x,  unsigned long y, QChar input){
-    int rowlength = (width*4+2)*2;
+    int rowlength = width*8+4;//(width*4+2)*2; one less multiplication
     int indexCount = rowlength*y-(width-x)*4-4;
     this->stringWorld->replace(indexCount, 1,input);
 }
@@ -116,7 +115,7 @@ void TextView::updateView(){
 void TextView::protDead(int x, int y){
     changeSignAtCoord(x,y,'D');
     this->textscene->clear();
-    this->textscene->addText(*stringWorld,QFont("Monospace"));
+    this->textscene->addText(*stringWorld,QFont("SF Mono"));
 
 }
 

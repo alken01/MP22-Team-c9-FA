@@ -22,7 +22,10 @@
 #include "graphicalview.h"
 #include "textview.h"
 #include <QScrollBar>
-
+#include "astar.h"
+#include <iostream>
+#include <thread>
+#include <chrono>
 
 MainWindow::MainWindow(QWidget* parent, QString init_worldmap, std::shared_ptr<Controller> c)
     : QMainWindow(parent)
@@ -63,7 +66,8 @@ MainWindow::MainWindow(QWidget* parent, QString init_worldmap, std::shared_ptr<C
 
     // Connect the button's clicked signal to the changeScene slot
     connect(button, &QPushButton::clicked, this, &MainWindow::changeScene);
-    connect(textInput, &QLineEdit::textChanged, this, &MainWindow::textEntered);
+//    connect(textInput, &QLineEdit::textChanged, this, &MainWindow::textEntered);
+    connect(textInput, &QLineEdit::returnPressed, this, &MainWindow::textEntered);
 
     scrollMarginY = this->controller->getWorld()->getHeight()/20;
     scrollMarginX=  this->controller->getWorld()->getWidth()/20;
@@ -131,33 +135,106 @@ void MainWindow::changeScene(){
     ui->graphicsView->setScene(newScene);
 }
 
+void MainWindow::goToPath(int x, int y){
+    int cols = this->controller->getWorld()->getWidth();
+    int rows = this->controller->getWorld()->getHeight();
+    Tile start(this->controller->getWorld()->getProtagonist()->getXPos(),this->controller->getWorld()->getProtagonist()->getYPos(),0.0);
+    Tile end(x,y,0.0);
+    float white_value = 0.1;
+    vector<pair<int, int> > path = astar(this->controller->getWorld()->getTiles(), rows, cols, start, end, white_value);
+    vector<QString> textPath = pathToText(path);
+    for (const auto& input : textPath) {
+        updatePath(input);
+//        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+    }
+}
+
+vector<QString> MainWindow::pathToText(vector<pair<int, int> > path){
+    // Resulting vector of directions
+    std::vector<QString> directions;
+
+    // Loop through the path and convert each pair of coordinates
+    // into a direction
+    for (size_t i = 1; i < path.size(); i++)
+    {
+        // Get the current and previous coordinates
+        auto current = path[i];
+        auto prev = path[i - 1];
+
+        // Compare the coordinates and add the corresponding direction
+        // to the result vector
+        if (current.first > prev.first){
+            directions.push_back(QString("r"));
+        }
+        else if (current.first < prev.first){
+            directions.push_back(QString("l"));
+        }
+        else if (current.second > prev.second){
+            directions.push_back(QString("d"));
+        }
+        else if (current.second < prev.second){
+            directions.push_back(QString("u"));
+        }
+    }
+
+    // Return the vector of directions
+    return directions;
+}
+
 void MainWindow::textEntered(){
+    QString input = this->textInput->text();
+    updatePath(input);
+}
+
+void MainWindow::updatePath(QString input){
     QScrollBar* yPos=ui->graphicsView->verticalScrollBar();
     QScrollBar* xPos=ui->graphicsView->horizontalScrollBar();
 
-    QString input = this->textInput->text();
-    if(input == "u"){
+    if (input.at(0) == 'g'){
+        QStringList strList = input.split(" ");
+
+        QString strY = strList.last();  // gets the last substring
+        strList.removeLast();           // removes the last item from the list
+        QString strX = strList.last();  // gets the second-to-last substring
+
+        bool ok;
+        int x = strX.toInt(&ok);        // convert the QString to an int, store the result in x
+        if (!ok) {
+            qDebug() << "Error converting string to int";
+            return;
+        }
+
+        int y = strY.toInt(&ok);
+        if (!ok) {
+            qDebug() << "Error converting string to int";
+            return;
+        }
+
+        goToPath(x,y); //call the helper function
+        return;
+    }
+    else if(input == "u"){
         this->controller->movePlayer(4);
         this->textInput->clear();
 
         yPos->setValue(yPos->value()-this->scrollMarginY);
     }
 
-    if(input == "d"){
+    else if(input == "d"){
         this->controller->movePlayer(1);
         this->textInput->clear();
 
         yPos->setValue(yPos->value()+this->scrollMarginY);
     }
 
-    if(input == "l"){
+    else if(input == "l"){
         this->controller->movePlayer(3);
         this->textInput->clear();
 
         xPos->setValue(xPos->value()-this->scrollMarginX);
     }
 
-    if(input == "r"){
+    else if(input == "r"){
         this->controller->movePlayer(2);
         this->textInput->clear();
 

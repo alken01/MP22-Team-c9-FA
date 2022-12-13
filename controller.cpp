@@ -21,7 +21,7 @@ void Controller::update(){
 
 void Controller::initWorlds(){
     this->world->getProtagonist()->setXPos(4);
-     this->world->getProtagonist()->setYPos(4);
+    this->world->getProtagonist()->setYPos(4);
     this->text_view->draw(this->world, this->Qtext_view);
 }
 
@@ -58,15 +58,15 @@ void Controller::setText_view(const std::shared_ptr<TextView> &newText_view)
 void Controller::switchViews()
 {
     if (graphical_view->isVisible())
-        {
-            graphical_view->hide();
-            text_view->show();
-        }
-        else
-        {
-            graphical_view->hide();
-            text_view->show();
-        }
+    {
+        graphical_view->hide();
+        text_view->show();
+    }
+    else
+    {
+        graphical_view->hide();
+        text_view->show();
+    }
 }
 
 
@@ -94,7 +94,7 @@ void Controller::movePlayer(int a){
         }
 
         if(a==4){ //down
-           y2--;
+            y2--;
         }
 
         // 0 health,1 enemy, 2 poison enemy, 3 wall, 4 tile
@@ -192,7 +192,7 @@ int Controller::checkMove(int x, int y){
         }
 
         return 2; //is poison enemy
-      }
+    }
 
 
     if(std::dynamic_pointer_cast<Enemy>(test)){
@@ -211,7 +211,6 @@ int Controller::checkMove(int x, int y){
             world->getProtagonist()->setHealth(health-test->getValue());
             world->getProtagonist()->setEnergy(100);
         }
-
 
         return 1; //is normal enemy
     }
