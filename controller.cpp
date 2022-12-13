@@ -207,11 +207,11 @@ int Controller::checkMove(int x, int y){
         std::cout << "damage added "<< test->getValue() << std::endl;
 
         //damage done
-         world->getProtagonist()->setHealth( world->getProtagonist()->getHealth()-test->getValue());
-         world->getProtagonist()->setEnergy(100);
-         test->setValue(-1);
-         return 1; //is normal enemy
-        }
+        world->getProtagonist()->setHealth( world->getProtagonist()->getHealth()-test->getValue());
+        world->getProtagonist()->setEnergy(100);
+        test->setValue(-1);
+        return 1; //is normal enemy
+    }
     return -2;
 }
 

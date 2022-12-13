@@ -68,14 +68,11 @@ MainWindow::MainWindow(QWidget* parent, QString init_worldmap, std::shared_ptr<C
 
     // Connect all
     connect(button, &QPushButton::clicked, this, &MainWindow::changeScene);
-//    connect(textInput, &QLineEdit::textChanged, this, &MainWindow::textEntered);
-    connect(textInput, &QLineEdit::returnPressed, this, &MainWindow::textEntered);
+    connect(textInput, &QLineEdit::textChanged, this, &MainWindow::textEntered);
+    connect(textInput, &QLineEdit::returnPressed, this, &MainWindow::pressEntered);
 
-    scrollMarginY = this->controller->getWorld()->getHeight()/20;
-    scrollMarginX=  this->controller->getWorld()->getWidth()/20;
-    int ratio = scrollMarginX/scrollMarginY;
-    scrollMarginY = scrollMarginY*ratio;
 }
+
 
 class ImageAndSelector
 {
@@ -138,16 +135,14 @@ void MainWindow::changeScene(){
 }
 
 void MainWindow::goToPath(int x, int y){
-    int cols = this->controller->getWorld()->getWidth();
-    int rows = this->controller->getWorld()->getHeight();
-    Tile start(this->controller->getWorld()->getProtagonist()->getXPos(),this->controller->getWorld()->getProtagonist()->getYPos(),0.0);
+    auto w = this->controller->getWorld();
+    Tile start(w->getProtagonist()->getXPos(),w->getProtagonist()->getYPos(),0.0);
     Tile end(x,y,0.0);
-    float white_value = 0.1;
-    vector<pair<int, int> > path = astar(this->controller->getWorld()->getTiles(), rows, cols, start, end, white_value);
+    vector<pair<int, int> > path = astar(w->getTiles(), w->getHeight(), w->getWidth(), start, end, 0.1);
     vector<QString> textPath = pathToText(path);
     for (const auto& input : textPath) {
         updatePath(input);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+        cout<< "moving" << input.toStdString() <<endl;
     }
 }
 
@@ -155,16 +150,14 @@ vector<QString> MainWindow::pathToText(vector<pair<int, int> > path){
     // Resulting vector of directions
     std::vector<QString> directions;
 
-    // Loop through the path and convert each pair of coordinates
-    // into a direction
+    // Loop through the path and convert each pair of coordinates into a direction
     for (size_t i = 1; i < path.size(); i++)
     {
         // Get the current and previous coordinates
         auto current = path[i];
         auto prev = path[i - 1];
 
-        // Compare the coordinates and add the corresponding direction
-        // to the result vector
+        // Compare the coordinates and add the corresponding direction to the result vector
         if (current.first > prev.first){
             directions.push_back(QString("r"));
         }
@@ -188,9 +181,8 @@ void MainWindow::textEntered(){
     updatePath(input);
 }
 
-void MainWindow::updatePath(QString input){
-    QScrollBar* yPos=ui->graphicsView->verticalScrollBar();
-    QScrollBar* xPos=ui->graphicsView->horizontalScrollBar();
+void MainWindow::pressEntered(){
+    QString input = this->textInput->text();
 
     if (input.at(0) == 'g'){
         QStringList strList = input.split(" ");
@@ -213,42 +205,48 @@ void MainWindow::updatePath(QString input){
         }
 
         goToPath(x,y); //call the helper function
-        return;
     }
-    else if(input == "u"){
+    this->textInput->clear();
+}
+
+void MainWindow::updatePath(QString input){
+    QScrollBar* yPos=ui->graphicsView->verticalScrollBar();
+    QScrollBar* xPos=ui->graphicsView->horizontalScrollBar();
+
+    if(input == "u"){
         this->controller->movePlayer(4);
         this->textInput->clear();
 
-            yPos->setValue(yPos->value()-this->scrollMarginY);
-        }
+        yPos->setValue(yPos->value()-this->scrollMarginY);
+    }
 
     else if(input == "d"){
         this->controller->movePlayer(1);
         this->textInput->clear();
 
-            yPos->setValue(yPos->value()+this->scrollMarginY);
-        }
+        yPos->setValue(yPos->value()+this->scrollMarginY);
+    }
 
     else if(input == "l"){
         this->controller->movePlayer(3);
         this->textInput->clear();
 
-            xPos->setValue(xPos->value()-this->scrollMarginX);
-        }
+        xPos->setValue(xPos->value()-this->scrollMarginX);
+    }
 
     else if(input == "r"){
         this->controller->movePlayer(2);
         this->textInput->clear();
 
-            xPos->setValue(xPos->value()+this->scrollMarginX);
+        xPos->setValue(xPos->value()+this->scrollMarginX);
 
-        }
-        health->setValue(this->controller->getWorld()->getProtagonist()->getHealth());
-        energy->setValue(this->controller->getWorld()->getProtagonist()->getEnergy());
-        //poisoned steps visualisation
-        ui->lcdNumber->display(controller->getPoisoned());
     }
+    health->setValue(this->controller->getWorld()->getProtagonist()->getHealth());
+    energy->setValue(this->controller->getWorld()->getProtagonist()->getEnergy());
+    //poisoned steps visualisation
+    ui->lcdNumber->display(controller->getPoisoned());
 }
+
 
 void MainWindow::setController(std::shared_ptr<Controller>& c){
     this->controller = c;
@@ -256,7 +254,7 @@ void MainWindow::setController(std::shared_ptr<Controller>& c){
 
 void MainWindow::setScroll(){
     ui->graphicsView->verticalScrollBar()->setValue(0);
-     ui->graphicsView->horizontalScrollBar()->setValue(0);
+    ui->graphicsView->horizontalScrollBar()->setValue(0);
 }
 
 

@@ -28,7 +28,7 @@ public:
     void goToPath(int x, int y);
     vector<QString> pathToText(vector<pair<int, int> > path);
     void updatePath(QString input);
-
+    void pressEntered();
 
 private:
     Ui::MainWindow* ui;
