@@ -21,6 +21,6 @@ struct NodeComparator {
     }
 };
 
-vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, int cols, Tile start, Tile end, float white_value);
+vector<pair<int, int> > astar(const vector< shared_ptr<Tile> >& world_grid, int rows, int cols, Tile start, Tile end, float white_value);
 
 #endif

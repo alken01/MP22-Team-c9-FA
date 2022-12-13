@@ -2,8 +2,7 @@
 #include <iostream>
 
 // A* search function that returns a path to the end position from the start position
-//vector<pair<int, int> > astar(vector<vector<int> >& grid, int sx, int sy, int ex, int ey){
-vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, int cols, Tile start, Tile end, float white_value){
+vector<pair<int, int> > astar(const vector< shared_ptr<Tile> >& world_grid, int rows, int cols, Tile start, Tile end, float white_value){
     cout<< "Starting algo..."<<endl;
     // TODO:
     // check if having the end and start positions as variables is quicker than calling them
@@ -25,7 +24,6 @@ vector<pair<int, int> > astar(vector< unique_ptr<Tile> >& world_grid, int rows, 
 //        cout<< "End value out of bounds"<<endl;
 //        return {};
 //    }
-
 
     vector<vector<float> > grid(cols, vector<float>(rows));
 
