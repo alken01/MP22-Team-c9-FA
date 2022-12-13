@@ -1,8 +1,7 @@
 #include "graphicalview.h"
 #include "QtWidgets/qgraphicsitem.h"
 
-GraphicalView::GraphicalView()
-{
+GraphicalView::GraphicalView(){
 
 }
 

@@ -7,35 +7,32 @@
 #include <vector>
 
 // Custom widget for displaying the image and path
-class ImageWidget : public QWidget
+class ImageWidget: public QWidget
 {
     Q_OBJECT
 
 public:
-    ImageWidget(QWidget *parent = nullptr) : QWidget(parent) {}
+    ImageWidget(QWidget* parent = nullptr) : QWidget(parent){}
 
-    void setImage(const QPixmap& image)
-    {
+    void setImage(const QPixmap& image){
         this->image = image;
         int scale = 700;
         scaledImage = image.scaled(scale, scale, Qt::KeepAspectRatio);
         update();
     }
 
-    void setPath(const std::vector<std::pair<int, int>>& path)
-    {
+    void setPath(const std::vector<std::pair<int, int>>& path){
         this->path = path;
         update();
     }
 
-    void moveImage(int dx, int dy)
-    {
+    void moveImage(int dx, int dy){
         // Update the position of the image
         imageX += dx;
         imageY += dy;
 
         // Update the path coordinates
-        for (auto& point : path) {
+        for(auto& point : path){
             point.first += dx;
             point.second += dy;
         }
@@ -45,9 +42,7 @@ public:
     }
 
 protected:
-
-    void wheelEvent(QWheelEvent* event)
-    {
+    void wheelEvent(QWheelEvent* event){
         // Calculate the zoom factor based on the scroll wheel delta
         QPoint numDegrees = event->angleDelta() / 8;
         int numSteps = numDegrees.y() / 15;
@@ -63,8 +58,7 @@ protected:
         update();
     }
 
-    void paintEvent(QPaintEvent* event)
-    {
+    void paintEvent(QPaintEvent* event){
         // Create a QPainter object
         QPainter painter(this);
 
@@ -73,7 +67,7 @@ protected:
 
         // Scale the path coordinates
         QVector<QPoint> scaledPath;
-        for (const auto& point : path){
+        for(const auto& point : path){
             scaledPath.append(QPoint(point.first * image.width(), point.second * image.height()));
         }
 
@@ -85,7 +79,7 @@ protected:
 
         // Draw the path
         painter.setPen(QPen(Qt::blue, 3));
-        for (auto point : path){
+        for(auto point : path){
             painter.drawPoint(point.first, point.second);
         }
 
@@ -94,19 +88,15 @@ protected:
         painter.restore();
     }
 
-    void keyPressEvent(QKeyEvent* event)
-    {
+    void keyPressEvent(QKeyEvent* event){
         // Handle the arrow keys
-        if (event->key() == Qt::Key_Right) {
+        if(event->key() == Qt::Key_Right){
             moveImage(-10, 0); // Move the image 10 pixels to the left
-        }
-        else if (event->key() == Qt::Key_Left) {
+        } else if(event->key() == Qt::Key_Left){
             moveImage(10, 0); // Move the image 10 pixels to the right
-        }
-        else if (event->key() == Qt::Key_Down) {
+        } else if(event->key() == Qt::Key_Down){
             moveImage(0, -10); // Move the image 10 pixels upwards
-        }
-        else if (event->key() == Qt::Key_Up) {
+        } else if(event->key() == Qt::Key_Up){
             moveImage(0, 10); // Move the image 10 pixels downwards
         }
     }
