@@ -15,22 +15,22 @@ public:
   void update();
   void autoPlay(); // implement a*
 
-std::shared_ptr<QGraphicsScene> getScene() const;
+  std::shared_ptr<QGraphicsScene> getScene() const;
 
-const std::shared_ptr<TextView> &getText_view() const;
-void setText_view(const std::shared_ptr<TextView> &newText_view);
+  const std::shared_ptr<TextView>& getText_view() const;
+  void setText_view(const std::shared_ptr<TextView>& newText_view);
 
-const std::shared_ptr<QGraphicsView> &getQtext_view() const;
-void setQtext_view(const std::shared_ptr<QGraphicsView> &newQtext_view);
+  const std::shared_ptr<QGraphicsView>& getQtext_view() const;
+  void setQtext_view(const std::shared_ptr<QGraphicsView>& newQtext_view);
 
-const std::shared_ptr<WorldModel> &getWorld() const;
-void setWorld(const std::shared_ptr<WorldModel> &newWorld);
+  const std::shared_ptr<WorldModel>& getWorld() const;
+  void setWorld(const std::shared_ptr<WorldModel>& newWorld);
 
-int getAlive() const;
-void setAlive(int newAlive);
+  int getAlive() const;
+  void setAlive(int newAlive);
 
-int getPoisoned() const;
-void setPoisoned(int newPoisoned);
+  int getPoisoned() const;
+  void setPoisoned(int newPoisoned);
 
 const std::shared_ptr<QGraphicsView> &getQgraphics_view() const;
 void setQgraphics_view(const std::shared_ptr<QGraphicsView> &newQgraphics_view);
@@ -50,7 +50,7 @@ private:
   std::shared_ptr<QGraphicsView> Qtext_view, Qgraphics_view;
   int checkMove(int x, int y);
   void dead(int x, int y);
-  int alive=1;
-  int poisoned=0;
+  int alive = 1;
+  int poisoned = 0;
 };
 #endif // CONTROLLER_H

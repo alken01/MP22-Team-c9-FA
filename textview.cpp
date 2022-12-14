@@ -3,8 +3,7 @@
 #include "world.h"
 #include <iostream>
 
-TextView::TextView()
-{
+TextView::TextView(){
     //poison timer
     timer.setInterval(1000);
     toggle = 1;
@@ -19,12 +18,12 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
     startposY=w->getProtagonist()->getYPos();
     this->world=w;
     std::cout.flush();
-    std::cout << "height:" << this->height << "width:"<< this->width << std::endl;
-    auto enemies=w->getEnemies();
-    auto healthPacks=w->getHealthPacks();
-    auto protagonist=w->getProtagonist();
-    auto tiles=w->getTiles();
-    this->textscene =new QGraphicsScene();
+    std::cout << "height:" << this->height << "width:" << this->width << std::endl;
+    auto enemies = w->getEnemies();
+    auto healthPacks = w->getHealthPacks();
+    auto protagonist = w->getProtagonist();
+    auto tiles = w->getTiles();
+    this->textscene = new QGraphicsScene();
     //Qstring = stores a string of 16-bit QChars --> implicit sharing: reduce memory usage and to avoid the needless copying of data
     auto wi = QString("+"); //Create Qstring for width
     auto h = QString("|"); //Create Qstring for height
@@ -136,7 +135,7 @@ void TextView::updateView(){
 }
 
 void TextView::protDead(int x, int y){
-    changeSignAtCoord(x,y,'D');
+    changeSignAtCoord(x, y, 'D');
     this->textscene->clear();
     this->textscene->addText(*stringWorld,QFont("Monospace"));
 
@@ -144,13 +143,12 @@ void TextView::protDead(int x, int y){
 
 //code for poison flashing
 void TextView::togglePoisoned(){
-    if(toggle==1){
+    if(toggle == 1){
         this->textscene->setBackgroundBrush(QColor("purple"));
-        toggle=0;
-    }
-    else{
-         this->textscene->setBackgroundBrush(QColor("base"));
-         toggle=1;
+        toggle = 0;
+    } else{
+        this->textscene->setBackgroundBrush(QColor("base"));
+        toggle = 1;
     }
     timer.start();
 }

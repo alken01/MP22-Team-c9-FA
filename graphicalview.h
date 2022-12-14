@@ -5,7 +5,7 @@
 #include <QObject>
 #include <QWidget>
 
-class GraphicalView : public View
+class GraphicalView: public View
 {
 
 public:

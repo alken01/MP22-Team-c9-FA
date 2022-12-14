@@ -53,12 +53,12 @@ MainWindow::MainWindow(QWidget* parent, QString init_worldmap, std::shared_ptr<C
 
     //progressBar health
     health = ui->progressBar;
-    health->setRange(0,100);
+    health->setRange(0, 100);
     health->setValue(c->getWorld()->getProtagonist()->getHealth());
 
     //progressBar energy
     energy = ui->progressBar_2;
-    energy->setRange(0,100);
+    energy->setRange(0, 100);
     energy->setValue(c->getWorld()->getProtagonist()->getEnergy());
 
     // Connect all
@@ -136,11 +136,11 @@ void MainWindow::changeScene(){
 
 void MainWindow::goToPath(int x, int y){
     auto w = this->controller->getWorld();
-    Tile start(w->getProtagonist()->getXPos(),w->getProtagonist()->getYPos(),0.0);
-    Tile end(x,y,0.0);
+    Tile start(w->getProtagonist()->getXPos(), w->getProtagonist()->getYPos(), 0.0);
+    Tile end(x, y, 0.0);
     vector<pair<int, int> > path = astar(w->getTiles(), w->getHeight(), w->getWidth(), start, end, 0.1);
     vector<QString> textPath = pathToText(path);
-    for (const auto& input : textPath) {
+    for(const auto& input : textPath){
         updatePath(input);
     }
 }
@@ -150,23 +150,19 @@ vector<QString> MainWindow::pathToText(vector<pair<int, int> > path){
     std::vector<QString> directions;
 
     // Loop through the path and convert each pair of coordinates into a direction
-    for (size_t i = 1; i < path.size(); i++)
-    {
+    for(size_t i = 1; i < path.size(); i++){
         // Get the current and previous coordinates
         auto current = path[i];
         auto prev = path[i - 1];
 
         // Compare the coordinates and add the corresponding direction to the result vector
-        if (current.first > prev.first){
+        if(current.first > prev.first){
             directions.push_back(QString("r"));
-        }
-        else if (current.first < prev.first){
+        } else if(current.first < prev.first){
             directions.push_back(QString("l"));
-        }
-        else if (current.second > prev.second){
+        } else if(current.second > prev.second){
             directions.push_back(QString("d"));
-        }
-        else if (current.second < prev.second){
+        } else if(current.second < prev.second){
             directions.push_back(QString("u"));
         }
     }
@@ -183,7 +179,7 @@ void MainWindow::textEntered(){
 void MainWindow::pressEntered(){
     QString input = this->textInput->text();
 
-    if (input.at(0) == 'g'){
+    if(input.at(0) == 'g'){
         QStringList strList = input.split(" ");
 
         QString strY = strList.last();  // gets the last substring
@@ -192,24 +188,23 @@ void MainWindow::pressEntered(){
 
         bool ok;
         int x = strX.toInt(&ok);        // convert the QString to an int, store the result in x
-        if (!ok) {
+        if(!ok){
             qDebug() << "Error converting string to int";
             return;
         }
 
         int y = strY.toInt(&ok);
-        if (!ok) {
+        if(!ok){
             qDebug() << "Error converting string to int";
             return;
         }
 
-        goToPath(x,y); //call the helper function
+        goToPath(x, y); //call the helper function
     }
     this->textInput->clear();
 }
 
 void MainWindow::updatePath(QString input){
-
 
     if(input == "u"){
         this->controller->movePlayer(4);
