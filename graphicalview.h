@@ -17,7 +17,7 @@ public:
 
 private:
     std::shared_ptr<QString> stringWorld;
-    std::shared_ptr<QGraphicsScene> graphicsscene;
+    QGraphicsScene* graphicsscene;
     std::shared_ptr<QGraphicsPixmapItem> worldPix;
 };
 

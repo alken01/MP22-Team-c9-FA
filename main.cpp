@@ -42,7 +42,7 @@ using namespace std;
 int main(int argc, char* argv[]){
     // Generate the world
     QApplication app(argc, argv);
-    QString init_worldmap = ":/images/world_images/maze2.png";
+    QString init_worldmap = ":/images/world_images/maze1.png";
     auto test = std::make_shared<World>();
     test->createWorld(init_worldmap, 3000, 10, 0.9);
     auto gview = std::make_shared<GraphicalView>();
@@ -52,7 +52,6 @@ int main(int argc, char* argv[]){
     c->initWorlds();
     MainWindow w = MainWindow(NULL, init_worldmap, c);
     w.show();
-    w.setScroll();
     return app.exec();
 }
 

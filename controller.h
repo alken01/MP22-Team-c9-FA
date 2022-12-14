@@ -32,6 +32,9 @@ void setAlive(int newAlive);
 int getPoisoned() const;
 void setPoisoned(int newPoisoned);
 
+const std::shared_ptr<QGraphicsView> &getQgraphics_view() const;
+void setQgraphics_view(const std::shared_ptr<QGraphicsView> &newQgraphics_view);
+
 public slots:
   void switchToGraphic();
   void switchToText();
@@ -44,7 +47,7 @@ private:
   std::shared_ptr<WorldModel> world;
   std::shared_ptr<GraphicalView> graphical_view;
   std::shared_ptr<TextView> text_view;
-  std::shared_ptr<QGraphicsView> Qtext_view;
+  std::shared_ptr<QGraphicsView> Qtext_view, Qgraphics_view;
   int checkMove(int x, int y);
   void dead(int x, int y);
   int alive=1;

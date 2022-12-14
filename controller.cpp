@@ -8,7 +8,9 @@ Controller::Controller(std::shared_ptr<WorldModel> w,std::shared_ptr<GraphicalVi
     this->graphical_view=g;
     this->text_view=t;
     this->Qtext_view=std::make_shared<QGraphicsView>();
+    this->Qgraphics_view=std::make_shared<QGraphicsView>();
 }
+
 
 
 void Controller::handleInput() {
@@ -20,9 +22,20 @@ void Controller::update(){
 }
 
 void Controller::initWorlds(){
-    this->world->getProtagonist()->setXPos(4);
-    this->world->getProtagonist()->setYPos(4);
+    this->world->getProtagonist()->setXPos(5);
+    this->world->getProtagonist()->setYPos(5);
     this->text_view->draw(this->world, this->Qtext_view);
+    this->graphical_view->draw(this->world, this->Qgraphics_view);
+}
+
+const std::shared_ptr<QGraphicsView> &Controller::getQgraphics_view() const
+{
+    return Qgraphics_view;
+}
+
+void Controller::setQgraphics_view(const std::shared_ptr<QGraphicsView> &newQgraphics_view)
+{
+    Qgraphics_view = newQgraphics_view;
 }
 
 const std::shared_ptr<WorldModel> &Controller::getWorld() const
@@ -54,22 +67,6 @@ void Controller::setText_view(const std::shared_ptr<TextView> &newText_view)
 {
     text_view = newText_view;
 }
-
-void Controller::switchViews()
-{
-    if (graphical_view->isVisible())
-    {
-        graphical_view->hide();
-        text_view->show();
-    }
-    else
-    {
-        graphical_view->hide();
-        text_view->show();
-    }
-}
-
-
 
 void Controller::movePlayer(int a){
     if(alive==1){
@@ -154,7 +151,7 @@ int Controller::checkMove(int x, int y){
     }
     else text_view->stopTimer(); //stop poison effect
 
-    //TILE + beaten enemy = -1
+    //TILE + beaten enemy or used healthpack = -1
     if(test->getValue()==1 || test->getValue()==-1){
         world->getProtagonist()->setEnergy(world->getProtagonist()->getEnergy()-1);
 
@@ -178,7 +175,7 @@ int Controller::checkMove(int x, int y){
                 world->getProtagonist()->setHealth(100);
             }
             else world->getProtagonist()->setHealth(health+test->getValue());
-
+            test->setValue(-1); //used
             return 0; // is health
         }
     }
@@ -191,7 +188,7 @@ int Controller::checkMove(int x, int y){
 
         poisoned+=test->getValue();
         world->getProtagonist()->setEnergy(100);
-        test->setValue(-1);
+        test->setValue(-1); //beaten
 
         //start poison textview animation
         text_view->startTimer();
@@ -209,7 +206,7 @@ int Controller::checkMove(int x, int y){
         //damage done
         world->getProtagonist()->setHealth( world->getProtagonist()->getHealth()-test->getValue());
         world->getProtagonist()->setEnergy(100);
-        test->setValue(-1);
+        test->setValue(-1); //beaten
         return 1; //is normal enemy
     }
     return -2;

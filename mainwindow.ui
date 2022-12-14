@@ -347,11 +347,7 @@ hr { height: 1px; border-width: 0; }
       </widget>
      </item>
      <item>
-      <widget class="QGraphicsView" name="graphicsView">
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_2"/>
      </item>
      <item>
       <widget class="QLineEdit" name="lineEdit">

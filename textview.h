@@ -23,15 +23,21 @@ public:
 
 
 private:
- QVector<QString> qVec;
+ QVector<QString> qVec,qVecPlayer;
  std::shared_ptr<QString> stringWorld;
+ std::shared_ptr<QString> playerString;
  std::shared_ptr<QGraphicsView> outputView;
  int width;
  int height;
  QGraphicsScene* textscene;
  QTimer timer;
  int toggle;
-
+ std::shared_ptr<WorldModel> world;
+ void moveCamera();
+ int renderWidth, renderHeight;
+ int xRatio;
+ int yRatio;
+ int startposX,startposY;
  };
 
 #endif // TEXTVIEW_H

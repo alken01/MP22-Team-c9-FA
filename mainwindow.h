@@ -29,6 +29,7 @@ public:
     vector<QString> pathToText(vector<pair<int, int> > path);
     void updatePath(QString input);
     void pressEntered();
+    void initCamera();
 
 private:
     Ui::MainWindow* ui;
@@ -37,8 +38,7 @@ private:
     std::shared_ptr<Controller> controller;
     QGraphicsView textView;
     QProgressBar* health, * energy;
-    int scrollMarginY;
-    int scrollMarginX;
+    int viewStatus;
 
 };
 #endif // MAINWINDOW_H

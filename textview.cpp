@@ -1,4 +1,5 @@
 #include "textview.h"
+#include "qscrollbar.h"
 #include "world.h"
 #include <iostream>
 
@@ -14,6 +15,9 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
     this->height=w->getHeight();
     this->width=w->getWidth();
     this->outputView=textView;
+    startposX=w->getProtagonist()->getXPos();
+    startposY=w->getProtagonist()->getYPos();
+    this->world=w;
     std::cout.flush();
     std::cout << "height:" << this->height << "width:"<< this->width << std::endl;
     auto enemies=w->getEnemies();
@@ -45,12 +49,6 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
        //close map bottom line
        qVec.push_back(wi);
 
-       //couldn't make newline characters work when printing text seperately --> combine all first into single string
-       this->stringWorld = std::make_shared<QString>();
-       for (int i = 0; i < qVec.size(); ++i) {
-           stringWorld->append(qVec.at(i));
-       }
-
        //add enemies
        for (unsigned long i = 0; i <enemies.size(); ++i) {
            unsigned long x = enemies.at(i)->getXPos();
@@ -60,12 +58,12 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
 
            if(temp != nullptr){
             changeSignAtCoord(x,y,'P');
-            std::cout.flush();
-            std::cout << "P enemy at Y:" << y << "X:"<< x <<"added" << std::endl;
+                std::cout.flush();
+                std::cout << "P enemy at Y:" << y << "X:"<< x <<"added" << std::endl;
            }
            else {
                changeSignAtCoord(x,y,'E');
-           std::cout << "Normal enemy at Y:" << y << "X:"<< x <<"added" << std::endl;
+               std::cout << "Normal enemy at Y:" << y << "X:"<< x <<"added" << std::endl;
            }
        }
 
@@ -93,8 +91,21 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
        unsigned long y =protagonist->getYPos();
        changeSignAtCoord(x,y,'$');
 
-       this->textscene->addText(*stringWorld,QFont("SF Mono"));
+
+       //cut world to size
+       moveCamera();
+
+
+       //couldn't make newline characters work when printing text seperately --> combine all first into single string
+       this->stringWorld = std::make_shared<QString>();
+       for (int i = 0; i < qVecPlayer.size(); ++i) {
+           stringWorld->append(qVecPlayer.at(i));
+       }
+
+
+       this->textscene->addText(*stringWorld,QFont("Monospace"));
        textView->setScene(this->textscene);
+       textView->setEnabled(true);
 
        //poison timer
        connect(&timer,&QTimer::timeout,this,&TextView::togglePoisoned);
@@ -105,14 +116,19 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
 void TextView::movProtagonist(int x1, int y1, int x2, int y2){
     changeSignAtCoord(x1,y1,' ');
     changeSignAtCoord(x2,y2,'$');
+    moveCamera();
+
+    this->stringWorld = std::make_shared<QString>();
+    for (int i = 0; i < qVecPlayer.size(); ++i) {
+        stringWorld->append(qVecPlayer.at(i));
+    }
+
     this->textscene->clear();
-    this->textscene->addText(*stringWorld,QFont("SF Mono"));
+    this->textscene->addText(*stringWorld,QFont("Monospace"));
 }
 
 void TextView::changeSignAtCoord( unsigned long x,  unsigned long y, QChar input){
-    int rowlength = width*8+4;//(width*4+2)*2; one less multiplication
-    int indexCount = rowlength*y-(width-x)*4-4;
-    this->stringWorld->replace(indexCount, 1,input);
+    qVec[(y)*4+2].replace(2+(x)*4, 1,input);
 }
 
 void TextView::updateView(){
@@ -122,7 +138,7 @@ void TextView::updateView(){
 void TextView::protDead(int x, int y){
     changeSignAtCoord(x,y,'D');
     this->textscene->clear();
-    this->textscene->addText(*stringWorld,QFont("SF Mono"));
+    this->textscene->addText(*stringWorld,QFont("Monospace"));
 
 }
 
@@ -145,7 +161,19 @@ void TextView::startTimer(){
 
 void TextView::stopTimer(){
     timer.stop();
-    this->textscene->setBackgroundBrush(QColor("base"));
+    this->textscene->setBackgroundBrush(Qt::transparent);
+}
+
+void TextView::moveCamera(){
+    //cut world to size
+    QVector<QString> temp;
+    qVecPlayer=qVec;
+    qVecPlayer=qVecPlayer.mid((world->getProtagonist()->getYPos()-3)*4,30);
+
+    for (int i = 0; i < qVecPlayer.size(); ++i) {
+        temp.push_back(qVecPlayer[i].mid((world->getProtagonist()->getXPos()-6)*4,60));
+    }
+    qVecPlayer=temp;
 }
 
 
