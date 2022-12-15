@@ -7,6 +7,9 @@ TextView::TextView(){
     //poison timer
     timer.setInterval(1000);
     toggle = 1;
+
+    timer2.setInterval(1000);
+    timer2.isSingleShot();
 }
 
 
@@ -107,6 +110,9 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
 
        //poison timer
        connect(&timer,&QTimer::timeout,this,&TextView::togglePoisoned);
+
+       //health timer
+       connect(&timer2,&QTimer::timeout,this,&TextView::resetBg);
 }
 
 
@@ -152,11 +158,22 @@ void TextView::togglePoisoned(){
         this->textscene->setBackgroundBrush(QColor("purple"));
         toggle = 0;
     } else{
-        this->textscene->setBackgroundBrush(QColor("base"));
+        resetBg();
         toggle = 1;
     }
     timer.start();
 }
+
+//code for poison flashing
+void TextView::healed(){
+        this->textscene->setBackgroundBrush(QColor("green"));
+        timer2.start();
+}
+
+void TextView::resetBg(){
+    this->textscene->setBackgroundBrush(Qt::transparent);
+}
+
 
 void TextView::startTimer(){
     timer.start();
@@ -164,17 +181,31 @@ void TextView::startTimer(){
 
 void TextView::stopTimer(){
     timer.stop();
-    this->textscene->setBackgroundBrush(Qt::transparent);
+    resetBg();
 }
 
 void TextView::moveCamera(){
     //cut world to size
-    QVector<QString> temp;
+    QString temp;
     qVecPlayer=qVec;
-    qVecPlayer=qVecPlayer.mid(((world->getProtagonist()->getYPos()-4)*2)+1,17);
+    auto before = ((world->getProtagonist()->getYPos()-4)*2)+1;
+
+    //take world edges into account
+    if(before <= 0){
+        qVecPlayer=qVecPlayer.mid(before,17-before);
+    }
+    else qVecPlayer=qVecPlayer.mid(before,17);
+
 
     for (int i = 0; i < qVecPlayer.size(); i++) {
-        auto temp = qVecPlayer[i].mid((world->getProtagonist()->getXPos()-7)*4,60);
+        //take world edges into account
+        before = (world->getProtagonist()->getXPos()-7)*4;
+        if(before <=0){
+            temp = qVecPlayer[i].mid(before,60-before);
+        }
+        else {
+            temp = qVecPlayer[i].mid(before,60);
+        }
         temp.append("\n");
         qVecPlayer[i]=temp;
     }

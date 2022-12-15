@@ -20,6 +20,7 @@ public:
     void activatePoisoned();
     void startTimer();
     void stopTimer();
+    void healed();
 
 
 private:
@@ -30,7 +31,7 @@ private:
  int width;
  int height;
  QGraphicsScene* textscene;
- QTimer timer;
+ QTimer timer,timer2;
  int toggle;
  std::shared_ptr<WorldModel> world;
  void moveCamera();
@@ -38,6 +39,7 @@ private:
  int xRatio;
  int yRatio;
  int startposX,startposY;
+ void resetBg();
  };
 
 #endif // TEXTVIEW_H

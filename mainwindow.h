@@ -19,7 +19,7 @@ class MainWindow: public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget* parent, QString init_worldmap, std::shared_ptr<Controller> c);
+    MainWindow(QWidget* parent,std::shared_ptr<Controller> c);
     ~MainWindow();
     void changeScene();
     void setController(std::shared_ptr<Controller>& c);
@@ -30,6 +30,7 @@ public:
     void updatePath(QString input);
     void pressEntered();
     void initCamera();
+    void initViews();
 
 private:
     Ui::MainWindow* ui;

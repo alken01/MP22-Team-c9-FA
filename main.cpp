@@ -50,7 +50,8 @@ int main(int argc, char* argv[]){
     auto wm = std::make_shared<WorldModel>(test);
     auto c = std::make_shared<Controller>(wm, gview, tview);
     c->initWorlds();
-    MainWindow w = MainWindow(NULL, init_worldmap, c);
+    MainWindow w = MainWindow(NULL, c);
+    w.initViews();
     w.show();
     return app.exec();
 }

@@ -22,24 +22,16 @@
 #include "graphicalview.h"
 #include "textview.h"
 #include <QScrollBar>
-#include "astar.h"#include <QtGui>
+#include "astar.h"
 
 
 
-MainWindow::MainWindow(QWidget* parent, QString init_worldmap, std::shared_ptr<Controller> c)
+MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> c)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow){
     ui->setupUi(this);
 
     this->controller=c;
-    //ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    //ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    //ui->graphicsView->setScene((c->getQtext_view().get())->scene());
-
-
-    ui->verticalLayout_2->addWidget(c->getQtext_view().get());
-    ui->verticalLayout_2->addWidget(c->getQgraphics_view().get());
-    c->getQgraphics_view().get()->hide();
 
     // Create a text input field
     textInput = ui->lineEdit;
@@ -113,6 +105,12 @@ private:
 
 MainWindow::~MainWindow(){
     delete ui;
+}
+
+void MainWindow::initViews(){
+    ui->verticalLayout_2->addWidget(controller->getQtext_view().get());
+    ui->verticalLayout_2->addWidget(controller->getQgraphics_view().get());
+    controller->getQgraphics_view().get()->hide();
 }
 
 

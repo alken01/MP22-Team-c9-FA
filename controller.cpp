@@ -175,6 +175,9 @@ int Controller::checkMove(int x, int y){
                 world->getProtagonist()->setHealth(100);
             }
             else world->getProtagonist()->setHealth(health+test->getValue());
+
+            text_view->healed();
+
             test->setValue(-1); //used
             return 0; // is health
         }
