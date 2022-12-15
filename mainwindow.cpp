@@ -57,15 +57,22 @@ MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> c)
     QCompleter *completer = new QCompleter(c->getCompleterList(),this);
     ui->lineEdit->setCompleter(completer);
 
+    //mapSelector
+    ui->comboBox->addItems(controller->getMapList());
+
     // Connect all
     connect(button, &QPushButton::clicked, this, &MainWindow::changeScene);
     connect(textInput, &QLineEdit::textChanged, this, &MainWindow::textEntered);
     connect(textInput, &QLineEdit::returnPressed, this, &MainWindow::pressEntered);
+    connect(ui->comboBox, &QComboBox::currentIndexChanged, this, &MainWindow::mapChanged);
 
     //empty line edit after autocomplete
     QObject::connect(completer, SIGNAL(activated(const QString&)),
                      ui->lineEdit, SLOT(clear()),
                      Qt::QueuedConnection);
+
+    //loading screen
+    ui->textEdit_5->hide();
 }
 
 
@@ -183,30 +190,35 @@ void MainWindow::textEntered(){
 }
 
 void MainWindow::pressEntered(){
-    QString input = this->textInput->text();
-    //updatePath(input);
-    QString result=controller->commandReceived(input);
-    if(result=="help"){
-        auto s = controller->getCompleterList();
-        ui->textEdit_4->append("--------------------------------");
-        ui->textEdit_4->append("Possible commands:");
-        for(int i=0 ; i < s.length() ; i++){
-            ui->textEdit_4->append(s.at(i));
+    if(controller->getAlive()){
+        QString input = this->textInput->text();
+        //updatePath(input);
+        QString result=controller->commandReceived(input);
+        if(result=="help"){
+            auto s = controller->getCompleterList();
+            ui->textEdit_4->append("--------------------------------");
+            ui->textEdit_4->append("Possible commands:");
+            for(int i=0 ; i < s.length() ; i++){
+                ui->textEdit_4->append(s.at(i));
+            }
+            ui->textEdit_4->append("--------------------------------");
         }
-        ui->textEdit_4->append("--------------------------------");
+        else if(!result.isNull()) {
+            ui->textEdit_4->append(result);
+        }
+        else ui->textEdit_4->append("Unrecognized input - type 'help' for possible commands");
+
+
     }
-    else if(!result.isNull()) {
-        ui->textEdit_4->append(result);
-    }
-    else ui->textEdit_4->append("Unrecognized input - type 'help' for possible commands");
+    else {ui->textEdit_4->append("Player is dead - reload map to reset");}
 
     //clear input
     textInput->clear();
 
     //update visualisations
-        health->setValue(this->controller->getWorld()->getProtagonist()->getHealth());
-        energy->setValue(this->controller->getWorld()->getProtagonist()->getEnergy());
-        ui->lcdNumber->display(controller->getPoisoned());
+    health->setValue(this->controller->getWorld()->getProtagonist()->getHealth());
+    energy->setValue(this->controller->getWorld()->getProtagonist()->getEnergy());
+    ui->lcdNumber->display(controller->getPoisoned());
 }
 
 // should be in controller
@@ -267,6 +279,13 @@ void MainWindow::setController(std::shared_ptr<Controller>& c){
     this->controller = c;
 }
 
+void MainWindow::mapChanged(){
+    controller->changeMap(ui->comboBox->currentText());
+    //update visualisations
+    health->setValue(this->controller->getWorld()->getProtagonist()->getHealth());
+    energy->setValue(this->controller->getWorld()->getProtagonist()->getEnergy());
+    ui->lcdNumber->display(controller->getPoisoned());
+}
 
 
 

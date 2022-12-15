@@ -18,6 +18,13 @@ Controller::Controller(std::shared_ptr<WorldModel> w,std::shared_ptr<GraphicalVi
     commands.push_back("goto x y");
     commands.push_back("help");
 
+    //mapList
+    mapList.append("maze1");
+    mapList.append("maze2");
+    mapList.append("maze3");
+    mapList.append("worldmap");
+    mapList.append("worldmap4");
+
 
 
     //also create QStringlist for use in autofill and switch
@@ -41,6 +48,21 @@ void Controller::initWorlds(){
     this->world->getProtagonist()->setYPos(5);
     this->text_view->draw(this->world, this->Qtext_view);
     this->graphical_view->draw(this->world, this->Qgraphics_view);
+}
+
+void::Controller::changeMap(QString mapName){
+    QString init_worldmap = ":/images/world_images/" + mapName + ".png";
+    auto test = std::make_shared<World>();
+    test->createWorld(init_worldmap, 100, 100, 0.5);
+    auto wm = std::make_shared<WorldModel>(test);
+    this->world->getProtagonist()->setHealth(100);
+    this->world->getProtagonist()->setEnergy(100);
+    text_view->stopTimer();
+    this->alive = 1;
+    this->poisoned=0;
+
+    this->world=wm;
+    initWorlds();
 }
 
 const std::shared_ptr<QGraphicsView> &Controller::getQgraphics_view() const
@@ -135,6 +157,7 @@ void Controller::movePlayer(QString input){
             }
 
 
+        //if its a player move code below runs, otherwise return in switch statement
         if(x2<0 || y2<0 || x2>=world->getWidth() || y2>=world->getHeight()){ return;}
 
         // 0 health,1 enemy, 2 poison enemy, 3 wall, 4 tile
@@ -167,17 +190,17 @@ void Controller::movePlayer(QString input){
         this->text_view->movProtagonist(x, y, world->getProtagonist()->getXPos(), world->getProtagonist()->getYPos(),world);
 
         //check if alive
-        if(world->getProtagonist()->getHealth() == 0){
+        if(world->getProtagonist()->getHealth() <= 0){
             dead(x2, y2);
         }
 
-        if(world->getProtagonist()->getEnergy() == 0){
+        if(world->getProtagonist()->getEnergy() <= 0){
             dead(x2, y2);
         }
 
         this->text_view->updateView();
     }
-}
+  }
 
 int Controller::checkMove(int x, int y){
     auto test = world.get()->getWorldMap().at(x).at(y);
@@ -198,7 +221,7 @@ int Controller::checkMove(int x, int y){
         world->getProtagonist()->setHealth(world->getProtagonist()->getHealth() - 1);
     } else text_view->stopTimer(); //stop poison effect
 
-    //TILE + beaten enemy or used healthpack = -1
+    //TILE
     if(test->getValue()<=1 && test->getValue()>=0){
         world->getProtagonist()->setEnergy(world->getProtagonist()->getEnergy()-test->getValue());
 
@@ -266,6 +289,16 @@ void Controller::dead(int x, int y){
     this->text_view->protDead(x, y);
     text_view->stopTimer();
     this->alive = 0;
+}
+
+const QStringList &Controller::getMapList() const
+{
+    return mapList;
+}
+
+void Controller::setMapList(const QStringList &newMapList)
+{
+    mapList = newMapList;
 }
 
 const QStringList &Controller::getCompleterList() const

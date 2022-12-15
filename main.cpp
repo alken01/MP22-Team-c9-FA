@@ -42,9 +42,9 @@ using namespace std;
 int main(int argc, char* argv[]){
     // Generate the world
     QApplication app(argc, argv);
-    QString init_worldmap = ":/images/world_images/worldmap.png";
+    QString init_worldmap = ":/images/world_images/maze1.png";
     auto test = std::make_shared<World>();
-    test->createWorld(init_worldmap, 10, 10, 0.9);
+    test->createWorld(init_worldmap, 100, 100, 0.5);
     auto gview = std::make_shared<GraphicalView>();
     auto tview = std::make_shared<TextView>();
     auto wm = std::make_shared<WorldModel>(test);
