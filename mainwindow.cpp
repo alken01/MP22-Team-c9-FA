@@ -40,7 +40,6 @@ MainWindow::MainWindow(QWidget* parent, QString init_worldmap, std::shared_ptr<C
     ui->verticalLayout_2->addWidget(c->getQtext_view().get());
     ui->verticalLayout_2->addWidget(c->getQgraphics_view().get());
     c->getQgraphics_view().get()->hide();
-    c->getText_view()->updateView();
 
     // Create a text input field
     textInput = ui->lineEdit;

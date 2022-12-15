@@ -40,9 +40,9 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
        //for each row repeat shape x height
        for(int q = 0; q < height; q++){
            qVec.push_back(wi);
-           qVec.append("\n");
+           //qVec.append("\n");
            qVec.push_back(h);
-           qVec.append("\n");
+           //qVec.append("\n");
        }
 
        //close map bottom line
@@ -104,7 +104,6 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
 
        this->textscene->addText(*stringWorld,QFont("Monospace"));
        textView->setScene(this->textscene);
-       textView->setEnabled(true);
 
        //poison timer
        connect(&timer,&QTimer::timeout,this,&TextView::togglePoisoned);
@@ -127,7 +126,13 @@ void TextView::movProtagonist(int x1, int y1, int x2, int y2){
 }
 
 void TextView::changeSignAtCoord( unsigned long x,  unsigned long y, QChar input){
-    qVec[(y)*4+2].replace(2+(x)*4, 1,input);
+    qVec[y*2+1].replace(2+x*4, 1,input);
+    moveCamera();
+
+    this->stringWorld = std::make_shared<QString>();
+    for (int i = 0; i < qVecPlayer.size(); ++i) {
+        stringWorld->append(qVecPlayer.at(i));
+    }
 }
 
 void TextView::updateView(){
@@ -166,13 +171,12 @@ void TextView::moveCamera(){
     //cut world to size
     QVector<QString> temp;
     qVecPlayer=qVec;
-    qVecPlayer=qVecPlayer.mid((world->getProtagonist()->getYPos()-3)*4,30);
+    qVecPlayer=qVecPlayer.mid(((world->getProtagonist()->getYPos()-4)*2)+1,17);
 
-    for (int i = 0; i < qVecPlayer.size(); ++i) {
-        temp.push_back(qVecPlayer[i].mid((world->getProtagonist()->getXPos()-6)*4,60));
+    for (int i = 0; i < qVecPlayer.size(); i++) {
+        auto temp = qVecPlayer[i].mid((world->getProtagonist()->getXPos()-7)*4,60);
+        temp.append("\n");
+        qVecPlayer[i]=temp;
     }
-    qVecPlayer=temp;
+
 }
-
-
-

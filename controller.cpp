@@ -88,6 +88,8 @@ void Controller::movePlayer(int a){
             y2--;
         }
 
+        if(x2<0 || y2<0 || x2>=world->getWidth() || y2>=world->getHeight()){ return;}
+
         // 0 health,1 enemy, 2 poison enemy, 3 wall, 4 tile
         auto test = checkMove(x2, y2);
 
@@ -133,6 +135,11 @@ void Controller::movePlayer(int a){
 int Controller::checkMove(int x, int y){
     auto test = world.get()->getWorldMap().at(x).at(y);
 
+    //beaten enemy or used healthpack = -1 nothing happens
+    if(test->getValue()==-1){
+        return 4; //is tilethis->textscene->addText(*stringWorld,QFont("Monospace"));
+    }
+
     //WALL
     if(test->getValue() == INFINITY){
         return 3; //is wall
@@ -145,8 +152,8 @@ int Controller::checkMove(int x, int y){
     } else text_view->stopTimer(); //stop poison effect
 
     //TILE + beaten enemy or used healthpack = -1
-    if(test->getValue()==1 || test->getValue()==-1){
-        world->getProtagonist()->setEnergy(world->getProtagonist()->getEnergy()-1);
+    if(test->getValue()<=1 && test->getValue()>=0){
+        world->getProtagonist()->setEnergy(world->getProtagonist()->getEnergy()-test->getValue());
 
         return 4; //is tilethis->textscene->addText(*stringWorld,QFont("Monospace"));
     }
@@ -207,7 +214,6 @@ int Controller::checkMove(int x, int y){
 
 void Controller::dead(int x, int y){
     this->text_view->protDead(x, y);
-
     text_view->stopTimer();
     this->alive = 0;
 }

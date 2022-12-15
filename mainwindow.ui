@@ -335,7 +335,7 @@ hr { height: 1px; border-width: 0; }
       <x>20</x>
       <y>40</y>
       <width>601</width>
-      <height>431</height>
+      <height>421</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
