@@ -165,17 +165,17 @@ void Controller::movePlayer(QString input){
         return;
     }
 
-    if(test == 2){
+    else if(test == 2){
         std::cout.flush();
         std::cout << "encountered poison enemy" << std::endl;
     }
 
-    if(test == 1){
+    else if(test == 1){
         std::cout.flush();
         std::cout << "encountered enemy" << std::endl;
     }
 
-    if(test == 0){
+    else if(test == 0){
         std::cout.flush();
         std::cout << "got healt yay" << std::endl;
     }
@@ -204,6 +204,7 @@ void Controller::goto_helper(QString input){
     QString strX = strList.last();  // gets the last substring
     bool ok;
     int x = strX.toInt(&ok);        // convert the QString to an int, store the result in x
+
     if(!ok){
 
         if(strX == "hp"){
@@ -309,7 +310,21 @@ vector<QString> Controller::pathToText(vector<pair<int, int> > path){
         // Get the current and previous coordinates
         auto current = path[i];
         auto prev = path[i - 1];
+
+        // Compare the coordinates and add the corresponding direction to the result vector
+        if(current.first > prev.first){
+            directions.push_back(QString("right"));
+        } else if(current.first < prev.first){
+            directions.push_back(QString("left"));
+        } else if(current.second > prev.second){
+            directions.push_back(QString("down"));
+        } else if(current.second < prev.second){
+            directions.push_back(QString("up"));
+        }
     }
+
+    // Return the vector of directions
+    return directions;
 }
 
 int Controller::checkMove(int x, int y){

@@ -8,7 +8,6 @@ TextView::TextView(){
     //poison timer
     timer.setInterval(500);
     toggle = 1;
-    
     timer2.setInterval(1000);
     timer2.isSingleShot();
 }
@@ -103,7 +102,7 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
     }
     
     
-    this->textscene->addText(*stringWorld,QFont("Monospace"));
+    this->textscene->addText(*stringWorld,QFont("SF Mono"));
     textView->setScene(this->textscene);
     
     //poison timer
@@ -143,7 +142,7 @@ void TextView::movProtagonist(int x1, int y1, int x2, int y2,std::shared_ptr<Wor
     }
     
     this->textscene->clear();
-    this->textscene->addText(*stringWorld,QFont("Monospace"));
+    this->textscene->addText(*stringWorld,QFont("SF Mono"));
 }
 
 void TextView::changeSignAtCoord( unsigned long x,  unsigned long y, QChar input){
@@ -165,7 +164,7 @@ void TextView::updateView(){
 void TextView::protDead(int x, int y){
     changeSignAtCoord(x, y, 'D');
     this->textscene->clear();
-    this->textscene->addText(*stringWorld,QFont("Monospace"));
+    this->textscene->addText(*stringWorld,QFont("SF Mono"));
     
 }
 
@@ -225,6 +224,5 @@ void TextView::moveCamera(){
         }
         temp.append("\n");
         qVecPlayer[i]=temp;
-    }
-    
+    }   
 }
