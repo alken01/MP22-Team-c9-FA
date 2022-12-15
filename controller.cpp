@@ -58,21 +58,6 @@ void::Controller::changeMap(QString mapName){
     initWorlds();
 }
 
-void::Controller::changeMap(QString mapName){
-    QString init_worldmap = ":/images/world_images/" + mapName + ".png";
-    auto test = std::make_shared<World>();
-    test->createWorld(init_worldmap, 100, 100, 0.5);
-    auto wm = std::make_shared<WorldModel>(test);
-    this->world->getProtagonist()->setHealth(100);
-    this->world->getProtagonist()->setEnergy(100);
-    text_view->stopTimer();
-    this->alive = 1;
-    this->poisoned = 0;
-
-    this->world = wm;
-    initWorlds();
-}
-
 const std::shared_ptr<QGraphicsView>& Controller::getQgraphics_view() const{
     return Qgraphics_view;
 }
@@ -290,7 +275,7 @@ void Controller::goToHealthpack(){
         Tile end(x, y, 0.0);
         vector<pair<int, int> > path = astar(world->getTiles(), world->getHeight(), world->getWidth(), start, end, 0.1);
         if(path.size() < min_len){
-            enemy_path = path;
+            health_pack = path;
         }
     }
     //didnt find healthpacks
@@ -324,10 +309,6 @@ vector<QString> Controller::pathToText(vector<pair<int, int> > path){
         // Get the current and previous coordinates
         auto current = path[i];
         auto prev = path[i - 1];
-
-        if(world->getProtagonist()->getEnergy() == 0){
-            dead(x2, y2);
-        }
     }
 }
 
@@ -417,16 +398,6 @@ void Controller::dead(int x, int y){
     this->text_view->protDead(x, y);
     text_view->stopTimer();
     this->alive = 0;
-}
-
-const QStringList &Controller::getMapList() const
-{
-    return mapList;
-}
-
-void Controller::setMapList(const QStringList &newMapList)
-{
-    mapList = newMapList;
 }
 
 const QStringList& Controller::getMapList() const{
