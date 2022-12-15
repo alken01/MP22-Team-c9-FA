@@ -13,7 +13,7 @@ public:
     void changeSignAtCoord(unsigned long x, unsigned long y, QChar input);
     void draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView> textView);
     void createMap();
-    void movProtagonist(int x1, int y1, int x2, int y2);
+    void movProtagonist(int x1, int y1, int x2, int y2,std::shared_ptr<WorldModel> w);
     void updateView();
     void protDead(int x, int y);
     void togglePoisoned();
@@ -21,7 +21,7 @@ public:
     void startTimer();
     void stopTimer();
     void healed();
-
+    QChar grayscaleToASCII(float intensity);
 
 private:
  QVector<QString> qVec,qVecPlayer;
