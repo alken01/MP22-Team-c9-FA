@@ -3,6 +3,8 @@
 #include "world.h"
 #include <iostream>
 
+using namespace std;
+
 TextView::TextView(){
     //poison timer
     timer.setInterval(1000);
@@ -113,14 +115,14 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
 }
 
 QChar TextView::grayscaleToASCII(float intensity){
-    if(intensity == INFINITY){
+    if(intensity == INFINITY)
         return QChar('@');
-    }
-    if(intensity <0.5){
+    if(intensity <0.5 || intensity == 1.0)
         return QChar(' ');
-    }
+
     std::vector<char> characters = {'.',':','-','=','+','*','#','%'};
     // scale the intensity value to the range of the character set and round it to the nearest index
+    cout<< "intesity"<<intensity<<endl;
     int index = round((intensity-0.49)* (characters.size() - 1));
 
     return QChar(characters[index]);
