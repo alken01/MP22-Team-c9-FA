@@ -57,15 +57,22 @@ MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> c)
     QCompleter* completer = new QCompleter(c->getCompleterList(), this);
     ui->lineEdit->setCompleter(completer);
 
+    //mapSelector
+    ui->comboBox->addItems(controller->getMapList());
+
     // Connect all
     connect(button, &QPushButton::clicked, this, &MainWindow::changeScene);
     connect(textInput, &QLineEdit::textChanged, this, &MainWindow::textEntered);
     connect(textInput, &QLineEdit::returnPressed, this, &MainWindow::pressEntered);
+    connect(ui->comboBox, &QComboBox::currentIndexChanged, this, &MainWindow::mapChanged);
 
     //empty line edit after autocomplete
     QObject::connect(completer, SIGNAL(activated(const QString&)),
-        ui->lineEdit, SLOT(clear()),
-        Qt::QueuedConnection);
+                     ui->lineEdit, SLOT(clear()),
+                     Qt::QueuedConnection);
+
+    //loading screen
+    ui->textEdit_5->hide();
 }
 
 
@@ -173,3 +180,15 @@ void MainWindow::textEntered(){
 void MainWindow::setController(std::shared_ptr<Controller>& c){
     this->controller = c;
 }
+
+void MainWindow::mapChanged(){
+    controller->changeMap(ui->comboBox->currentText());
+    //update visualisations
+    health->setValue(this->controller->getWorld()->getProtagonist()->getHealth());
+    energy->setValue(this->controller->getWorld()->getProtagonist()->getEnergy());
+    ui->lcdNumber->display(controller->getPoisoned());
+}
+
+
+
+

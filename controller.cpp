@@ -20,6 +20,12 @@ Controller::Controller(std::shared_ptr<WorldModel> w, std::shared_ptr<GraphicalV
     commands.push_back("goto hp");
     commands.push_back("help");
 
+    //mapList
+    mapList.append("maze1");
+    mapList.append("maze2");
+    mapList.append("maze3");
+    mapList.append("worldmap");
+    mapList.append("worldmap4");
     //also create QStringlist for use in autofill and switch
     for(unsigned long i = 0; i < commands.size(); i++){
         completerList.append(commands.at(i));
@@ -35,6 +41,36 @@ void Controller::initWorlds(){
     this->world->getProtagonist()->setYPos(5);
     this->text_view->draw(this->world, this->Qtext_view);
     this->graphical_view->draw(this->world, this->Qgraphics_view);
+}
+
+void::Controller::changeMap(QString mapName){
+    QString init_worldmap = ":/images/world_images/" + mapName + ".png";
+    auto test = std::make_shared<World>();
+    test->createWorld(init_worldmap, 100, 100, 0.5);
+    auto wm = std::make_shared<WorldModel>(test);
+    this->world->getProtagonist()->setHealth(100);
+    this->world->getProtagonist()->setEnergy(100);
+    text_view->stopTimer();
+    this->alive = 1;
+    this->poisoned = 0;
+
+    this->world = wm;
+    initWorlds();
+}
+
+void::Controller::changeMap(QString mapName){
+    QString init_worldmap = ":/images/world_images/" + mapName + ".png";
+    auto test = std::make_shared<World>();
+    test->createWorld(init_worldmap, 100, 100, 0.5);
+    auto wm = std::make_shared<WorldModel>(test);
+    this->world->getProtagonist()->setHealth(100);
+    this->world->getProtagonist()->setEnergy(100);
+    text_view->stopTimer();
+    this->alive = 1;
+    this->poisoned = 0;
+
+    this->world = wm;
+    initWorlds();
 }
 
 const std::shared_ptr<QGraphicsView>& Controller::getQgraphics_view() const{
@@ -132,10 +168,8 @@ void Controller::movePlayer(QString input){
     default:
         std::cout << "This is not a legal move" << std::endl;
     }
-
-    if(x2 < 0 || y2 < 0 || x2 >= world->getWidth() || y2 >= world->getHeight()){
-        return;
-    }
+    //if its a player move code below runs, otherwise return in switch statement
+    if(x2 < 0 || y2 < 0 || x2 >= world->getWidth() || y2 >= world->getHeight()){ return; }
 
     // 0 health,1 enemy, 2 poison enemy, 3 wall, 4 tile
     auto test = checkMove(x2, y2);
@@ -144,28 +178,40 @@ void Controller::movePlayer(QString input){
         std::cout.flush();
         std::cout << "you can't walk through walls" << std::endl;
         return;
-    } else if(test == 2){
+    }
+
+    if(test == 2){
         std::cout.flush();
         std::cout << "encountered poison enemy" << std::endl;
-    } else if(test == 1){
+    }
+
+    if(test == 1){
         std::cout.flush();
         std::cout << "encountered enemy" << std::endl;
-    } else if(test == 0){
-        std::cout.flush();
-        std::cout << "got health yay" << std::endl;
     }
+
+    if(test == 0){
+        std::cout.flush();
+        std::cout << "got healt yay" << std::endl;
+    }
+
     world->getProtagonist()->setXPos(x2);
     world->getProtagonist()->setYPos(y2);
 
     this->text_view->movProtagonist(x, y, world->getProtagonist()->getXPos(), world->getProtagonist()->getYPos(), world);
 
     //check if alive
-    if(world->getProtagonist()->getHealth() == 0 || world->getProtagonist()->getEnergy() == 0){
+    if(world->getProtagonist()->getHealth() <= 0){
         dead(x2, y2);
     }
-    this->text_view->updateView();
 
+    if(world->getProtagonist()->getEnergy() <= 0){
+        dead(x2, y2);
+    }
+
+    this->text_view->updateView();
 }
+
 
 void Controller::goto_helper(QString input){
     QStringList strList = input.split(" ");
@@ -222,7 +268,6 @@ void Controller::goToEnemy(){
     if(enemy_path.empty()){
         return;
     }
-
     vector<QString> textPath = pathToText(enemy_path);
     for(const auto& input : textPath){
         movePlayer(input);
@@ -245,7 +290,7 @@ void Controller::goToHealthpack(){
         Tile end(x, y, 0.0);
         vector<pair<int, int> > path = astar(world->getTiles(), world->getHeight(), world->getWidth(), start, end, 0.1);
         if(path.size() < min_len){
-            health_pack = path;
+            enemy_path = path;
         }
     }
     //didnt find healthpacks
@@ -280,20 +325,10 @@ vector<QString> Controller::pathToText(vector<pair<int, int> > path){
         auto current = path[i];
         auto prev = path[i - 1];
 
-        // Compare the coordinates and add the corresponding direction to the result vector
-        if(current.first > prev.first){
-            directions.push_back(QString("right"));
-        } else if(current.first < prev.first){
-            directions.push_back(QString("left"));
-        } else if(current.second > prev.second){
-            directions.push_back(QString("down"));
-        } else if(current.second < prev.second){
-            directions.push_back(QString("up"));
+        if(world->getProtagonist()->getEnergy() == 0){
+            dead(x2, y2);
         }
     }
-
-    // Return the vector of directions
-    return directions;
 }
 
 int Controller::checkMove(int x, int y){
@@ -318,6 +353,7 @@ int Controller::checkMove(int x, int y){
     //TILE + beaten enemy or used healthpack = -1
     if(test->getValue() <= 1 && test->getValue() >= 0){
         world->getProtagonist()->setEnergy(world->getProtagonist()->getEnergy() - test->getValue());
+
         return 4; //is tilethis->textscene->addText(*stringWorld,QFont("Monospace"));
     }
 
@@ -381,6 +417,24 @@ void Controller::dead(int x, int y){
     this->text_view->protDead(x, y);
     text_view->stopTimer();
     this->alive = 0;
+}
+
+const QStringList &Controller::getMapList() const
+{
+    return mapList;
+}
+
+void Controller::setMapList(const QStringList &newMapList)
+{
+    mapList = newMapList;
+}
+
+const QStringList& Controller::getMapList() const{
+    return mapList;
+}
+
+void Controller::setMapList(const QStringList& newMapList){
+    mapList = newMapList;
 }
 
 const QStringList& Controller::getCompleterList() const{

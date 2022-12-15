@@ -121,10 +121,11 @@ QChar TextView::grayscaleToASCII(float intensity){
 
     std::vector<char> characters = {'.',':','-','=','+','*','#','%'};
     // scale the intensity value to the range of the character set and round it to the nearest index
-    cout<< "intesity"<<intensity<<endl;
+    //cout<< "intesity"<<intensity<<endl;
     int index = round((intensity-0.49)* (characters.size() - 1));
 
     return QChar(characters[index]);
+    //else return QChar(' ');
 }
 
 

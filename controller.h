@@ -46,6 +46,9 @@ public:
     void goToHealthpack();
     vector<QString> pathToText(vector<pair<int, int> > path);
 
+const QStringList &getMapList() const;
+void setMapList(const QStringList &newMapList);
+
 public slots:
     void switchToGraphic();
     void switchToText();
@@ -53,6 +56,7 @@ public slots:
     void switchViews();
     void initWorlds();
     QString commandReceived(QString input);
+    void changeMap(QString mapName);
 
 
 private:
@@ -66,6 +70,7 @@ private:
     int poisoned = 0;
     std::vector<QString> commands;
     QStringList completerList;
+    QStringList mapList;
     void printHelp();
 };
 #endif // CONTROLLER_H

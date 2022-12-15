@@ -42,6 +42,6 @@ private:
     QGraphicsView textView;
     QProgressBar* health, * energy;
     int viewStatus;
-
+    void mapChanged();
 };
 #endif // MAINWINDOW_H
