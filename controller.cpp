@@ -162,7 +162,7 @@ void Controller::movePlayer(QString input){
         world->getProtagonist()->setXPos(x2);
         world->getProtagonist()->setYPos(y2);
 
-        this->text_view->movProtagonist(x, y, world->getProtagonist()->getXPos(), world->getProtagonist()->getYPos());
+        this->text_view->movProtagonist(x, y, world->getProtagonist()->getXPos(), world->getProtagonist()->getYPos(),world);
 
         //check if alive
         if(world->getProtagonist()->getHealth() == 0){
