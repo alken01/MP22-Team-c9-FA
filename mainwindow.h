@@ -9,6 +9,8 @@
 #include <QProgressBar>
 #include <QTimer>
 #include <QLCDNumber>
+#include <QStringList>
+#include <QCompleter>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

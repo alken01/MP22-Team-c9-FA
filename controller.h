@@ -1,7 +1,5 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
-
-#include "QtWidgets/qmainwindow.h"
 #include "graphicalview.h"
 #include "textview.h"
 #include "worldmodel.h"
@@ -35,12 +33,19 @@ public:
 const std::shared_ptr<QGraphicsView> &getQgraphics_view() const;
 void setQgraphics_view(const std::shared_ptr<QGraphicsView> &newQgraphics_view);
 
+const std::vector<QString> &getCommands() const;
+void setCommands(const std::vector<QString> &newCommands);
+
+const QStringList &getCompleterList() const;
+void setCompleterList(const QStringList &newCompleterList);
+
 public slots:
   void switchToGraphic();
   void switchToText();
-  void movePlayer(int direction);
+  void movePlayer(QString input);
   void switchViews();
   void initWorlds();
+  QString commandReceived(QString input);
 
 
 private:
@@ -52,5 +57,8 @@ private:
   void dead(int x, int y);
   int alive = 1;
   int poisoned = 0;
+  std::vector<QString> commands;
+  QStringList completerList;
+  void printHelp();
 };
 #endif // CONTROLLER_H

@@ -40,7 +40,8 @@ MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> c)
     // Create a button
     QPushButton* button = ui->pushButton;
 
-
+    //hide scrollbar terminal
+    ui->textEdit_4->setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
 
     //progressBar health
     health = ui->progressBar;
@@ -52,11 +53,19 @@ MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> c)
     energy->setRange(0, 100);
     energy->setValue(c->getWorld()->getProtagonist()->getEnergy());
 
+    //autocomplete
+    QCompleter *completer = new QCompleter(c->getCompleterList(),this);
+    ui->lineEdit->setCompleter(completer);
+
     // Connect all
     connect(button, &QPushButton::clicked, this, &MainWindow::changeScene);
     connect(textInput, &QLineEdit::textChanged, this, &MainWindow::textEntered);
     connect(textInput, &QLineEdit::returnPressed, this, &MainWindow::pressEntered);
 
+    //empty line edit after autocomplete
+    QObject::connect(completer, SIGNAL(activated(const QString&)),
+                     ui->lineEdit, SLOT(clear()),
+                     Qt::QueuedConnection);
 }
 
 
@@ -131,16 +140,16 @@ void MainWindow::changeScene(){
     }
 }
 
-void MainWindow::goToPath(int x, int y){
-    auto w = this->controller->getWorld();
-    Tile start(w->getProtagonist()->getXPos(), w->getProtagonist()->getYPos(), 0.0);
-    Tile end(x, y, 0.0);
-    vector<pair<int, int> > path = astar(w->getTiles(), w->getHeight(), w->getWidth(), start, end, 0.1);
-    vector<QString> textPath = pathToText(path);
-    for(const auto& input : textPath){
-        updatePath(input);
-    }
-}
+//void MainWindow::goToPath(int x, int y){
+//    auto w = this->controller->getWorld();
+//    Tile start(w->getProtagonist()->getXPos(), w->getProtagonist()->getYPos(), 0.0);
+//    Tile end(x, y, 0.0);
+//    vector<pair<int, int> > path = astar(w->getTiles(), w->getHeight(), w->getWidth(), start, end, 0.1);
+//    vector<QString> textPath = pathToText(path);
+//    for(const auto& input : textPath){
+//        updatePath(input);
+//    }
+//}
 
 vector<QString> MainWindow::pathToText(vector<pair<int, int> > path){
     // Resulting vector of directions
@@ -169,65 +178,84 @@ vector<QString> MainWindow::pathToText(vector<pair<int, int> > path){
 }
 
 void MainWindow::textEntered(){
-    QString input = this->textInput->text();
-    updatePath(input);
+
 }
 
 void MainWindow::pressEntered(){
     QString input = this->textInput->text();
-
-    if(input.at(0) == 'g'){
-        QStringList strList = input.split(" ");
-
-        QString strY = strList.last();  // gets the last substring
-        strList.removeLast();           // removes the last item from the list
-        QString strX = strList.last();  // gets the second-to-last substring
-
-        bool ok;
-        int x = strX.toInt(&ok);        // convert the QString to an int, store the result in x
-        if(!ok){
-            qDebug() << "Error converting string to int";
-            return;
+    //updatePath(input);
+    QString result=controller->commandReceived(input);
+    if(result=="help"){
+        auto s = controller->getCompleterList();
+        ui->textEdit_4->append("--------------------------------");
+        ui->textEdit_4->append("Possible commands:");
+        for(int i=0 ; i < s.length() ; i++){
+            ui->textEdit_4->append(s.at(i));
         }
-
-        int y = strY.toInt(&ok);
-        if(!ok){
-            qDebug() << "Error converting string to int";
-            return;
-        }
-
-        goToPath(x, y); //call the helper function
+        ui->textEdit_4->append("--------------------------------");
     }
-    this->textInput->clear();
+    else if(!result.isNull()) {
+        ui->textEdit_4->append(result);
+    }
+    else ui->textEdit_4->append("Unrecognized input - type 'help' for possible commands");
+    textInput->clear();
 }
 
-void MainWindow::updatePath(QString input){
+// should be in controller
+//    QString input = this->textInput->text();
 
-    if(input == "u"){
-        this->controller->movePlayer(4);
-        this->textInput->clear();
-    }
+//    if(input.at(0) == 'g'){
+//        QStringList strList = input.split(" ");
 
-    else if(input == "d"){
-        this->controller->movePlayer(1);
-        this->textInput->clear();
-    }
+//        QString strY = strList.last();  // gets the last substring
+//        strList.removeLast();           // removes the last item from the list
+//        QString strX = strList.last();  // gets the second-to-last substring
 
-    else if(input == "l"){
-        this->controller->movePlayer(3);
-        this->textInput->clear();
-    }
+//        bool ok;
+//        int x = strX.toInt(&ok);        // convert the QString to an int, store the result in x
+//        if(!ok){
+//            qDebug() << "Error converting string to int";
+//            return;
+//        }
 
-    else if(input == "r"){
-        this->controller->movePlayer(2);
-        this->textInput->clear();
-    }
+//        int y = strY.toInt(&ok);
+//        if(!ok){
+//            qDebug() << "Error converting string to int";
+//            return;
+//        }
 
-    //update visualisations
-    health->setValue(this->controller->getWorld()->getProtagonist()->getHealth());
-    energy->setValue(this->controller->getWorld()->getProtagonist()->getEnergy());
-    ui->lcdNumber->display(controller->getPoisoned());
-}
+//        goToPath(x, y); //call the helper function
+//    }
+//    this->textInput->clear();
+//}
+
+//void MainWindow::updatePath(QString input){
+
+//    if(input == "u"){
+//        this->controller->movePlayer(4);
+//        this->textInput->clear();
+//    }
+
+//    else if(input == "d"){
+//        this->controller->movePlayer(1);
+//        this->textInput->clear();
+//    }
+
+//    else if(input == "l"){
+//        this->controller->movePlayer(3);
+//        this->textInput->clear();
+//    }
+
+//    else if(input == "r"){
+//        this->controller->movePlayer(2);
+//        this->textInput->clear();
+//    }
+
+//    //update visualisations
+//    health->setValue(this->controller->getWorld()->getProtagonist()->getHealth());
+//    energy->setValue(this->controller->getWorld()->getProtagonist()->getEnergy());
+//    ui->lcdNumber->display(controller->getPoisoned());
+//}
 
 
 void MainWindow::setController(std::shared_ptr<Controller>& c){

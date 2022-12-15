@@ -9,6 +9,19 @@ Controller::Controller(std::shared_ptr<WorldModel> w,std::shared_ptr<GraphicalVi
     this->text_view=t;
     this->Qtext_view=std::make_shared<QGraphicsView>();
     this->Qgraphics_view=std::make_shared<QGraphicsView>();
+
+    //command list
+    commands.push_back("up");
+    commands.push_back("down");
+    commands.push_back("left");
+    commands.push_back("right");
+    commands.push_back("goto x y");
+    commands.push_back("help");
+
+    //also create QStringlist for use in autofill and switch
+    for(unsigned long i =0; i<commands.size(); i++){
+        completerList.append(commands.at(i));
+    }
 }
 
 
@@ -62,7 +75,35 @@ void Controller::setText_view(const std::shared_ptr<TextView>& newText_view){
     text_view = newText_view;
 }
 
-void Controller::movePlayer(int a){
+//checks input from text and gets matching unique command
+QString Controller::commandReceived(QString input){
+    int count=0;
+    std::vector<QString> resultSet;
+
+    for(unsigned long i = 0; i < commands.size(); ++i){
+        for(int j = 0; j < input.size(); ++j){
+            if(j<commands[i].size()){
+                if(input.at(j)==commands[i].at(j)){
+                count++;
+                }
+            }
+        }
+        if(count==input.size()){
+            resultSet.push_back(commands[i]);
+        }
+        count=0;
+    }
+    if(resultSet.size()==1){
+        QString result = resultSet[0];
+        std::cout << result.toStdString() << std::endl;
+        movePlayer(result);
+        return result;
+    }
+    else return NULL;
+}
+
+void Controller::movePlayer(QString input){
+
     if(alive == 1){
         //store old coordinate
         int x = world->getProtagonist()->getXPos();
@@ -72,21 +113,25 @@ void Controller::movePlayer(int a){
         int x2 = x;
         int y2 = y;
 
-        if(a == 1){ //up
-            y2++;
-        }
+        //folows order of commands added
+        switch(completerList.indexOf(input)){
+                case 0: //up
+                    y2++; break;
+                case 1: //down
+                    y2--; break;
+                case 2: //left
+                    x2--; break;
+                case 3: //right
+                    x2++; break;
+                case 4: //goto x y
+                     break;
+                case 5: //help handled in window
+                     return;
 
-        if(a == 2){ //right
-            x2++;
-        }
+            default:
+                std::cout << "This is not a legal move" << std::endl;
+            }
 
-        if(a == 3){ //left
-            x2--;
-        }
-
-        if(a == 4){ //down
-            y2--;
-        }
 
         if(x2<0 || y2<0 || x2>=world->getWidth() || y2>=world->getHeight()){ return;}
 
@@ -221,6 +266,26 @@ void Controller::dead(int x, int y){
     this->alive = 0;
 }
 
+const QStringList &Controller::getCompleterList() const
+{
+    return completerList;
+}
+
+void Controller::setCompleterList(const QStringList &newCompleterList)
+{
+    completerList = newCompleterList;
+}
+
+const std::vector<QString> &Controller::getCommands() const
+{
+    return commands;
+}
+
+void Controller::setCommands(const std::vector<QString> &newCommands)
+{
+    commands = newCommands;
+}
+
 int Controller::getPoisoned() const{
     return poisoned;
 }
@@ -236,3 +301,4 @@ int Controller::getAlive() const{
 void Controller::setAlive(int newAlive){
     alive = newAlive;
 }
+
