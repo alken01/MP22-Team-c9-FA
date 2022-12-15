@@ -1,5 +1,4 @@
 #include "textview.h"
-#include "qscrollbar.h"
 #include "world.h"
 #include <iostream>
 
@@ -7,7 +6,7 @@ using namespace std;
 
 TextView::TextView(){
     //poison timer
-    timer.setInterval(1000);
+    timer.setInterval(500);
     toggle = 1;
     
     timer2.setInterval(1000);
@@ -104,7 +103,7 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
     }
     
     
-    this->textscene->addText(*stringWorld,QFont("SF Mono"));
+    this->textscene->addText(*stringWorld,QFont("Monospace"));
     textView->setScene(this->textscene);
     
     //poison timer
@@ -143,13 +142,15 @@ void TextView::movProtagonist(int x1, int y1, int x2, int y2,std::shared_ptr<Wor
     }
     
     this->textscene->clear();
-    this->textscene->addText(*stringWorld,QFont("SF Mono"));
+    this->textscene->addText(*stringWorld,QFont("Monospace"));
 }
 
 void TextView::changeSignAtCoord( unsigned long x,  unsigned long y, QChar input){
     qVec[y*2+1].replace(2+x*4, 1,input);
+    //cut view
     moveCamera();
     
+    //update display
     this->stringWorld = std::make_shared<QString>();
     for (int i = 0; i < qVecPlayer.size(); ++i) {
         stringWorld->append(qVecPlayer.at(i));
@@ -163,7 +164,7 @@ void TextView::updateView(){
 void TextView::protDead(int x, int y){
     changeSignAtCoord(x, y, 'D');
     this->textscene->clear();
-    this->textscene->addText(*stringWorld,QFont("SF Mono"));
+    this->textscene->addText(*stringWorld,QFont("Monospace"));
     
 }
 

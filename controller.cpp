@@ -10,13 +10,15 @@ Controller::Controller(std::shared_ptr<WorldModel> w,std::shared_ptr<GraphicalVi
     this->Qtext_view=std::make_shared<QGraphicsView>();
     this->Qgraphics_view=std::make_shared<QGraphicsView>();
 
-    //command list
+    //command list - add new commands here
     commands.push_back("up");
     commands.push_back("down");
     commands.push_back("left");
     commands.push_back("right");
     commands.push_back("goto x y");
     commands.push_back("help");
+
+
 
     //also create QStringlist for use in autofill and switch
     for(unsigned long i =0; i<commands.size(); i++){
@@ -116,9 +118,9 @@ void Controller::movePlayer(QString input){
         //folows order of commands added
         switch(completerList.indexOf(input)){
                 case 0: //up
-                    y2++; break;
-                case 1: //down
                     y2--; break;
+                case 1: //down
+                    y2++; break;
                 case 2: //left
                     x2--; break;
                 case 3: //right
@@ -182,7 +184,7 @@ int Controller::checkMove(int x, int y){
 
     //beaten enemy or used healthpack = -1 nothing happens
     if(test->getValue()==-1){
-        return 4; //is tilethis->textscene->addText(*stringWorld,QFont("Monospace"));
+        return 4; //
     }
 
     //WALL

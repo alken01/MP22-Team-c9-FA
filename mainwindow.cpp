@@ -136,6 +136,7 @@ void MainWindow::changeScene(){
         controller->getQgraphics_view().get()->show();
         controller->getQtext_view().get()->hide();
         ui->lineEdit->hide();
+        ui->textEdit_4->clear();
         viewStatus=1;
     }
 }
@@ -198,7 +199,14 @@ void MainWindow::pressEntered(){
         ui->textEdit_4->append(result);
     }
     else ui->textEdit_4->append("Unrecognized input - type 'help' for possible commands");
+
+    //clear input
     textInput->clear();
+
+    //update visualisations
+        health->setValue(this->controller->getWorld()->getProtagonist()->getHealth());
+        energy->setValue(this->controller->getWorld()->getProtagonist()->getEnergy());
+        ui->lcdNumber->display(controller->getPoisoned());
 }
 
 // should be in controller
@@ -251,10 +259,7 @@ void MainWindow::pressEntered(){
 //        this->textInput->clear();
 //    }
 
-//    //update visualisations
-//    health->setValue(this->controller->getWorld()->getProtagonist()->getHealth());
-//    energy->setValue(this->controller->getWorld()->getProtagonist()->getEnergy());
-//    ui->lcdNumber->display(controller->getPoisoned());
+//
 //}
 
 
