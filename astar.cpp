@@ -11,26 +11,17 @@ vector<pair<int, int> > astar(const vector< shared_ptr<Tile> >& world_grid, int 
     int ex = end.getXPos();
     int ey = end.getYPos();
 
-    cout << "Start: (" << sx << ", " << sy << ", " << start.getValue() << ")" << endl;
-    cout << "End: (" << ex << ", " << ey << ", " << end.getValue() << ")" << endl;
-    cout << "Rows/Y:\t" << rows << endl;
-    cout << "Cols/X:\t" << cols << endl;
-
-    //    if(sx < 0 || sx >= cols || sy < 0 || sy >= rows){
-    //        cout<< "Start value out of bounds"<<endl;
-    //        return {};
-    //    }
-    //    if(ex < 0 || ex >= cols || ey < 0 || ey >= rows){
-    //        cout<< "End value out of bounds"<<endl;
-    //        return {};
-    //    }
+    //    cout << "Start: (" << sx << ", " << sy << ", " << start.getValue() << ")" << endl;
+    //    cout << "End: (" << ex << ", " << ey << ", " << end.getValue() << ")" << endl;
+    //    cout << "Rows/Y:\t" << rows << endl;
+    //    cout << "Cols/X:\t" << cols << endl;
 
     vector<vector<float> > grid(cols, vector<float>(rows));
 
     // Set the grid elements
     for(int col = 0; col < cols; col++){
         for(int row = 0; row < rows; row++){
-            grid[col][row] = world_grid[row * cols + col]->getValue();
+            grid[col][row] = 1 - world_grid[row * cols + col]->getValue();
         }
     }
 
@@ -45,11 +36,7 @@ vector<pair<int, int> > astar(const vector< shared_ptr<Tile> >& world_grid, int 
     // Explore the four possible moves from the current position (right, left, up, down)
     vector<pair<int, int> > result = {};
 
-    // TODO: try how it looks with diagonal moves
-    // vector<pair<int, int> > moves = { {0, 1}, {0, -1}, {1, 0}, {-1, 0}, 
-    //                                  {-1, -1}, {1, 1}, {-1, 1}, {1, -1}  };
     vector<pair<int, int> > moves = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
-
 
     // While the priority queue is not empty
     while(!pq.empty()){
@@ -77,10 +64,10 @@ vector<pair<int, int> > astar(const vector< shared_ptr<Tile> >& world_grid, int 
 
             // Skip the move if the new position is outside the grid
             if(nx < 0 || nx >= rows || ny < 0 || ny >= cols) continue;
-            if(grid[nx][ny] > 1.1) continue;
-            if(grid[nx][ny] == 1.0) grid[nx][ny] = white_value;
+            //            if(grid[nx][ny] > INFINITY) continue;
+            //            if(grid[nx][ny] == 1.0) grid[nx][ny] = white_value;
 
-            // Update the minimum cost and the priority queue if the new position has a lower cost
+                        // Update the minimum cost and the priority queue if the new position has a lower cost
             if(dist[nx][ny] == -1 || dist[nx][ny] > dist[curr.x][curr.y] + grid[nx][ny]){
                 dist[nx][ny] = dist[curr.x][curr.y] + grid[nx][ny];
                 pq.push(Node(nx, ny, dist[nx][ny]));
