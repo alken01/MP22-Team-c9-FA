@@ -5,11 +5,14 @@
 #include "worldmodel.h"
 #include <QObject>
 #include <QWidget>
+#include <QTimer>
+#include "QTime"
+
 // should we namespace std; everything?
 using namespace std;
 class Controller {
 public:
-    Controller(std::shared_ptr<WorldModel> w, std::shared_ptr<GraphicalView> graphical_view, std::shared_ptr<TextView> text_view);
+    Controller(std::shared_ptr<WorldModel> w);
     void handleInput();
     void update();
     void autoPlay(); // implement a*
@@ -49,6 +52,9 @@ public:
 const QStringList &getMapList() const;
 void setMapList(const QStringList &newMapList);
 
+const QString &getTerminalOut() const;
+void setTerminalOut(const QString &newTerminalOut);
+
 public slots:
     void switchToGraphic();
     void switchToText();
@@ -57,6 +63,7 @@ public slots:
     void initWorlds();
     QString commandReceived(QString input);
     void changeMap(QString mapName);
+    void restart();
 
 
 private:
@@ -72,5 +79,11 @@ private:
     QStringList completerList;
     QStringList mapList;
     void printHelp();
+    QTimer delayTimer;
+    void fighting(int x);
+    int delaySwitch;
+    void resetDelay();
+    QString terminalOut;
+    std::shared_ptr<World> newMap;
 };
 #endif // CONTROLLER_H

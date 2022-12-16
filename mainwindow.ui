@@ -427,7 +427,7 @@ hr { height: 1px; border-width: 0; }
         <enum>Qt::WheelFocus</enum>
        </property>
        <property name="placeholderText">
-        <string>add commands here</string>
+        <string>add commands here - type &quot;help&quot; for info</string>
        </property>
       </widget>
      </item>

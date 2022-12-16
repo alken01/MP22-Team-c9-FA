@@ -22,6 +22,7 @@ public:
     void stopTimer();
     void healed();
     QChar grayscaleToASCII(float intensity);
+    void fighting();
 
 private:
  QVector<QString> qVec,qVecPlayer;

@@ -43,5 +43,6 @@ private:
     QProgressBar* health, * energy;
     int viewStatus;
     void mapChanged();
+    void getFeedback();
 };
 #endif // MAINWINDOW_H

@@ -146,6 +146,10 @@ void MainWindow::changeScene(){
 }
 
 void MainWindow::pressEntered(){
+    if(controller->getAlive()!=1){
+        ui->textEdit_4->setText("Player died - reselect map to restart");
+        return;
+    }
     QString input = this->textInput->text();
     //updatePath(input);
     QString result = controller->commandReceived(input);
@@ -162,11 +166,14 @@ void MainWindow::pressEntered(){
     //maybe need to change this back
     //needs to be fixed somehow anyway
     else if(!result.isNull() || input.left(4) == "goto"){
-        ui->textEdit_4->append(input);
+        ui->textEdit_4->append(result);
     } else ui->textEdit_4->append("Unrecognized input - type 'help' for possible commands");
 
     //clear input
     textInput->clear();
+
+    //getfeedback if textview
+    getFeedback();
 
     //update visualisations
     health->setValue(this->controller->getWorld()->getProtagonist()->getHealth());
@@ -187,6 +194,15 @@ void MainWindow::mapChanged(){
     health->setValue(this->controller->getWorld()->getProtagonist()->getHealth());
     energy->setValue(this->controller->getWorld()->getProtagonist()->getEnergy());
     ui->lcdNumber->display(controller->getPoisoned());
+    ui->textEdit_4->clear();
+}
+
+//get terminal message from controller
+void MainWindow::getFeedback(){
+    auto message = controller->getTerminalOut();
+    if(message.isNull()) return;
+    ui->textEdit_4->append(message);
+    controller->setTerminalOut(NULL);
 }
 
 

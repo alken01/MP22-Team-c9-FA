@@ -2,11 +2,11 @@
 #include <iostream>
 #include "astar.h"
 
-Controller::Controller(std::shared_ptr<WorldModel> w, std::shared_ptr<GraphicalView> g, std::shared_ptr<TextView> t) :
-    graphical_view(g), text_view(t){
+
+Controller::Controller(std::shared_ptr<WorldModel> w){
     this->world = w;
-    this->graphical_view = g;
-    this->text_view = t;
+    this->graphical_view = std::make_shared<GraphicalView>();;
+    this->text_view = std::make_shared<TextView>();
     this->Qtext_view = std::make_shared<QGraphicsView>();
     this->Qgraphics_view = std::make_shared<QGraphicsView>();
 
@@ -30,6 +30,8 @@ Controller::Controller(std::shared_ptr<WorldModel> w, std::shared_ptr<GraphicalV
     for(unsigned long i = 0; i < commands.size(); i++){
         completerList.append(commands.at(i));
     }
+
+    delayTimer.isSingleShot();
 }
 
 void Controller::handleInput(){}
@@ -45,16 +47,12 @@ void Controller::initWorlds(){
 
 void::Controller::changeMap(QString mapName){
     QString init_worldmap = ":/images/world_images/" + mapName + ".png";
-    auto test = std::make_shared<World>();
-    test->createWorld(init_worldmap, 100, 100, 0.5);
-    auto wm = std::make_shared<WorldModel>(test);
-    this->world->getProtagonist()->setHealth(100);
-    this->world->getProtagonist()->setEnergy(100);
+    newMap = std::make_shared<World>();
+    newMap->createWorld(init_worldmap, 100, 100, 0.5);
+    this->world = std::make_shared<WorldModel>(newMap);
     text_view->stopTimer();
     this->alive = 1;
     this->poisoned = 0;
-
-    this->world = wm;
     initWorlds();
 }
 
@@ -178,6 +176,14 @@ void Controller::movePlayer(QString input){
     else if(test == 0){
         std::cout.flush();
         std::cout << "got healt yay" << std::endl;
+    }
+
+    else if(test == -1){
+        std::cout.flush();
+        std::cout << "Lost the fight :(" << std::endl;
+        dead(x,y);
+        this->text_view->updateView();
+        return;
     }
 
     world->getProtagonist()->setXPos(x2);
@@ -337,6 +343,7 @@ int Controller::checkMove(int x, int y){
 
     //WALL
     if(test->getValue() == INFINITY){
+        terminalOut="You can't walk into a wall";
         return 3; //is wall
     }
 
@@ -350,7 +357,7 @@ int Controller::checkMove(int x, int y){
     if(test->getValue() <= 1 && test->getValue() >= 0){
         world->getProtagonist()->setEnergy(world->getProtagonist()->getEnergy() - test->getValue());
 
-        return 4; //is tilethis->textscene->addText(*stringWorld,QFont("Monospace"));
+        return 4;
     }
 
 
@@ -366,6 +373,9 @@ int Controller::checkMove(int x, int y){
             std::cout.flush();
             std::cout << "health added " << test->getValue() << std::endl;
 
+            terminalOut="health added:";
+            terminalOut.append(QString::number(test->getValue()));
+
             if(health + test->getValue() >= 100){
                 world->getProtagonist()->setHealth(100);
             } else world->getProtagonist()->setHealth(health + test->getValue());
@@ -380,8 +390,9 @@ int Controller::checkMove(int x, int y){
     //POISON ENEMY
     if(std::dynamic_pointer_cast<PEnemy>(test)){
 
-        std::cout.flush();
-        std::cout << "Poisoned for:" << test->getValue() << std::endl;
+        terminalOut="Poisoned for:";
+        terminalOut.append(QString::number(test->getValue()));
+        terminalOut.append(" steps");
 
         poisoned += test->getValue();
         world->getProtagonist()->setEnergy(100);
@@ -397,11 +408,20 @@ int Controller::checkMove(int x, int y){
     //NORMAL ENEMY
     if(std::dynamic_pointer_cast<Enemy>(test)){
 
-        std::cout.flush();
-        std::cout << "damage added " << test->getValue() << std::endl;
+        //fighting
+        fighting(1000);
+
+        terminalOut="Damage taken:";
+        terminalOut.append(QString::number(test->getValue()));
 
         //damage done
-        world->getProtagonist()->setHealth(world->getProtagonist()->getHealth() - test->getValue());
+        auto currentHealth=world->getProtagonist()->getHealth() - test->getValue();
+
+        if(currentHealth<0){ //lost fight
+            world->getProtagonist()->setHealth(0);
+            return -1;
+        }
+        world->getProtagonist()->setHealth(currentHealth);
         world->getProtagonist()->setEnergy(100);
         test->setValue(-1); //beaten
         return 1; //is normal enemy
@@ -410,9 +430,15 @@ int Controller::checkMove(int x, int y){
 }
 
 void Controller::dead(int x, int y){
+    terminalOut="Protagonist died :c";
     this->text_view->protDead(x, y);
     text_view->stopTimer();
     this->alive = 0;
+}
+
+void Controller::fighting(int x){
+    this->text_view->fighting();
+
 }
 
 const QStringList& Controller::getMapList() const{
@@ -453,5 +479,28 @@ int Controller::getAlive() const{
 
 void Controller::setAlive(int newAlive){
     alive = newAlive;
+}
+
+void Controller::resetDelay(){
+    delaySwitch=0;
+}
+
+const QString &Controller::getTerminalOut() const
+{
+    return terminalOut;
+}
+
+void Controller::setTerminalOut(const QString &newTerminalOut)
+{
+    terminalOut = newTerminalOut;
+}
+
+void Controller::restart() //not implemented yet
+{
+    world->getProtagonist()->setPos(5,5);
+    world->getProtagonist()->setHealth(100);
+    world->getProtagonist()->setEnergy(100);
+
+    //textview restart --> redraw only used healthpacks and enemies with random generated values
 }
 

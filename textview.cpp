@@ -102,13 +102,13 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
     }
     
     
-    this->textscene->addText(*stringWorld,QFont("SF Mono"));
+    this->textscene->addText(*stringWorld,QFont("Monospace"));
     textView->setScene(this->textscene);
     
     //poison timer
     connect(&timer,&QTimer::timeout,this,&TextView::togglePoisoned);
     
-    //health timer
+    //health timer + fighting
     connect(&timer2,&QTimer::timeout,this,&TextView::resetBg);
 }
 
@@ -142,7 +142,7 @@ void TextView::movProtagonist(int x1, int y1, int x2, int y2,std::shared_ptr<Wor
     }
     
     this->textscene->clear();
-    this->textscene->addText(*stringWorld,QFont("SF Mono"));
+    this->textscene->addText(*stringWorld,QFont("Monospace"));
 }
 
 void TextView::changeSignAtCoord( unsigned long x,  unsigned long y, QChar input){
@@ -162,10 +162,10 @@ void TextView::updateView(){
 }
 
 void TextView::protDead(int x, int y){
+    this->outputView->setBackgroundBrush(QColor("red"));
     changeSignAtCoord(x, y, 'D');
     this->textscene->clear();
-    this->textscene->addText(*stringWorld,QFont("SF Mono"));
-    
+    this->textscene->addText(*stringWorld,QFont("Monospace"));   
 }
 
 //code for poison flashing
@@ -225,4 +225,10 @@ void TextView::moveCamera(){
         temp.append("\n");
         qVecPlayer[i]=temp;
     }   
+}
+
+void TextView::fighting(){
+    timer2.stop();
+    this->textscene->setBackgroundBrush(QColor("orange"));
+    timer2.start();
 }
