@@ -1,11 +1,5 @@
-#include "QtWidgets/qgraphicsscene.h"
-#include "QtWidgets/qgraphicsview.h"
 #include "mainwindow.h"
-#include "world.h"
 #include "controller.h"
-#include "graphicalview.h"
-#include "textview.h"
-#include "astar.h"
 #include <iostream>
 #include <QApplication>
 #include <QWidget>
@@ -14,7 +8,7 @@
 #include <vector>
 #include <chrono> 
 #include "ImageWidget.h"
-#include "worldmodel.h"
+#include <memory>
 
 using namespace std;
 int main(int argc, char* argv[]){

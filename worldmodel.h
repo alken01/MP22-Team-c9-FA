@@ -8,7 +8,7 @@
 class WorldModel
 {
 public:
-  WorldModel(std::shared_ptr<World> w);
+  WorldModel(std::shared_ptr<World> w, int xEnemies);
 
   const std::vector<std::shared_ptr<Tile> >& getTiles() const;
   void setTiles(const std::vector<std::shared_ptr<Tile> >& newTiles);

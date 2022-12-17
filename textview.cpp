@@ -7,12 +7,10 @@ using namespace std;
 auto choose_font = QFont("SF Mono");
 
 TextView::TextView(){
-    //poison timer
-    timer.setInterval(500);
-    toggle = 1;
-    timer2.setInterval(1000);
-    timer2.isSingleShot();
 
+    //animation timers
+    timer2.isSingleShot();
+    this->textscene = new QGraphicsScene();
 }
 
 void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView> textView ){
@@ -22,13 +20,18 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
     startposX=w->getProtagonist()->getXPos();
     startposY=w->getProtagonist()->getYPos();
     this->world=w;
+    qVec.clear();
     std::cout.flush();
     std::cout << "height:" << this->height << "width:" << this->width << std::endl;
     auto enemies = w->getEnemies();
     auto healthPacks = w->getHealthPacks();
     auto protagonist = w->getProtagonist();
     auto tiles = w->getTiles();
-    this->textscene = new QGraphicsScene();
+    textscene->clear();
+    textscene->setBackgroundBrush(Qt::transparent);
+    timer.setInterval(2000);
+    timer2.setInterval(1000);
+
     //Qstring = stores a string of 16-bit QChars --> implicit sharing: reduce memory usage and to avoid the needless copying of data
     auto wi = QString("+"); //Create Qstring for width
     auto h = QString("|"); //Create Qstring for height
@@ -71,11 +74,20 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
             std::cout.flush();
             std::cout << "P enemy at Y:" << y << "X:"<< x <<std::endl;
         }
-        else {
-            changeSignAtCoord(x,y,'E');
-            std::cout << "Normal enemy at Y:" << y << "X:"<< x << std::endl;
+        else{
+            auto temp2=std::dynamic_pointer_cast<XEnemy>(enemies.at(i));
+
+            if(temp2 != nullptr){
+                changeSignAtCoord(x,y,'X');
+                std::cout.flush();
+                std::cout << "X enemy at Y:" << y << "X:"<< x <<"added" << std::endl;
+            }
+            else{
+                changeSignAtCoord(x,y,'E');
+                std::cout << "Normal enemy at Y:" << y << "X:"<< x <<"added" << std::endl;
+            }
         }
-    }
+     }
     
     //add health
     for (unsigned long i = 0; i < healthPacks.size(); ++i) {
@@ -108,7 +120,7 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
     textView->setScene(this->textscene);
     
     //poison timer
-    connect(&timer,&QTimer::timeout,this,&TextView::togglePoisoned);
+    connect(&timer,&QTimer::timeout,this,&TextView::activatePoisoned);
     
     //health timer + fighting
     connect(&timer2,&QTimer::timeout,this,&TextView::resetBg);
@@ -163,25 +175,12 @@ void TextView::updateView(){
 }
 
 void TextView::protDead(int x, int y){
-    this->outputView->setBackgroundBrush(QColor("red"));
     changeSignAtCoord(x, y, 'D');
     this->textscene->clear();
     this->textscene->addText(*stringWorld,choose_font);
 }
 
-//code for poison flashing
-void TextView::togglePoisoned(){
-    if(toggle == 1){
-        this->textscene->setBackgroundBrush(QColor("purple"));
-        toggle = 0;
-    } else{
-        resetBg();
-        toggle = 1;
-    }
-    timer.start();
-}
 
-//code for poison flashing
 void TextView::healed(){
     this->textscene->setBackgroundBrush(QColor("green"));
     timer2.start();
@@ -229,7 +228,12 @@ void TextView::moveCamera(){
 }
 
 void TextView::fighting(){
-    timer2.stop();
     this->textscene->setBackgroundBrush(QColor("orange"));
     timer2.start();
+}
+
+void TextView::activatePoisoned(){
+    this->textscene->setBackgroundBrush(QColor("purple"));
+    timer2.start();
+    timer.start();
 }

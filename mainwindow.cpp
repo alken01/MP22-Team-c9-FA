@@ -1,9 +1,6 @@
 #include "controller.h"
-#include "graphicalview.h"
 #include "mainwindow.h"
-#include "QtWidgets/qgraphicsscene.h"
 #include "QtWidgets/qgraphicsview.h"
-#include "textview.h"
 #include "ui_mainwindow.h"
 #include "world.h"
 #include <iostream>
@@ -19,10 +16,8 @@
 #include <QVBoxLayout>
 #include "controller.h"
 #include "world.h"
-#include "graphicalview.h"
-#include "textview.h"
 #include <QScrollBar>
-#include "astar.h"
+
 
 
 
@@ -72,7 +67,9 @@ MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> c)
                      Qt::QueuedConnection);
 
     //loading screen
-    ui->textEdit_5->hide();
+    ui->zoomSlider->hide();
+    ui->textEdit_11->hide();
+    ui->pushButton_2->hide();
 }
 
 
@@ -131,14 +128,18 @@ void MainWindow::initViews(){
 
 
 void MainWindow::changeScene(){
-    if(viewStatus == 1){
+    if(viewStatus == 1){ //textview
         controller->getQtext_view().get()->show();
         controller->getQgraphics_view().get()->hide();
         ui->lineEdit->show();
+        ui->zoomSlider->hide();
+        ui->textEdit_11->hide();
         viewStatus = 0;
-    } else{
+    } else{ //graphicsView
         controller->getQgraphics_view().get()->show();
         controller->getQtext_view().get()->hide();
+        ui->zoomSlider->show();
+        ui->textEdit_11->show();
         ui->lineEdit->hide();
         ui->textEdit_4->clear();
         viewStatus = 1;
@@ -147,7 +148,9 @@ void MainWindow::changeScene(){
 
 void MainWindow::pressEntered(){
     if(controller->getAlive()!=1){
-        ui->textEdit_4->setText("Player died - reselect map to restart");
+        ui->textEdit_4->setText("Player died - press restart button");
+        ui->pushButton->hide();
+        ui->pushButton_2->show();
         return;
     }
     QString input = this->textInput->text();
@@ -195,6 +198,7 @@ void MainWindow::mapChanged(){
     energy->setValue(this->controller->getWorld()->getProtagonist()->getEnergy());
     ui->lcdNumber->display(controller->getPoisoned());
     ui->textEdit_4->clear();
+    initViews();
 }
 
 //get terminal message from controller

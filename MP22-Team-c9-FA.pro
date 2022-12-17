@@ -15,7 +15,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     textview.cpp \
-    worldmodel.cpp
+    worldmodel.cpp \
+    xenemy.cpp
 
 
 HEADERS += \
@@ -30,7 +31,8 @@ HEADERS += \
     world.h \
     world_global.h \
     textview.h \
-    worldmodel.h
+    worldmodel.h \
+    xenemy.h
 
 FORMS += \
     mainwindow.ui
