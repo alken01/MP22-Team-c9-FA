@@ -274,6 +274,9 @@ void Controller::goToHealthpack(){
     int min_len = 2147483647;
     //find the path with the smallest length
     for(unsigned long i = 0; i < world->getHealthPacks().size(); ++i){
+        // cout<< "i: "<<i;
+        // cout<< "\tx: "<<world->getHealthPacks().at(i)->getXPos();
+        // cout<< "\ty: "<<world->getHealthPacks().at(i)->getYPos()<<endl;
         if(world->getHealthPacks().at(i)->getValue() == -1){
             continue;
         }
@@ -485,22 +488,19 @@ void Controller::resetDelay(){
     delaySwitch=0;
 }
 
-const QString &Controller::getTerminalOut() const
-{
+const QString &Controller::getTerminalOut() const{
     return terminalOut;
 }
 
-void Controller::setTerminalOut(const QString &newTerminalOut)
-{
+void Controller::setTerminalOut(const QString &newTerminalOut){
     terminalOut = newTerminalOut;
 }
 
-void Controller::restart() //not implemented yet
-{
-    world->getProtagonist()->setPos(5,5);
-    world->getProtagonist()->setHealth(100);
-    world->getProtagonist()->setEnergy(100);
+//void Controller::restart() //not implemented yet{
+//    world->getProtagonist()->setPos(5,5);
+//    world->getProtagonist()->setHealth(100);
+//    world->getProtagonist()->setEnergy(100);
 
-    //textview restart --> redraw only used healthpacks and enemies with random generated values
-}
+//    //textview restart --> redraw only used healthpacks and enemies with random generated values
+//}
 

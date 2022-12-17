@@ -21,7 +21,12 @@ vector<pair<int, int> > astar(const vector< shared_ptr<Tile> >& world_grid, int 
     // Set the grid elements
     for(int col = 0; col < cols; col++){
         for(int row = 0; row < rows; row++){
-            grid[col][row] = 1 - world_grid[row * cols + col]->getValue();
+            if(world_grid[row * cols + col]->getValue() == INFINITY) {
+                grid[col][row] = world_grid[row * cols + col]->getValue();
+            }
+            else{
+                grid[col][row] = 1+white_value - world_grid[row * cols + col]->getValue();
+            }
         }
     }
 
@@ -41,7 +46,7 @@ vector<pair<int, int> > astar(const vector< shared_ptr<Tile> >& world_grid, int 
     // While the priority queue is not empty
     while(!pq.empty()){
         //        cout<< "Searching..." << endl;
-                // Get the top node (node with the lowest cost) from the queue
+        // Get the top node (node with the lowest cost) from the queue
         Node curr = pq.top();
         pq.pop();
 
@@ -64,10 +69,9 @@ vector<pair<int, int> > astar(const vector< shared_ptr<Tile> >& world_grid, int 
 
             // Skip the move if the new position is outside the grid
             if(nx < 0 || nx >= rows || ny < 0 || ny >= cols) continue;
-            //            if(grid[nx][ny] > INFINITY) continue;
-            //            if(grid[nx][ny] == 1.0) grid[nx][ny] = white_value;
+            if(grid[nx][ny] == INFINITY) continue;
 
-                        // Update the minimum cost and the priority queue if the new position has a lower cost
+            // Update the minimum cost and the priority queue if the new position has a lower cost
             if(dist[nx][ny] == -1 || dist[nx][ny] > dist[curr.x][curr.y] + grid[nx][ny]){
                 dist[nx][ny] = dist[curr.x][curr.y] + grid[nx][ny];
                 pq.push(Node(nx, ny, dist[nx][ny]));
