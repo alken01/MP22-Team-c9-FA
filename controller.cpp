@@ -252,8 +252,8 @@ int Controller::goToHealthpack(){
     }
 
     if(min_cost>-1){
-       goToPath(health_pack);
-       return min_cost;
+        goToPath(health_pack);
+        return min_cost;
     }
     return -1;
 }
@@ -283,8 +283,8 @@ int Controller::goToEnemy(){
     }
 
     if(min_cost>0){
-       goToPath(enemy_path);
-       return min_cost;
+        goToPath(enemy_path);
+        return min_cost;
     }
     return -1;
 }
@@ -335,15 +335,24 @@ vector<QString> Controller::pathToText(vector<pair<int, int> > path){
 void Controller::autoPlay(){
     while(alive){
         if(goToEnemy()==-1){
-           goToHealthpack();
+            goToHealthpack();
         }
     }
 }
 
+bool Controller::enemiesLeft(){
+    for(auto enem: world.get()->getEnemies()){
+        if(enem->getValue()!=-1)
+            return true;
+    }
+    return false;
+}
+
 int Controller::checkMove(int x, int y){
-    if(world.get()->getEnemies().size()==0){
+    if(!enemiesLeft()){
         return 420;
     }
+
     auto test = world.get()->getWorldMap().at(x).at(y);
 
     //beaten enemy or used healthpack = -1 nothing happens
@@ -395,7 +404,7 @@ int Controller::checkMove(int x, int y){
 
             text_view->healed();
 
-            test->setValue(-1); //used
+            test.get()->setValue(-1); //beaten
             return 0; // is health
         }
     }
@@ -408,7 +417,7 @@ int Controller::checkMove(int x, int y){
 
         poisoned += test->getValue();
         world->getProtagonist()->setEnergy(100);
-        test->setValue(-1); //beaten
+        test.get()->setValue(-1); //beaten
 
         //start poison textview animation
         text_view->activatePoisoned();
@@ -417,7 +426,6 @@ int Controller::checkMove(int x, int y){
     }
 
     //XEnemy
-
     auto xEn = std::dynamic_pointer_cast<XEnemy>(test);
     if(xEn){
         fighting();
@@ -433,7 +441,6 @@ int Controller::checkMove(int x, int y){
             world->getProtagonist()->setEnergy(0);
             return -1;
         }
-
         world->getProtagonist()->setEnergy(energy);
 
         terminalOut.append(" health added:");
@@ -443,7 +450,6 @@ int Controller::checkMove(int x, int y){
         if(health + test->getValue() >= 100){
             world->getProtagonist()->setHealth(100);
         } else world->getProtagonist()->setHealth(health + test->getValue());
-
 
         return 6; //is X enemy
     }
@@ -467,7 +473,7 @@ int Controller::checkMove(int x, int y){
         }
         world->getProtagonist()->setHealth(currentHealth);
         world->getProtagonist()->setEnergy(100);
-        test->setValue(-1); //beaten
+        test.get()->setValue(-1); //beaten
         return 1; //is normal enemy
     }
     return -2;

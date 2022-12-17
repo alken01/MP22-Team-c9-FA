@@ -68,6 +68,7 @@ public slots:
     QString commandReceived(QString input);
     void changeMap(QString mapName);
     void restart();
+    bool enemiesLeft();
 
 
 private:
