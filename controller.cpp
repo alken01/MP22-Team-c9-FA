@@ -4,7 +4,7 @@
 
 
 Controller::Controller(){
-    QString init_worldmap = ":/images/world_images/worldmap.png";
+    QString init_worldmap = ":/images/world_images/maze1.png";
     newMap= std::make_shared<World>();
     newMap->createWorld(init_worldmap, 5, 5, 0.5);
     world = std::make_shared<WorldModel>(newMap,250);
@@ -13,6 +13,7 @@ Controller::Controller(){
     this->text_view = std::make_shared<TextView>();
     this->Qtext_view = std::make_shared<QGraphicsView>();
     this->Qgraphics_view = std::make_shared<QGraphicsView>();
+
 
     //command list - add new commands here
     commands.push_back("up");

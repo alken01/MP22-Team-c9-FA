@@ -19,6 +19,7 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
     startposX=w->getProtagonist()->getXPos();
     startposY=w->getProtagonist()->getYPos();
     this->world=w;
+    qVec.clear();
     std::cout.flush();
     std::cout << "height:" << this->height << "width:" << this->width << std::endl;
     auto enemies = w->getEnemies();
