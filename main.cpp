@@ -1,11 +1,5 @@
-#include "QtWidgets/qgraphicsscene.h"
-#include "QtWidgets/qgraphicsview.h"
 #include "mainwindow.h"
-#include "world.h"
 #include "controller.h"
-#include "graphicalview.h"
-#include "textview.h"
-#include "astar.h"
 #include <iostream>
 #include <QApplication>
 #include <QWidget>
@@ -14,17 +8,13 @@
 #include <vector>
 #include <chrono> 
 #include "ImageWidget.h"
-#include "worldmodel.h"
+#include <memory>
 
 using namespace std;
 int main(int argc, char* argv[]){
     // Generate the world
     QApplication app(argc, argv);
-    QString init_worldmap = ":/images/world_images/maze1.png";
-    auto test = std::make_shared<World>();
-    test->createWorld(init_worldmap, 100, 100, 0.5);
-    auto wm = std::make_shared<WorldModel>(test);
-    auto c = std::make_shared<Controller>(wm);
+    auto c = std::make_shared<Controller>();
     c->initWorlds();
     MainWindow w = MainWindow(NULL, c);
     w.initViews();
@@ -32,7 +22,7 @@ int main(int argc, char* argv[]){
     return app.exec();
 }
 
-//// main for astar testing
+// main for astar testing
 //int main(int argc, char* argv[]){
 //    // Generate the world
 //    QApplication app(argc, argv);

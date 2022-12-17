@@ -1,9 +1,6 @@
 #include "controller.h"
-#include "graphicalview.h"
 #include "mainwindow.h"
-#include "QtWidgets/qgraphicsscene.h"
 #include "QtWidgets/qgraphicsview.h"
-#include "textview.h"
 #include "ui_mainwindow.h"
 #include "world.h"
 #include <iostream>
@@ -19,10 +16,8 @@
 #include <QVBoxLayout>
 #include "controller.h"
 #include "world.h"
-#include "graphicalview.h"
-#include "textview.h"
 #include <QScrollBar>
-#include "astar.h"
+
 
 
 
@@ -195,6 +190,7 @@ void MainWindow::mapChanged(){
     energy->setValue(this->controller->getWorld()->getProtagonist()->getEnergy());
     ui->lcdNumber->display(controller->getPoisoned());
     ui->textEdit_4->clear();
+    initViews();
 }
 
 //get terminal message from controller

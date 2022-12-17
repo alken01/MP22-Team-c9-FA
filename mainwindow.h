@@ -11,6 +11,7 @@
 #include <QLCDNumber>
 #include <QStringList>
 #include <QCompleter>
+#include <memory>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

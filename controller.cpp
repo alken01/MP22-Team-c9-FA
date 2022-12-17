@@ -3,9 +3,13 @@
 #include "astar.h"
 
 
-Controller::Controller(std::shared_ptr<WorldModel> w){
-    this->world = w;
-    this->graphical_view = std::make_shared<GraphicalView>();;
+Controller::Controller(){
+    QString init_worldmap = ":/images/world_images/worldmap.png";
+    newMap= std::make_shared<World>();
+    newMap->createWorld(init_worldmap, 5, 5, 0.5);
+    world = std::make_shared<WorldModel>(newMap,250);
+
+    this->graphical_view = std::make_shared<GraphicalView>();
     this->text_view = std::make_shared<TextView>();
     this->Qtext_view = std::make_shared<QGraphicsView>();
     this->Qgraphics_view = std::make_shared<QGraphicsView>();
@@ -49,44 +53,12 @@ void::Controller::changeMap(QString mapName){
     QString init_worldmap = ":/images/world_images/" + mapName + ".png";
     newMap = std::make_shared<World>();
     newMap->createWorld(init_worldmap, 100, 100, 0.5);
-    this->world = std::make_shared<WorldModel>(newMap);
-    text_view->stopTimer();
+    this->world = std::make_shared<WorldModel>(newMap,10);
     this->alive = 1;
     this->poisoned = 0;
     initWorlds();
 }
 
-const std::shared_ptr<QGraphicsView>& Controller::getQgraphics_view() const{
-    return Qgraphics_view;
-}
-
-void Controller::setQgraphics_view(const std::shared_ptr<QGraphicsView>& newQgraphics_view){
-    Qgraphics_view = newQgraphics_view;
-}
-
-const std::shared_ptr<WorldModel>& Controller::getWorld() const{
-    return world;
-}
-
-void Controller::setWorld(const std::shared_ptr<WorldModel>& newWorld){
-    world = newWorld;
-}
-
-const std::shared_ptr<QGraphicsView>& Controller::getQtext_view() const{
-    return Qtext_view;
-}
-
-void Controller::setQtext_view(const std::shared_ptr<QGraphicsView>& newQtext_view){
-    Qtext_view = newQtext_view;
-}
-
-const std::shared_ptr<TextView>& Controller::getText_view() const{
-    return text_view;
-}
-
-void Controller::setText_view(const std::shared_ptr<TextView>& newText_view){
-    text_view = newText_view;
-}
 
 //checks input from text and gets matching unique command
 QString Controller::commandReceived(QString input){
@@ -184,6 +156,11 @@ void Controller::movePlayer(QString input){
         dead(x,y);
         this->text_view->updateView();
         return;
+    }
+
+    else if(test == 6){
+        std::cout.flush();
+        std::cout << "Encountered XEnemy" << std::endl;
     }
 
     world->getProtagonist()->setXPos(x2);
@@ -348,10 +325,13 @@ int Controller::checkMove(int x, int y){
     }
 
     //POISONED
-    if(poisoned > 0){
+    if(poisoned > 1){
         poisoned--; //one tile less poisoned
         world->getProtagonist()->setHealth(world->getProtagonist()->getHealth() - 1);
-    } else text_view->stopTimer(); //stop poison effect
+    } else {
+        text_view->stopTimer(); //stop poison effect
+        poisoned=0;
+    }
 
     //TILE + beaten enemy or used healthpack = -1
     if(test->getValue() <= 1 && test->getValue() >= 0){
@@ -390,6 +370,7 @@ int Controller::checkMove(int x, int y){
     //POISON ENEMY
     if(std::dynamic_pointer_cast<PEnemy>(test)){
 
+
         terminalOut="Poisoned for:";
         terminalOut.append(QString::number(test->getValue()));
         terminalOut.append(" steps");
@@ -399,17 +380,50 @@ int Controller::checkMove(int x, int y){
         test->setValue(-1); //beaten
 
         //start poison textview animation
-        text_view->startTimer();
+        text_view->activatePoisoned();
 
         return 2; //is poison enemy
     }
+
+    //XEnemy
+
+    auto xEn =std::dynamic_pointer_cast<XEnemy>(test);
+    if(xEn){
+        fighting();
+
+        auto energy=world->getProtagonist()->getEnergy();
+
+        terminalOut="Energy reduced:";
+        terminalOut.append(QString::number(xEn->getEnergy()));
+
+        energy=energy-xEn->getEnergy();
+
+        if(energy<=0){ //lost fight
+            world->getProtagonist()->setEnergy(0);
+            return -1;
+        }
+
+        world->getProtagonist()->setEnergy(energy);
+
+        terminalOut.append(" health added:");
+        terminalOut.append(QString::number(xEn->getValue()));
+
+        auto health = world->getProtagonist()->getHealth();
+        if(health + test->getValue() >= 100){
+            world->getProtagonist()->setHealth(100);
+        } else world->getProtagonist()->setHealth(health + test->getValue());
+
+
+        return 6; //is X enemy
+    }
+
 
 
     //NORMAL ENEMY
     if(std::dynamic_pointer_cast<Enemy>(test)){
 
         //fighting
-        fighting(1000);
+        fighting();
 
         terminalOut="Damage taken:";
         terminalOut.append(QString::number(test->getValue()));
@@ -417,7 +431,7 @@ int Controller::checkMove(int x, int y){
         //damage done
         auto currentHealth=world->getProtagonist()->getHealth() - test->getValue();
 
-        if(currentHealth<0){ //lost fight
+        if(currentHealth<=0){ //lost fight
             world->getProtagonist()->setHealth(0);
             return -1;
         }
@@ -436,7 +450,7 @@ void Controller::dead(int x, int y){
     this->alive = 0;
 }
 
-void Controller::fighting(int x){
+void Controller::fighting(){
     this->text_view->fighting();
 
 }
@@ -504,3 +518,34 @@ void Controller::restart() //not implemented yet
     //textview restart --> redraw only used healthpacks and enemies with random generated values
 }
 
+const std::shared_ptr<QGraphicsView>& Controller::getQgraphics_view() const{
+    return Qgraphics_view;
+}
+
+void Controller::setQgraphics_view(const std::shared_ptr<QGraphicsView>& newQgraphics_view){
+    Qgraphics_view = newQgraphics_view;
+}
+
+const std::shared_ptr<WorldModel>& Controller::getWorld() const{
+    return world;
+}
+
+void Controller::setWorld(const std::shared_ptr<WorldModel>& newWorld){
+    world = newWorld;
+}
+
+const std::shared_ptr<QGraphicsView>& Controller::getQtext_view() const{
+    return Qtext_view;
+}
+
+void Controller::setQtext_view(const std::shared_ptr<QGraphicsView>& newQtext_view){
+    Qtext_view = newQtext_view;
+}
+
+const std::shared_ptr<TextView>& Controller::getText_view() const{
+    return text_view;
+}
+
+void Controller::setText_view(const std::shared_ptr<TextView>& newText_view){
+    text_view = newText_view;
+}

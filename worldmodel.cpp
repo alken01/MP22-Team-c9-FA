@@ -1,7 +1,8 @@
 #include "worldmodel.h"
+#include "xenemy.h"
 #include <iostream>
 
-WorldModel::WorldModel(std::shared_ptr<World> w){
+WorldModel::WorldModel(std::shared_ptr<World> w, int xEnemies){
     this->width = w->getCols();
     this->height = w->getRows();
     auto enemyUnique = w->getEnemies();
@@ -13,6 +14,19 @@ WorldModel::WorldModel(std::shared_ptr<World> w){
     std::move(enemyUnique.begin(), enemyUnique.end(), std::back_inserter(this->enemies));
     std::move(healthUnique.begin(), healthUnique.end(), std::back_inserter(this->healthPacks));
     std::move(tilesUnique.begin(), tilesUnique.end(), std::back_inserter(this->tiles));
+
+    //add X enemies
+    for (unsigned long i = 0; i <enemies.size(); ++i) {
+        unsigned long x = enemies.at(i)->getXPos();
+        unsigned long y = enemies.at(i)->getYPos();
+
+        //if normal enemy add x Xtype enemies
+        if(!std::dynamic_pointer_cast<PEnemy>(enemies.at(i)) && xEnemies>0){
+                auto xEnemy = std::make_shared<XEnemy>(x,y,enemies.at(i)->getValue());
+                enemies.at(i)=xEnemy;
+                xEnemies--;
+            }
+    }
 
 
     //initialise 2D array of map tiles

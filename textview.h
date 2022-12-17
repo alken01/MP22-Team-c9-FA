@@ -2,6 +2,7 @@
 #define TEXTVIEW_H
 #include "view.h"
 #include "world.h"
+#include "xenemy.h"
 #include "worldmodel.h"
 #include <QTimer>
 

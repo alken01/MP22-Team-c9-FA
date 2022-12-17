@@ -7,12 +7,13 @@
 #include <QWidget>
 #include <QTimer>
 #include "QTime"
+#include <memory>
 
 // should we namespace std; everything?
 using namespace std;
 class Controller {
 public:
-    Controller(std::shared_ptr<WorldModel> w);
+    Controller();
     void handleInput();
     void update();
     void autoPlay(); // implement a*
@@ -80,10 +81,11 @@ private:
     QStringList mapList;
     void printHelp();
     QTimer delayTimer;
-    void fighting(int x);
+    void fighting();
     int delaySwitch;
     void resetDelay();
     QString terminalOut;
     std::shared_ptr<World> newMap;
+
 };
 #endif // CONTROLLER_H
