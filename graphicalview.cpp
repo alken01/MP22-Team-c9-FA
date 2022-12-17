@@ -12,11 +12,11 @@ GraphicalView::GraphicalView(){
 }
 
 void GraphicalView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView> graphicsView){
-    this->height=w->getHeight();
-    this->width=w->getWidth();
-    startposX=w->getProtagonist()->getXPos();
-    startposY=w->getProtagonist()->getYPos();
-    this->world=w;
+    this->height = w->getHeight();
+    this->width = w->getWidth();
+    startposX = w->getProtagonist()->getXPos();
+    startposY = w->getProtagonist()->getYPos();
+    this->world = w;
     std::cout.flush();
     std::cout << "height:" << this->height << "width:" << this->width << std::endl;
     auto enemies = w->getEnemies();
@@ -25,13 +25,13 @@ void GraphicalView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphic
     auto tiles = w->getTiles();
 
     this->graphicsscene = new QGraphicsScene;
-//    graphicsscene->addRect(QRect(0, 0, height, width));
+    //    graphicsscene->addRect(QRect(0, 0, height, width));
     auto scene = std::make_shared<QGraphicsScene>();
     graphicsView->setScene(scene.get());
 
     auto proxy = std::make_shared<QGraphicsProxyWidget>();
     auto imageWidget = new ImageWidget();
-    QString init_worldmap = ":/images/world_images/maze1.png";
+    QString init_worldmap = ":/images/world_images/worldmap.png";
     imageWidget->setImage(QPixmap(init_worldmap));
     proxy->setWidget(imageWidget);
 

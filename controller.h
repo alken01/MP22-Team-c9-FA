@@ -46,25 +46,25 @@ public:
 
 
     void getPath(int x, int y);
-    void goToEnemy();
-    void goToHealthpack();
+    int goToEnemy();
+    int goToHealthpack();
     void gotoHelper(QString input);
     vector<QString> pathToText(vector<pair<int, int> > path);
     void goToPath(vector<pair<int, int> > path);
     float pathCost(vector<pair<int, int> > path);
 
-const QStringList &getMapList() const;
-void setMapList(const QStringList &newMapList);
+    const QStringList& getMapList() const;
+    void setMapList(const QStringList& newMapList);
 
-const QString &getTerminalOut() const;
-void setTerminalOut(const QString &newTerminalOut);
+    const QString& getTerminalOut() const;
+    void setTerminalOut(const QString& newTerminalOut);
 
 public slots:
     void switchToGraphic();
     void switchToText();
     void movePlayer(QString input);
     void switchViews();
-    void initWorlds();
+    void initWorlds(QString init_worldmap);
     QString commandReceived(QString input);
     void changeMap(QString mapName);
     void restart();

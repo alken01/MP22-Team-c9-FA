@@ -63,8 +63,8 @@ MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> c)
 
     //empty line edit after autocomplete
     QObject::connect(completer, SIGNAL(activated(const QString&)),
-                     ui->lineEdit, SLOT(clear()),
-                     Qt::QueuedConnection);
+        ui->lineEdit, SLOT(clear()),
+        Qt::QueuedConnection);
 
     //loading screen
     ui->zoomSlider->hide();
@@ -147,7 +147,7 @@ void MainWindow::changeScene(){
 }
 
 void MainWindow::pressEntered(){
-    if(controller->getAlive()!=1){
+    if(controller->getAlive() != 1){
         ui->textEdit_4->setText("Player died - press restart button");
         ui->pushButton->hide();
         ui->pushButton_2->show();
@@ -208,7 +208,3 @@ void MainWindow::getFeedback(){
     ui->textEdit_4->append(message);
     controller->setTerminalOut(NULL);
 }
-
-
-
-

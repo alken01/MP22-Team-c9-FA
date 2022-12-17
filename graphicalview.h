@@ -20,7 +20,7 @@ private:
     QGraphicsScene* graphicsscene;
     std::shared_ptr<QGraphicsPixmapItem> worldPix;
 
-    QVector<QString> qVec,qVecPlayer;
+    QVector<QString> qVec, qVecPlayer;
     std::shared_ptr<QString> playerString;
     std::shared_ptr<QGraphicsView> outputView;
     int width;
@@ -29,7 +29,7 @@ private:
     int renderWidth, renderHeight;
     int xRatio;
     int yRatio;
-    int startposX,startposY;
+    int startposX, startposY;
 };
 
 #endif // GRAPHICALVIEW_H
