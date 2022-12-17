@@ -44,11 +44,14 @@ public:
     const QStringList& getCompleterList() const;
     void setCompleterList(const QStringList& newCompleterList);
 
-    void goto_helper(QString input);
-    void goToPath(int x, int y);
+
+    void getPath(int x, int y);
     void goToEnemy();
     void goToHealthpack();
+    void gotoHelper(QString input);
     vector<QString> pathToText(vector<pair<int, int> > path);
+    void goToPath(vector<pair<int, int> > path);
+    float pathCost(vector<pair<int, int> > path);
 
 const QStringList &getMapList() const;
 void setMapList(const QStringList &newMapList);

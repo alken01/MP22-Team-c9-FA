@@ -11,21 +11,14 @@ vector<pair<int, int> > astar(const vector< shared_ptr<Tile> >& world_grid, int 
     int ex = end.getXPos();
     int ey = end.getYPos();
 
-    //    cout << "Start: (" << sx << ", " << sy << ", " << start.getValue() << ")" << endl;
-    //    cout << "End: (" << ex << ", " << ey << ", " << end.getValue() << ")" << endl;
-    //    cout << "Rows/Y:\t" << rows << endl;
-    //    cout << "Cols/X:\t" << cols << endl;
-
     vector<vector<float> > grid(cols, vector<float>(rows));
 
     // Set the grid elements
     for(int col = 0; col < cols; col++){
         for(int row = 0; row < rows; row++){
-            if(world_grid[row * cols + col]->getValue() == INFINITY) {
-                grid[col][row] = world_grid[row * cols + col]->getValue();
-            }
-            else{
-                grid[col][row] = 1+white_value - world_grid[row * cols + col]->getValue();
+            grid[col][row] = world_grid[row * cols + col]->getValue();
+            if(world_grid[row * cols + col]->getValue() != INFINITY) {
+                grid[col][row] = 1+white_value - grid[col][row]; //if it is not infinte, flip the value around, whiter tiles << darker tiles
             }
         }
     }
@@ -45,7 +38,6 @@ vector<pair<int, int> > astar(const vector< shared_ptr<Tile> >& world_grid, int 
 
     // While the priority queue is not empty
     while(!pq.empty()){
-        //        cout<< "Searching..." << endl;
         // Get the top node (node with the lowest cost) from the queue
         Node curr = pq.top();
         pq.pop();
@@ -82,6 +74,5 @@ vector<pair<int, int> > astar(const vector< shared_ptr<Tile> >& world_grid, int 
 
     // If we reach here, it means that there is no path from the start position to the end position
     if(result.size() == 0) cout << "No path found" << endl;
-
     return result;
 }

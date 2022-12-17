@@ -68,8 +68,7 @@ QString Controller::commandReceived(QString input){
 
     if(input.size() >= 4){
         if(input.left(4) == "goto"){
-            cout << "yes" << endl;
-            goto_helper(input);
+            gotoHelper(input);
             return NULL;
         }
     }
@@ -148,7 +147,7 @@ void Controller::movePlayer(QString input){
 
     else if(test == 0){
         std::cout.flush();
-        std::cout << "got healt yay" << std::endl;
+        std::cout << "got health yay" << std::endl;
     }
 
     else if(test == -1){
@@ -182,7 +181,7 @@ void Controller::movePlayer(QString input){
 }
 
 
-void Controller::goto_helper(QString input){
+void Controller::gotoHelper(QString input){
     QStringList strList = input.split(" ");
 
     QString strX = strList.last();  // gets the last substring
@@ -190,8 +189,7 @@ void Controller::goto_helper(QString input){
     int x = strX.toInt(&ok);        // convert the QString to an int, store the result in x
 
     if(!ok){
-
-        if(strX == "hp"){
+        if(strX == "hp" || strX == "healthpack"){
             goToHealthpack();
             return;
         } else if(strX == "enemy"){
@@ -212,36 +210,16 @@ void Controller::goto_helper(QString input){
         return;
     }
     //call the helper function
-    goToPath(x, y);
+    getPath(x, y);
 }
 
-void Controller::goToEnemy(){
-    auto world = this->getWorld();
-    Tile start(world->getProtagonist()->getXPos(), world->getProtagonist()->getYPos(), 0.0);
-    vector<pair<int, int> > enemy_path = {};
-    //max int value, yeah not the most elegant :(
-    int min_len = 2147483647;
-    //find the path with the smallest length
-    for(unsigned long i = 0; i < world->getEnemies().size(); ++i){
-        if(world->getEnemies().at(i)->getValue() == -1){
-            continue;
-        }
-        int x = world->getEnemies().at(i)->getXPos();
-        int y = world->getEnemies().at(i)->getYPos();
-        Tile end(x, y, 0.0);
-        vector<pair<int, int> > path = astar(world->getTiles(), world->getHeight(), world->getWidth(), start, end, 0.1);
-        if(path.size() < min_len){
-            enemy_path = path;
-        }
+
+float Controller::pathCost(vector<pair<int, int> > path){
+    float sum = 0.0;
+    for (const auto& elem : path) {
+        sum += world->getTileValue(elem.first,elem.second);
     }
-    //didnt find healthpacks
-    if(enemy_path.empty()){
-        return;
-    }
-    vector<QString> textPath = pathToText(enemy_path);
-    for(const auto& input : textPath){
-        movePlayer(input);
-    }
+    return sum;
 }
 
 void Controller::goToHealthpack(){
@@ -249,39 +227,58 @@ void Controller::goToHealthpack(){
     Tile start(world->getProtagonist()->getXPos(), world->getProtagonist()->getYPos(), 0.0);
     vector<pair<int, int> > health_pack = {};
     //max int value, yeah not the most elegant :(
-    int min_len = 2147483647;
+    float min_cost = 2147483647.0;
     //find the path with the smallest length
     for(unsigned long i = 0; i < world->getHealthPacks().size(); ++i){
-        // cout<< "i: "<<i;
-        // cout<< "\tx: "<<world->getHealthPacks().at(i)->getXPos();
-        // cout<< "\ty: "<<world->getHealthPacks().at(i)->getYPos()<<endl;
-        if(world->getHealthPacks().at(i)->getValue() == -1){
-            continue;
-        }
+        if(world->getHealthPacks().at(i)->getValue() == -1)continue;
+
         int x = world->getHealthPacks().at(i)->getXPos();
         int y = world->getHealthPacks().at(i)->getYPos();
         Tile end(x, y, 0.0);
         vector<pair<int, int> > path = astar(world->getTiles(), world->getHeight(), world->getWidth(), start, end, 0.1);
-        if(path.size() < min_len){
+        if(pathCost(path) < min_cost){
             health_pack = path;
         }
     }
-    //didnt find healthpacks
-    if(health_pack.empty()){
-        return;
-    }
 
-    vector<QString> textPath = pathToText(health_pack);
-    for(const auto& input : textPath){
-        movePlayer(input);
-    }
+    goToPath(health_pack);
 }
 
-void Controller::goToPath(int x, int y){
+void Controller::goToEnemy(){
+    auto world = this->getWorld();
+    Tile start(world->getProtagonist()->getXPos(), world->getProtagonist()->getYPos(), 0.0);
+    vector<pair<int, int> > enemy_path = {};
+    //max int value, yeah not the most elegant :(
+    float min_cost = 2147483647.0;
+    //find the path with the smallest length
+    for(unsigned long i = 0; i < world->getEnemies().size(); ++i){
+        if(world->getEnemies().at(i)->getValue() == -1){
+            continue;
+        }
+        cout<< world->getEnemies().at(i)->getValue()<<endl;
+        int x = world->getEnemies().at(i)->getXPos();
+        int y = world->getEnemies().at(i)->getYPos();
+        Tile end(x, y, 0.0);
+        vector<pair<int, int> > path = astar(world->getTiles(), world->getHeight(), world->getWidth(), start, end, 0.1);
+        if(pathCost(path) < min_cost){
+            enemy_path = path;
+        }
+    }
+
+    goToPath(enemy_path);
+}
+
+
+void Controller::getPath(int x, int y){
     auto w = this->getWorld();
     Tile start(w->getProtagonist()->getXPos(), w->getProtagonist()->getYPos(), 0.0);
     Tile end(x, y, 0.0);
     vector<pair<int, int> > path = astar(w->getTiles(), w->getHeight(), w->getWidth(), start, end, 0.1);
+    goToPath(path);
+}
+
+void Controller::goToPath(vector<pair<int, int> > path){
+    if(path.empty()) return;
     vector<QString> textPath = pathToText(path);
     for(const auto& input : textPath){
         movePlayer(input);
