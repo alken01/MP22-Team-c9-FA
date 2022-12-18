@@ -2,37 +2,46 @@
 #include "world.h"
 #include <iostream>
 
-using namespace std;
 
-auto choose_font = QFont("SF Mono");
+auto choose_font = QFont("Monospace");
 
 TextView::TextView(){
 
     //animation timers
     timer2.isSingleShot();
-    this->textscene = new QGraphicsScene();
+    textscene = new QGraphicsScene();
 }
 
-void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView> textView ){
-    this->height=w->getHeight();
-    this->width=w->getWidth();
-    this->outputView=textView;
-    startposX=w->getProtagonist()->getXPos();
-    startposY=w->getProtagonist()->getYPos();
-    this->world=w;
-    qVec.clear();
-    std::cout.flush();
-    std::cout << "height:" << this->height << "width:" << this->width << std::endl;
+void TextView::draw(shared_ptr<WorldModel> w, shared_ptr<QGraphicsView> textView ){
+    world=w;
+    height=w->getHeight();
+    width=w->getWidth();
     auto enemies = w->getEnemies();
     auto healthPacks = w->getHealthPacks();
     auto protagonist = w->getProtagonist();
     auto tiles = w->getTiles();
+
+    outputView=textView;
+
+    startposX=w->getProtagonist()->getXPos();
+    startposY=w->getProtagonist()->getYPos();
+
     textscene->clear();
     textscene->setBackgroundBrush(Qt::transparent);
+
+    //timers for animations
     timer.setInterval(2000);
     timer2.setInterval(1000);
 
-    //Qstring = stores a string of 16-bit QChars --> implicit sharing: reduce memory usage and to avoid the needless copying of data
+    //poison timer
+    connect(&timer,&QTimer::timeout,this,&TextView::activatePoisoned);
+
+    //health timer + fighting
+    connect(&timer2,&QTimer::timeout,this,&TextView::resetBg);
+
+    qVec.clear();
+
+    //Qstring = stores a string of 16-bit QChars
     auto wi = QString("+"); //Create Qstring for width
     auto h = QString("|"); //Create Qstring for height
     
@@ -67,24 +76,24 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
         unsigned long x = enemies.at(i)->getXPos();
         unsigned long y = enemies.at(i)->getYPos();
         
-        auto temp=std::dynamic_pointer_cast<PEnemy>(enemies.at(i));
+        auto temp=dynamic_pointer_cast<PEnemy>(enemies.at(i));
         
         if(temp != nullptr){
             changeSignAtCoord(x,y,'P');
-            std::cout.flush();
-            std::cout << "P enemy at Y:" << y << "X:"<< x <<std::endl;
+            cout.flush();
+            cout << "P enemy at Y:" << y << "X:"<< x <<endl;
         }
         else{
-            auto temp2=std::dynamic_pointer_cast<XEnemy>(enemies.at(i));
+            auto temp2=dynamic_pointer_cast<XEnemy>(enemies.at(i));
 
             if(temp2 != nullptr){
                 changeSignAtCoord(x,y,'X');
-                std::cout.flush();
-                std::cout << "X enemy at Y:" << y << "X:"<< x <<"added" << std::endl;
+                cout.flush();
+                cout << "X enemy at Y:" << y << "X:"<< x <<"added" << endl;
             }
             else{
                 changeSignAtCoord(x,y,'E');
-                std::cout << "Normal enemy at Y:" << y << "X:"<< x <<"added" << std::endl;
+                cout << "Normal enemy at Y:" << y << "X:"<< x <<"added" << endl;
             }
         }
      }
@@ -94,8 +103,8 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
         int x =healthPacks.at(i)->getXPos();
         int y =healthPacks.at(i)->getYPos();
         changeSignAtCoord(x,y,'H');
-        std::cout.flush();
-        std::cout << "Health added at Y:" << y << "X:"<< x << std::endl;
+        cout.flush();
+        cout << "Health added at Y:" << y << "X:"<< x << endl;
         
     }
     
@@ -110,29 +119,23 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
     
     
     //couldn't make newline characters work when printing text seperately --> combine all first into single string
-    this->stringWorld = std::make_shared<QString>();
+    stringWorld = make_shared<QString>();
     for (int i = 0; i < qVecPlayer.size(); ++i) {
         stringWorld->append(qVecPlayer.at(i));
     }
-    
-    
-    this->textscene->addText(*stringWorld,choose_font);
-    textView->setScene(this->textscene);
-    
-    //poison timer
-    connect(&timer,&QTimer::timeout,this,&TextView::activatePoisoned);
-    
-    //health timer + fighting
-    connect(&timer2,&QTimer::timeout,this,&TextView::resetBg);
+     
+    textscene->addText(*stringWorld,choose_font);
+    textView->setScene(textscene);
 }
 
+//add special characters to show greyscale
 QChar TextView::grayscaleToASCII(float intensity){
     if(intensity == INFINITY)
         return QChar('@');
     if(intensity >0.5)
         return QChar(' ');
 
-    std::vector<char> characters = {'.',':','-','=','+','*','#','%'};
+    vector<char> characters = {'.',':','-','=','+','*','#','%'};
     // scale the intensity value to the range of the character set and round it to the nearest index
     //cout<< "intesity"<<intensity<<endl;
     int index = round((intensity+0.49)* (characters.size() - 1));
@@ -142,20 +145,20 @@ QChar TextView::grayscaleToASCII(float intensity){
 
 
 // This code will be used in controller / changed so it gets input from controller
-void TextView::movProtagonist(int x1, int y1, int x2, int y2,std::shared_ptr<WorldModel> w){
+void TextView::movProtagonist(int x1, int y1, int x2, int y2,shared_ptr<WorldModel> w){
     int i = y1 * w->getWidth()+ x1;
     auto tiles = w->getTiles();
     changeSignAtCoord(x1,y1,grayscaleToASCII(tiles.at(i)->getValue()));
     changeSignAtCoord(x2,y2,'$');
     moveCamera();
     
-    this->stringWorld = std::make_shared<QString>();
+    stringWorld = make_shared<QString>();
     for (int i = 0; i < qVecPlayer.size(); ++i) {
         stringWorld->append(qVecPlayer.at(i));
     }
     
-    this->textscene->clear();
-    this->textscene->addText(*stringWorld,choose_font);
+    textscene->clear();
+    textscene->addText(*stringWorld,choose_font);
 }
 
 void TextView::changeSignAtCoord( unsigned long x,  unsigned long y, QChar input){
@@ -164,30 +167,30 @@ void TextView::changeSignAtCoord( unsigned long x,  unsigned long y, QChar input
     moveCamera();
     
     //update display
-    this->stringWorld = std::make_shared<QString>();
+    stringWorld = make_shared<QString>();
     for (int i = 0; i < qVecPlayer.size(); ++i) {
         stringWorld->append(qVecPlayer.at(i));
     }
 }
 
 void TextView::updateView(){
-    this->outputView->scene()->update();
+    outputView->scene()->update();
 }
 
 void TextView::protDead(int x, int y){
     changeSignAtCoord(x, y, 'D');
-    this->textscene->clear();
-    this->textscene->addText(*stringWorld,choose_font);
+    textscene->clear();
+    textscene->addText(*stringWorld,choose_font);
 }
 
 
 void TextView::healed(){
-    this->textscene->setBackgroundBrush(QColor("green"));
+    textscene->setBackgroundBrush(QColor("green"));
     timer2.start();
 }
 
 void TextView::resetBg(){
-    this->textscene->setBackgroundBrush(Qt::transparent);
+    textscene->setBackgroundBrush(Qt::transparent);
 }
 
 
@@ -228,12 +231,12 @@ void TextView::moveCamera(){
 }
 
 void TextView::fighting(){
-    this->textscene->setBackgroundBrush(QColor("orange"));
+    textscene->setBackgroundBrush(QColor("orange"));
     timer2.start();
 }
 
 void TextView::activatePoisoned(){
-    this->textscene->setBackgroundBrush(QColor("purple"));
+    textscene->setBackgroundBrush(QColor("purple"));
     timer2.start();
     timer.start();
 }

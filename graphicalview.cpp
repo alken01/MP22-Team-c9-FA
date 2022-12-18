@@ -12,19 +12,17 @@ GraphicalView::GraphicalView(){
 }
 
 void GraphicalView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView> graphicsView){
-    this->height = w->getHeight();
-    this->width = w->getWidth();
+    height = w->getHeight();
+    width = w->getWidth();
     startposX = w->getProtagonist()->getXPos();
     startposY = w->getProtagonist()->getYPos();
-    this->world = w;
-    std::cout.flush();
-    std::cout << "height:" << this->height << "width:" << this->width << std::endl;
+    world = w;
     auto enemies = w->getEnemies();
     auto healthPacks = w->getHealthPacks();
     auto protagonist = w->getProtagonist();
     auto tiles = w->getTiles();
 
-    this->graphicsscene = new QGraphicsScene;
+    graphicsscene = new QGraphicsScene;
     //    graphicsscene->addRect(QRect(0, 0, height, width));
     auto scene = std::make_shared<QGraphicsScene>();
     graphicsView->setScene(scene.get());

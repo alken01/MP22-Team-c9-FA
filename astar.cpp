@@ -1,6 +1,5 @@
 #include "astar.h"
 #include <iostream>
-#include "controller.h"
 #include "worldmodel.h"
 
 // A* search function that returns a path to the end position from the start position

@@ -1,32 +1,12 @@
 #include "controller.h"
 #include "mainwindow.h"
-#include "QtWidgets/qgraphicsview.h"
-#include "ui_mainwindow.h"
-#include "world.h"
-#include <iostream>
-#include <QApplication>
-#include <QGraphicsRectItem>
-#include <QGraphicsScene>
-#include <QPainter>
-#include <QPixmap>
-#include <QPushButton>
-#include <Qt>
-#include <QtGui>
-#include <QTimer>
-#include <QVBoxLayout>
-#include "controller.h"
-#include "world.h"
-#include <QScrollBar>
-
-
-
 
 MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> c)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow){
     ui->setupUi(this);
 
-    this->controller = c;
+    controller = c;
 
     // Create a text input field
     textInput = ui->lineEdit;
@@ -168,7 +148,7 @@ void MainWindow::pressEntered(){
         ui->pushButton_2->show();
         return;
     }
-    QString input = this->textInput->text();
+    QString input = textInput->text();
     //updatePath(input);
     QString result = controller->commandReceived(input);
     if(result == "help"){
@@ -195,8 +175,8 @@ void MainWindow::pressEntered(){
     getFeedback();
 
     //update visualisations
-    health->setValue(this->controller->getWorld()->getProtagonist()->getHealth());
-    energy->setValue(this->controller->getWorld()->getProtagonist()->getEnergy());
+    health->setValue(controller->getWorld()->getProtagonist()->getHealth());
+    energy->setValue(controller->getWorld()->getProtagonist()->getEnergy());
     ui->lcdNumber->display(controller->getPoisoned());
 }
 void MainWindow::textEntered(){
@@ -204,14 +184,14 @@ void MainWindow::textEntered(){
 }
 
 void MainWindow::setController(std::shared_ptr<Controller>& c){
-    this->controller = c;
+    controller = c;
 }
 
 void MainWindow::mapChanged(){
     controller->changeMap(ui->comboBox->currentText());
     //update visualisations
-    health->setValue(this->controller->getWorld()->getProtagonist()->getHealth());
-    energy->setValue(this->controller->getWorld()->getProtagonist()->getEnergy());
+    health->setValue(controller->getWorld()->getProtagonist()->getHealth());
+    energy->setValue(controller->getWorld()->getProtagonist()->getEnergy());
     ui->lcdNumber->display(controller->getPoisoned());
     ui->textEdit_4->clear();
     ui->pushButton_2->hide();

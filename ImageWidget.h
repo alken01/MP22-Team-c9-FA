@@ -5,6 +5,7 @@
 #include <QKeyEvent>
 #include <iostream>
 #include <vector>
+using namespace std;
 
 // Custom widget for displaying the image and path
 class ImageWidget: public QWidget
@@ -21,7 +22,7 @@ public:
         update();
     }
 
-    void setPath(const std::vector<std::pair<int, int>>& path){
+    void setPath(const vector<pair<int, int>>& path){
         this->path = path;
         update();
     }
@@ -49,7 +50,7 @@ protected:
         zoomFactor += numSteps * 0.1;
 
         // Clamp the zoom factor to the range [1, 2]
-        zoomFactor = std::max(1.0, std::min(zoomFactor, 5.0));
+        zoomFactor = max(1.0, min(zoomFactor, 5.0));
 
         // Update the scaled image
         scaledImage = image.scaled(zoomFactor * image.width(), zoomFactor * image.height(), Qt::KeepAspectRatio);
@@ -104,7 +105,7 @@ protected:
 private:
     QPixmap image;
     QPixmap scaledImage;
-    std::vector<std::pair<int, int>> path;
+    vector<pair<int, int>> path;
     double zoomFactor = 1.0;
     int imageX = 0;
     int imageY = 0;

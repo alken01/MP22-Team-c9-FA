@@ -12,6 +12,21 @@
 #include <QStringList>
 #include <QCompleter>
 #include <memory>
+#include "QtWidgets/qgraphicsview.h"
+#include "ui_mainwindow.h"
+#include <iostream>
+#include <QApplication>
+#include <QGraphicsRectItem>
+#include <QGraphicsScene>
+#include <QPainter>
+#include <QPixmap>
+#include <QPushButton>
+#include <Qt>
+#include <QtGui>
+#include <QTimer>
+#include <QVBoxLayout>
+#include "controller.h"
+#include <QScrollBar>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

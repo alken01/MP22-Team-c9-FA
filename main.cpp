@@ -15,7 +15,7 @@
 using namespace std;
 int main(int argc, char* argv[]){
 
-    int choose = 1;
+    int choose = 0;
     if(choose == 0){
         QApplication app(argc, argv);
         auto c = std::make_shared<Controller>();
@@ -25,7 +25,7 @@ int main(int argc, char* argv[]){
         return app.exec();
     }
 
-//    // main for astar testing
+// main only for astar testing
     else{
         // Generate the world
         QApplication app(argc, argv);
