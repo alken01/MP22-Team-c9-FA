@@ -66,6 +66,7 @@ MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> c)
     connect(ui->heuristicSlider, &QSlider::sliderMoved, this, &MainWindow::setHeuristic);
     connect(ui->pushButton_3, &QPushButton::clicked, this, &MainWindow::autoplay);
     connect(ui->pushButton_2, &QPushButton::clicked, this, &MainWindow::mapChanged);
+    connect(ui->animationSlider, &QSlider::sliderMoved, this, &MainWindow::changeSpeed);
 
     //empty line edit after autocomplete
     QObject::connect(completer, SIGNAL(activated(const QString&)),
@@ -236,4 +237,8 @@ void MainWindow::setHeuristic(){
 
 void MainWindow::autoplay(){
     controller->autoPlay();
+}
+
+void MainWindow::changeSpeed(){
+    controller->setAnimationSpeed(ui->animationSlider->value()*10);
 }

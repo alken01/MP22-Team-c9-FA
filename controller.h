@@ -65,6 +65,9 @@ public:
     int getWin() const;
     void setWin(int newWin);
 
+    int getAnimationSpeed() const;
+    void setAnimationSpeed(int newAnimationSpeed);
+
 public slots:
     void switchToGraphic();
     void switchToText();
@@ -99,6 +102,7 @@ private:
     float whiteValue;
     int enemiesCount;
     int Win;
-
+    void makePathMoves(vector<QString> textPath);
+    unsigned long move;
 };
 #endif // CONTROLLER_H

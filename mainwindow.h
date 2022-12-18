@@ -48,5 +48,6 @@ private:
     void setHeuristic();
     void autoplay();
      QCompleter* completer;
+     void changeSpeed();
 };
 #endif // MAINWINDOW_H

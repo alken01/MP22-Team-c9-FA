@@ -2,6 +2,8 @@
 #include <iostream>
 #include "astar.h"
 #include <QPixmap>
+#include <chrono>
+#include <thread>
 
 Controller::Controller(){
     QString init_worldmap = ":/images/world_images/maze1.png";
@@ -37,7 +39,7 @@ Controller::Controller(){
         completerList.append(commands.at(i));
     }
 
-    delayTimer.isSingleShot();
+    animationSpeed=500;
 }
 
 void Controller::handleInput(){}
@@ -199,6 +201,8 @@ void Controller::movePlayer(QString input){
 }
 
 
+
+
 void Controller::gotoHelper(QString input){
     QStringList strList = input.split(" ");
 
@@ -241,6 +245,7 @@ float Controller::pathCost(vector<pair<int, int> > path){
 }
 
 int Controller::goToHealthpack(){
+    move=0;
     auto world = this->getWorld();
     Tile start(world->getProtagonist()->getXPos(), world->getProtagonist()->getYPos(), 0.0);
     vector<pair<int, int> > health_pack = {};
@@ -269,6 +274,7 @@ int Controller::goToHealthpack(){
 }
 
 int Controller::goToEnemy(){
+    move=0;
     auto world = this->getWorld();
     Tile start(world->getProtagonist()->getXPos(), world->getProtagonist()->getYPos(), 0.0);
     vector<pair<int, int> > enemy_path = {};
@@ -302,6 +308,7 @@ int Controller::goToEnemy(){
 
 
 void Controller::getPath(int x, int y){
+    move=0;
     auto w = this->getWorld();
     Tile start(w->getProtagonist()->getXPos(), w->getProtagonist()->getYPos(), 0.0);
     Tile end(x, y, 0.0);
@@ -312,10 +319,18 @@ void Controller::getPath(int x, int y){
 void Controller::goToPath(vector<pair<int, int> > path){
     if(path.empty()) return;
     vector<QString> textPath = pathToText(path);
-    for(const auto& input : textPath){
-        movePlayer(input);
+
+    QTimer::singleShot(animationSpeed, [this, textPath]() { makePathMoves(textPath); } );
+}
+
+void Controller::makePathMoves(vector<QString> textPath){
+    if(move<textPath.size()){
+        commandReceived(textPath.at(move));
+        move++;
+        QTimer::singleShot(animationSpeed, [this, textPath]() { makePathMoves(textPath); } );
     }
 }
+
 
 vector<QString> Controller::pathToText(vector<pair<int, int> > path){
     // Resulting vector of directions
@@ -445,6 +460,8 @@ int Controller::checkMove(int x, int y){
             world->getProtagonist()->setEnergy(0);
             return -1;
         }
+        test.get()->setValue(-1); //beaten
+
         world->getProtagonist()->setEnergy(energy);
         enemiesCount--;
 
@@ -539,6 +556,16 @@ void Controller::setAlive(int newAlive){
 
 void Controller::resetDelay(){
     delaySwitch = 0;
+}
+
+int Controller::getAnimationSpeed() const
+{
+    return animationSpeed;
+}
+
+void Controller::setAnimationSpeed(int newAnimationSpeed)
+{
+    animationSpeed = newAnimationSpeed;
 }
 
 int Controller::getWin() const

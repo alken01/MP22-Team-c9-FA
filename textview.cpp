@@ -171,7 +171,7 @@ void TextView::changeSignAtCoord( unsigned long x,  unsigned long y, QChar input
 }
 
 void TextView::updateView(){
-    this->outputView->setScene(this->textscene);
+    this->outputView->scene()->update();
 }
 
 void TextView::protDead(int x, int y){
