@@ -38,16 +38,13 @@ Controller::Controller(){
     }
 
     delayTimer.isSingleShot();
-
-    //start drawing map
-    initWorlds(init_worldmap);
 }
 
 void Controller::handleInput(){}
 
 void Controller::update(){}
 
-void Controller::initWorlds(QString init_worldmap){
+void Controller::initWorlds(){
     this->world->getProtagonist()->setXPos(7);
     this->world->getProtagonist()->setYPos(7);
     this->text_view->draw(this->world, this->Qtext_view);
@@ -62,12 +59,12 @@ void::Controller::changeMap(QString mapName){
     QPixmap file(init_worldmap);
     int height = file.height();
 
-    newMap->createWorld(init_worldmap, height/10, height/20, 0.25);
-    this->world = std::make_shared<WorldModel>(newMap, height/20);
+    newMap->createWorld(init_worldmap, height/2, height/2, 0.25);
+    this->world = std::make_shared<WorldModel>(newMap, height/2);
     this->alive = 1;
     this->poisoned = 0;
     Win=0;
-    initWorlds(init_worldmap);
+    initWorlds();
 }
 
 

@@ -47,5 +47,6 @@ private:
     void getFeedback();
     void setHeuristic();
     void autoplay();
+     QCompleter* completer;
 };
 #endif // MAINWINDOW_H

@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> c)
     energy->setValue(c->getWorld()->getProtagonist()->getEnergy());
 
     //autocomplete
-    QCompleter* completer = new QCompleter(c->getCompleterList(), this);
+    completer = new QCompleter(c->getCompleterList(), this);
     ui->lineEdit->setCompleter(completer);
 
     //mapSelector
@@ -130,7 +130,7 @@ MainWindow::~MainWindow(){
 
 void MainWindow::initViews(){
     ui->verticalLayout_2->addWidget(controller->getQtext_view().get());
-    //ui->verticalLayout_2->addWidget(controller->getQgraphics_view().get());
+    ui->verticalLayout_2->addWidget(controller->getQgraphics_view().get());
     controller->getQgraphics_view().get()->hide();
 }
 
@@ -215,7 +215,11 @@ void MainWindow::mapChanged(){
     ui->textEdit_4->clear();
     ui->pushButton_2->hide();
     ui->pushButton->show();
-    initViews();
+
+    //empty line edit after autocomplete
+    QObject::connect(completer, SIGNAL(activated(const QString&)),
+        ui->lineEdit, SLOT(clear()),
+        Qt::QueuedConnection);
 }
 
 //get terminal message from controller

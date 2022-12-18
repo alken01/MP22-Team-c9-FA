@@ -70,7 +70,7 @@ public slots:
     void switchToText();
     void movePlayer(QString input);
     void switchViews();
-    void initWorlds(QString init_worldmap);
+    void initWorlds();
     QString commandReceived(QString input);
     void changeMap(QString mapName);
     void restart();
