@@ -217,6 +217,7 @@ void MainWindow::mapChanged(){
     ui->pushButton_2->hide();
     ui->pushButton->show();
 
+
     //empty line edit after autocomplete
     QObject::connect(completer, SIGNAL(activated(const QString&)),
         ui->lineEdit, SLOT(clear()),

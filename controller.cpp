@@ -57,14 +57,13 @@ void Controller::initWorlds(){
 void::Controller::changeMap(QString mapName){
     QString init_worldmap = ":/images/world_images/" + mapName + ".png";
     newMap = std::make_shared<World>();
-
     QPixmap file(init_worldmap);
     int height = file.height();
-
     newMap->createWorld(init_worldmap, height/2, height/2, 0.25);
     this->world = std::make_shared<WorldModel>(newMap, height/2);
     this->alive = 1;
     this->poisoned = 0;
+    text_view->stopTimer();
     Win=0;
     initWorlds();
 }
@@ -143,12 +142,6 @@ void Controller::movePlayer(QString input){
     // 0 health, 1 enemy, 2 poison enemy, 3 wall, 4 tile
     auto test = checkMove(x2, y2);
 
-
-    if(enemiesCount==0){
-        Win=1;
-        return;
-    }
-
     if(test == 3){
         std::cout.flush();
         std::cout << "you can't walk through walls" << std::endl;
@@ -195,6 +188,11 @@ void Controller::movePlayer(QString input){
     //check if alive
     if(world->getProtagonist()->getHealth() <= 0 || world->getProtagonist()->getEnergy() <= 0){
         dead(x2, y2);
+    }
+
+    if(enemiesCount==0){
+        Win=1;
+        return;
     }
 
     this->text_view->updateView();
@@ -359,14 +357,25 @@ vector<QString> Controller::pathToText(vector<pair<int, int> > path){
 }
 
 void Controller::autoPlay(){
-    while(alive){
-        if(goToEnemy()==-1){
-            if(goToHealthpack()==-1){
-                return;
-            }
+       if(alive && loop){
+            QTimer::singleShot(animationSpeed+1, [this]() { autoPlayLoop(); } );
+       }
+       else loop =1; return;
+}
+
+void Controller::autoPlayLoop(){
+    if(loop){
+        if(goToEnemy() != -1){
+            autoPlay();
         }
+        if(goToHealthpack() ==-1){
+            loop=0;
+        }
+        autoPlay();
     }
 }
+
+
 
 int Controller::checkMove(int x, int y){
 
