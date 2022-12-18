@@ -357,8 +357,8 @@ vector<QString> Controller::pathToText(vector<pair<int, int> > path){
 }
 
 void Controller::autoPlay(){
-       if(alive && loop){
-            QTimer::singleShot(animationSpeed+1, [this]() { autoPlayLoop(); } );
+       if(alive && loop && Win==0){
+            QTimer::singleShot(animationSpeed*2, [this]() { autoPlayLoop(); } );
        }
        else loop =1; return;
 }
