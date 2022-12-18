@@ -6,7 +6,7 @@
 #include <queue>
 #include <algorithm>
 #include "world.h"
-
+#include "worldmodel.h"
 using namespace std;
 
 struct Node {
@@ -21,6 +21,6 @@ struct NodeComparator {
     }
 };
 
-vector<pair<int, int> > astar(const vector< shared_ptr<Tile> >& world_grid, int rows, int cols, Tile start, Tile end, float white_value);
+vector<pair<int, int> > astar(shared_ptr<WorldModel>& world, Tile start, Tile end, float white_value);
 
 #endif

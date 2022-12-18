@@ -114,6 +114,8 @@ void WorldModel::setWorldMap(const std::vector<std::vector<std::shared_ptr<Tile>
     worldMap = newWorldMap;
 }
 
+
+
 void WorldModel::initMapVec(){
     //init 2D array/check poison enemies
 

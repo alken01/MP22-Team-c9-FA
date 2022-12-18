@@ -1,8 +1,10 @@
 #include "astar.h"
 #include <iostream>
+#include "controller.h"
+#include "worldmodel.h"
 
 // A* search function that returns a path to the end position from the start position
-vector<pair<int, int> > astar(const vector< shared_ptr<Tile> >& world_grid, int rows, int cols, Tile start, Tile end, float white_value){
+vector<pair<int, int> > astar(shared_ptr<WorldModel>& world, Tile start, Tile end, float white_value){
     cout << "Starting algo..." << endl;
     // TODO:
     // check if having the end and start positions as variables is quicker than calling them
@@ -11,14 +13,21 @@ vector<pair<int, int> > astar(const vector< shared_ptr<Tile> >& world_grid, int 
     int ex = end.getXPos();
     int ey = end.getYPos();
 
+    int cols = world->getWidth();
+    int rows = world->getHeight();
+
     vector<vector<float> > grid(cols, vector<float>(rows));
 
     // Set the grid elements
     for(int col = 0; col < cols; col++){
         for(int row = 0; row < rows; row++){
-            grid[col][row] = world_grid[row * cols + col]->getValue();
-            if(world_grid[row * cols + col]->getValue() != INFINITY) {
+            grid[col][row] = world->getTileValue(col,row);
+            if(world->getTileValue(col,row) != INFINITY) {
+                if(white_value>0.99){
+                    grid[col][row] = 1;
+                }else{
                 grid[col][row] = 1+white_value - grid[col][row]; //if it is not infinte, flip the value around, whiter tiles << darker tiles
+                }
             }
         }
     }

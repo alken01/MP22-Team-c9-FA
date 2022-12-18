@@ -4,7 +4,7 @@
 
 using namespace std;
 
-auto choose_font = QFont("Monospace");
+auto choose_font = QFont("SF Mono");
 
 TextView::TextView(){
 
