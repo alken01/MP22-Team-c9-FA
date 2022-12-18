@@ -346,11 +346,12 @@ vector<QString> Controller::pathToText(vector<pair<int, int> > path){
 void Controller::autoPlay(){
     while(alive){
         if(goToEnemy()==-1){
-            goToHealthpack();
+            if(goToHealthpack()==-1){
+                return;
+            }
         }
     }
 }
-
 
 int Controller::checkMove(int x, int y){
 
