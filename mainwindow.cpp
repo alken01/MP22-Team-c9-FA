@@ -122,7 +122,7 @@ MainWindow::~MainWindow(){
 
 void MainWindow::initViews(){
     ui->verticalLayout_2->addWidget(controller->getQtext_view().get());
-    ui->verticalLayout_2->addWidget(controller->getQgraphics_view().get());
+    //ui->verticalLayout_2->addWidget(controller->getQgraphics_view().get());
     controller->getQgraphics_view().get()->hide();
 }
 

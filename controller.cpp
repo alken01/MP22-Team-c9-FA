@@ -363,7 +363,7 @@ int Controller::checkMove(int x, int y){
 
             text_view->healed();
 
-            test->setValue(-1); //used
+            test.get()->setValue(-1); //used
             return 0; // is health
         }
     }
@@ -378,7 +378,7 @@ int Controller::checkMove(int x, int y){
 
         poisoned += test->getValue();
         world->getProtagonist()->setEnergy(100);
-        test->setValue(-1); //beaten
+        test.get()->setValue(-1); //beaten
 
         //start poison textview animation
         text_view->activatePoisoned();
@@ -438,7 +438,7 @@ int Controller::checkMove(int x, int y){
         }
         world->getProtagonist()->setHealth(currentHealth);
         world->getProtagonist()->setEnergy(100);
-        test->setValue(-1); //beaten
+        test.get()->setValue(-1); //beaten
         return 1; //is normal enemy
     }
     return -2;

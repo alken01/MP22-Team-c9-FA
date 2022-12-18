@@ -86,6 +86,7 @@ private:
     void resetDelay();
     QString terminalOut;
     std::shared_ptr<World> newMap;
+    int animationSpeed;
 
 };
 #endif // CONTROLLER_H
