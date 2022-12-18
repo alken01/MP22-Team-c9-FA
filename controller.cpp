@@ -74,11 +74,11 @@ void::Controller::changeMap(QString mapName){
 QString Controller::commandReceived(QString input){
     int count = 0;
     std::vector<QString> resultSet;
-//    //these dont need to be here, but for testing purposes i will keep them
-//    if(input == "w") return commandReceived(QString("up"));
-//    if(input == "a") return commandReceived(QString("left"));
-//    if(input == "s") return commandReceived(QString("down"));
-//    if(input == "d") return commandReceived(QString("right"));
+    //    //these dont need to be here, but for testing purposes i will keep them
+    //    if(input == "w") return commandReceived(QString("up"));
+    //    if(input == "a") return commandReceived(QString("left"));
+    //    if(input == "s") return commandReceived(QString("down"));
+    //    if(input == "d") return commandReceived(QString("right"));
 
     if(input.size() >= 4){
         if(input.left(4) == "goto"){
@@ -256,7 +256,7 @@ int Controller::goToHealthpack(){
         int x = world->getHealthPacks().at(i)->getXPos();
         int y = world->getHealthPacks().at(i)->getYPos();
         Tile end(x, y, 0.0);
-        vector<pair<int, int> > path = astar(world->getTiles(), world->getHeight(), world->getWidth(), start, end, whiteValue);
+        vector<pair<int, int> > path = astar(world, start, end, whiteValue);
         float new_cost = pathCost(path);
         if(new_cost >= world->getProtagonist()->getEnergy() ) continue;
         if(new_cost < min_cost || min_cost==-1){
@@ -289,7 +289,7 @@ int Controller::goToEnemy(){
         int x = world->getEnemies().at(i)->getXPos();
         int y = world->getEnemies().at(i)->getYPos();
         Tile end(x, y, 0.0);
-        vector<pair<int, int> > path = astar(world->getTiles(), world->getHeight(), world->getWidth(), start, end, whiteValue);
+        vector<pair<int, int> > path = astar(world, start, end, whiteValue);
         float new_cost = pathCost(path);
         if(new_cost >= world->getProtagonist()->getEnergy() ) continue;
         if(new_cost < min_cost || min_cost==-1){
@@ -312,7 +312,7 @@ void Controller::getPath(int x, int y){
     auto w = this->getWorld();
     Tile start(w->getProtagonist()->getXPos(), w->getProtagonist()->getYPos(), 0.0);
     Tile end(x, y, 0.0);
-    vector<pair<int, int> > path = astar(w->getTiles(), w->getHeight(), w->getWidth(), start, end, whiteValue);
+    vector<pair<int, int> > path = astar(world, start, end, whiteValue);
     goToPath(path);
 }
 
@@ -359,13 +359,8 @@ vector<QString> Controller::pathToText(vector<pair<int, int> > path){
 }
 
 void Controller::autoPlay(){
-    while(alive){
-        if(goToEnemy()==-1){
-            if(goToHealthpack()==-1){
-                return;
-            }
-        }
-    }
+    goToEnemy();
+    cout<< "END OF AUTOPLAY"<<endl;
 }
 
 int Controller::checkMove(int x, int y){

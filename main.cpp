@@ -15,7 +15,7 @@
 using namespace std;
 int main(int argc, char* argv[]){
 
-    int choose = 0;
+    int choose = 1;
     if(choose == 0){
         QApplication app(argc, argv);
         auto c = std::make_shared<Controller>();
@@ -26,81 +26,81 @@ int main(int argc, char* argv[]){
     }
 
 //    // main for astar testing
-//    else{
-//        // Generate the world
-//        QApplication app(argc, argv);
+    else{
+        // Generate the world
+        QApplication app(argc, argv);
 
-//        int i = 4;
+        int i = 3;
 
-//        QString init_worldmap;
-//        Tile start(0, 0, 1.0);
-//        Tile end(0, 1, 1.0);
+        QString init_worldmap;
+        Tile start(0, 0, 1.0);
+        Tile end(0, 1, 1.0);
 
-//        if(i == 0){
-//            init_worldmap = ":/images/world_images/worldmap.png";
-//            start = Tile(3, 5, 1.0);
-//            end = Tile(29, 5, 1.0);
-//        }
+        if(i == 0){
+            init_worldmap = ":/images/world_images/worldmap.png";
+            start = Tile(3, 5, 1.0);
+            end = Tile(29, 5, 1.0);
+        }
 
-//        if(i == 4){
-//            init_worldmap = ":/images/world_images/worldmap4.png";
-//            start = Tile(3, 44, 1.0);
-//            end = Tile(999, 937, 1.0);
-//        }
-
-
-//        if(i == 1){
-//            init_worldmap = ":/images/world_images/maze1.png";
-//            start = Tile(0, 492, 1.0);
-//            end = Tile(499, 334, 1.0);
-//        }
-
-//        if(i == 2){
-//            init_worldmap = ":/images/world_images/maze2.png";
-//            start = Tile(445, 430, 1.0);
-//            end = Tile(440, 208, 1.0);
-//        }
-//        if(i == 3){
-//            init_worldmap = ":/images/world_images/maze3.png";
-//            start = Tile(0, 0, 1.0);
-//            end = Tile(1175, 1196, 1.0);
-//        }
-
-//        auto test = std::make_shared<World>();
-//        test->createWorld(init_worldmap, 100, 100, 0.5);
-//        auto wm = std::make_shared<WorldModel>(test);
+        if(i == 4){
+            init_worldmap = ":/images/world_images/worldmap4.png";
+            start = Tile(3, 44, 1.0);
+            end = Tile(999, 937, 1.0);
+        }
 
 
-//        int rows = wm->getHeight();
-//        int cols = wm->getWidth();
+        if(i == 1){
+            init_worldmap = ":/images/world_images/maze1.png";
+            start = Tile(0, 492, 1.0);
+            end = Tile(499, 334, 1.0);
+        }
 
-//        std::cout << "world_grid size: " << cols << "x" << rows << std::endl;
+        if(i == 2){
+            init_worldmap = ":/images/world_images/maze2.png";
+            start = Tile(445, 430, 1.0);
+            end = Tile(440, 208, 1.0);
+        }
+        if(i == 3){
+            init_worldmap = ":/images/world_images/maze3.png";
+            start = Tile(0, 10, 1.0);
+            end = Tile(1146, 1179, 1.0);
+        }
 
-//        // Start the timer
-//        auto start_timer = std::chrono::high_resolution_clock::now();
-
-//        // Call the A* search function and
-//        vector<pair<int, int>> path = astar(wm->getTiles(), rows, cols, start, end, 0.0);
+        auto test = std::make_shared<World>();
+        test->createWorld(init_worldmap, 100, 100, 0.5);
+        auto wm = std::make_shared<WorldModel>(test,1);
 
 
-//        // Stop the timer
-//        auto end_timer = std::chrono::high_resolution_clock::now();
+        int rows = wm->getHeight();
+        int cols = wm->getWidth();
 
-//        // Only show window if found path
-//        cout << "Path:\n";
+        std::cout << "world_grid size: " << cols << "x" << rows << std::endl;
 
-//        for (const auto& pair : path)
-//            std::cout << "(" << pair.first << ", " << pair.second << ")" << std::endl;
-//        // Calculate the elapsed time in milliseconds
-//        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_timer - start_timer);
+        // Start the timer
+        auto start_timer = std::chrono::high_resolution_clock::now();
 
-//        // Print the elapsed time
-//        std::cout << "Elapsed time: " << elapsed.count() << " ms" << std::endl;
+        // Call the A* search function and
+        vector<pair<int, int>> path = astar(wm, start, end, 0.98);
 
-//        ImageWidget widget;
-//        widget.setImage(QPixmap(init_worldmap));
-//        widget.setPath(path);
-//        widget.show();
-//        return app.exec();
-//    }
+
+        // Stop the timer
+        auto end_timer = std::chrono::high_resolution_clock::now();
+
+        // Only show window if found path
+        cout << "Path:\n";
+
+        for (const auto& pair : path)
+            std::cout << "(" << pair.first << ", " << pair.second << ")" << std::endl;
+        // Calculate the elapsed time in milliseconds
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_timer - start_timer);
+
+        // Print the elapsed time
+        std::cout << "Elapsed time: " << elapsed.count() << " ms" << std::endl;
+
+        ImageWidget widget;
+        widget.setImage(QPixmap(init_worldmap));
+        widget.setPath(path);
+        widget.show();
+        return app.exec();
+    }
 }
