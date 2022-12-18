@@ -4,13 +4,14 @@
 
 using namespace std;
 
+auto choose_font = QFont("SF Mono");
+
 TextView::TextView(){
 
     //animation timers
     timer2.isSingleShot();
     this->textscene = new QGraphicsScene();
 }
-
 
 void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView> textView ){
     this->height=w->getHeight();
@@ -71,7 +72,7 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
         if(temp != nullptr){
             changeSignAtCoord(x,y,'P');
             std::cout.flush();
-            std::cout << "P enemy at Y:" << y << "X:"<< x <<"added" << std::endl;
+            std::cout << "P enemy at Y:" << y << "X:"<< x <<std::endl;
         }
         else{
             auto temp2=std::dynamic_pointer_cast<XEnemy>(enemies.at(i));
@@ -94,7 +95,7 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
         int y =healthPacks.at(i)->getYPos();
         changeSignAtCoord(x,y,'H');
         std::cout.flush();
-        std::cout << "Health added at Y:" << y << "X:"<< x <<"added" << std::endl;
+        std::cout << "Health added at Y:" << y << "X:"<< x << std::endl;
         
     }
     
@@ -115,7 +116,7 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
     }
     
     
-    this->textscene->addText(*stringWorld,QFont("Monospace"));
+    this->textscene->addText(*stringWorld,choose_font);
     textView->setScene(this->textscene);
     
     //poison timer
@@ -128,16 +129,15 @@ void TextView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView
 QChar TextView::grayscaleToASCII(float intensity){
     if(intensity == INFINITY)
         return QChar('@');
-    if(intensity <0.5 || intensity == 1.0)
+    if(intensity >0.5)
         return QChar(' ');
 
     std::vector<char> characters = {'.',':','-','=','+','*','#','%'};
     // scale the intensity value to the range of the character set and round it to the nearest index
     //cout<< "intesity"<<intensity<<endl;
-    int index = round((intensity-0.49)* (characters.size() - 1));
+    int index = round((intensity+0.49)* (characters.size() - 1));
 
-    return QChar(characters[index]);
-
+    return QChar(characters[characters.size()-index-1]);
 }
 
 
@@ -155,7 +155,7 @@ void TextView::movProtagonist(int x1, int y1, int x2, int y2,std::shared_ptr<Wor
     }
     
     this->textscene->clear();
-    this->textscene->addText(*stringWorld,QFont("Monospace"));
+    this->textscene->addText(*stringWorld,choose_font);
 }
 
 void TextView::changeSignAtCoord( unsigned long x,  unsigned long y, QChar input){
@@ -177,7 +177,7 @@ void TextView::updateView(){
 void TextView::protDead(int x, int y){
     changeSignAtCoord(x, y, 'D');
     this->textscene->clear();
-    this->textscene->addText(*stringWorld,QFont("Monospace"));   
+    this->textscene->addText(*stringWorld,choose_font);
 }
 
 

@@ -33,6 +33,8 @@ public:
   const std::vector<std::vector<std::shared_ptr<Tile> > >& getWorldMap() const;
   void setWorldMap(const std::vector<std::vector<std::shared_ptr<Tile> > >& newWorldMap);
 
+  float getTileValue(int x, int y);
+
 private:
   std::vector<std::shared_ptr<Tile>> tiles;
   int width;

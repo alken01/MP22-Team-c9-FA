@@ -107,6 +107,9 @@ const std::vector<std::vector<std::shared_ptr<Tile> > >& WorldModel::getWorldMap
     return worldMap;
 }
 
+float WorldModel::getTileValue(int x, int y){
+    return this->getTiles()[x+y*this->getWidth()]->getValue();
+}
 void WorldModel::setWorldMap(const std::vector<std::vector<std::shared_ptr<Tile> > >& newWorldMap){
     worldMap = newWorldMap;
 }
