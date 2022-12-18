@@ -103,6 +103,7 @@ private:
     int enemiesCount;
     int Win;
     void makePathMoves(vector<QString> textPath);
-    unsigned long move;
+    unsigned long move,loop;
+    void autoPlayLoop();
 };
 #endif // CONTROLLER_H
