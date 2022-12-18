@@ -65,16 +65,19 @@ MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> c)
     connect(ui->comboBox, &QComboBox::currentIndexChanged, this, &MainWindow::mapChanged);
     connect(ui->heuristicSlider, &QSlider::sliderMoved, this, &MainWindow::setHeuristic);
     connect(ui->pushButton_3, &QPushButton::clicked, this, &MainWindow::autoplay);
+    connect(ui->pushButton_2, &QPushButton::clicked, this, &MainWindow::mapChanged);
 
     //empty line edit after autocomplete
     QObject::connect(completer, SIGNAL(activated(const QString&)),
         ui->lineEdit, SLOT(clear()),
         Qt::QueuedConnection);
 
-    //loading screen
+    //hide graphicsview stuff
     ui->zoomSlider->hide();
     ui->textEdit_11->hide();
     ui->pushButton_2->hide();
+
+    ui->comboBox->setCurrentIndex(0);
 }
 
 
@@ -152,6 +155,12 @@ void MainWindow::changeScene(){
 }
 
 void MainWindow::pressEntered(){
+    if(controller->getWin() == 1){
+        ui->textEdit_4->setText("You win!");
+        ui->pushButton->hide();
+        ui->pushButton_2->show();
+        return;
+    }
     if(controller->getAlive() != 1){
         ui->textEdit_4->setText("Player died - press restart button");
         ui->pushButton->hide();
@@ -175,6 +184,7 @@ void MainWindow::pressEntered(){
     //needs to be fixed somehow anyway
     else if(!result.isNull() || input.left(4) == "goto"){
         ui->textEdit_4->append(result);
+        getFeedback();
     } else ui->textEdit_4->append("Unrecognized input - type 'help' for possible commands");
 
     //clear input
@@ -203,6 +213,8 @@ void MainWindow::mapChanged(){
     energy->setValue(this->controller->getWorld()->getProtagonist()->getEnergy());
     ui->lcdNumber->display(controller->getPoisoned());
     ui->textEdit_4->clear();
+    ui->pushButton_2->hide();
+    ui->pushButton->show();
     initViews();
 }
 

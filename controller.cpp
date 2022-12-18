@@ -4,7 +4,7 @@
 #include <QPixmap>
 
 Controller::Controller(){
-    QString init_worldmap = ":/images/world_images/worldmap.png";
+    QString init_worldmap = ":/images/world_images/maze1.png";
     newMap = std::make_shared<World>();
     newMap->createWorld(init_worldmap, 5, 5, 0.5);
     world = std::make_shared<WorldModel>(newMap, 250);
@@ -31,12 +31,16 @@ Controller::Controller(){
     mapList.append("maze3");
     mapList.append("worldmap");
     mapList.append("worldmap4");
+
     //also create QStringlist for use in autofill and switch
     for(unsigned long i = 0; i < commands.size(); i++){
         completerList.append(commands.at(i));
     }
 
     delayTimer.isSingleShot();
+
+    //start drawing map
+    initWorlds(init_worldmap);
 }
 
 void Controller::handleInput(){}
@@ -44,10 +48,11 @@ void Controller::handleInput(){}
 void Controller::update(){}
 
 void Controller::initWorlds(QString init_worldmap){
-    this->world->getProtagonist()->setXPos(5);
-    this->world->getProtagonist()->setYPos(5);
+    this->world->getProtagonist()->setXPos(7);
+    this->world->getProtagonist()->setYPos(7);
     this->text_view->draw(this->world, this->Qtext_view);
     this->graphical_view->draw(this->world, this->Qgraphics_view);
+    this->enemiesCount=world->getEnemies().size();
 }
 
 void::Controller::changeMap(QString mapName){
@@ -57,10 +62,11 @@ void::Controller::changeMap(QString mapName){
     QPixmap file(init_worldmap);
     int height = file.height();
 
-    newMap->createWorld(init_worldmap, height*10, height*10, 0.25);
-    this->world = std::make_shared<WorldModel>(newMap, 10);
+    newMap->createWorld(init_worldmap, height/10, height/20, 0.25);
+    this->world = std::make_shared<WorldModel>(newMap, height/20);
     this->alive = 1;
     this->poisoned = 0;
+    Win=0;
     initWorlds(init_worldmap);
 }
 
@@ -69,11 +75,11 @@ void::Controller::changeMap(QString mapName){
 QString Controller::commandReceived(QString input){
     int count = 0;
     std::vector<QString> resultSet;
-    //these dont need to be here, but for testing purposes i will keep them
-    if(input == "w") return commandReceived(QString("up"));
-    if(input == "a") return commandReceived(QString("left"));
-    if(input == "s") return commandReceived(QString("down"));
-    if(input == "d") return commandReceived(QString("right"));
+//    //these dont need to be here, but for testing purposes i will keep them
+//    if(input == "w") return commandReceived(QString("up"));
+//    if(input == "a") return commandReceived(QString("left"));
+//    if(input == "s") return commandReceived(QString("down"));
+//    if(input == "d") return commandReceived(QString("right"));
 
     if(input.size() >= 4){
         if(input.left(4) == "goto"){
@@ -130,13 +136,19 @@ void Controller::movePlayer(QString input){
     case 5: //help handled in window
         return;
     default:
-        std::cout << "This is not a legal move" << std::endl;
+        std::cout << "This move can't be made" << std::endl;
     }
     //if its a player move code below runs, otherwise return in switch statement
     if(x2 < 0 || y2 < 0 || x2 >= world->getWidth() || y2 >= world->getHeight()) return;
 
     // 0 health, 1 enemy, 2 poison enemy, 3 wall, 4 tile
     auto test = checkMove(x2, y2);
+
+
+    if(enemiesCount==0){
+        Win=1;
+        return;
+    }
 
     if(test == 3){
         std::cout.flush();
@@ -255,7 +267,7 @@ int Controller::goToHealthpack(){
         goToPath(health_pack);
         return min_cost;
     }
-    terminalOut = "No enemy in range";
+    terminalOut = "No healthpack in range";
     return -1;
 }
 
@@ -342,18 +354,8 @@ void Controller::autoPlay(){
     }
 }
 
-bool Controller::enemiesLeft(){
-    for(auto enem: world.get()->getEnemies()){
-        if(enem->getValue()!=-1)
-            return true;
-    }
-    return false;
-}
 
 int Controller::checkMove(int x, int y){
-    if(!enemiesLeft()){
-        return 420;
-    }
 
     auto test = world.get()->getWorldMap().at(x).at(y);
 
@@ -417,6 +419,8 @@ int Controller::checkMove(int x, int y){
         terminalOut.append(QString::number(test->getValue()));
         terminalOut.append(" steps");
 
+        enemiesCount--;
+
         poisoned += test->getValue();
         world->getProtagonist()->setEnergy(100);
         test.get()->setValue(-1); //beaten
@@ -444,6 +448,7 @@ int Controller::checkMove(int x, int y){
             return -1;
         }
         world->getProtagonist()->setEnergy(energy);
+        enemiesCount--;
 
         terminalOut.append(" health added:");
         terminalOut.append(QString::number(xEn->getValue()));
@@ -473,6 +478,7 @@ int Controller::checkMove(int x, int y){
             world->getProtagonist()->setHealth(0);
             return -1;
         }
+        enemiesCount--;
         world->getProtagonist()->setHealth(currentHealth);
         world->getProtagonist()->setEnergy(100);
         test.get()->setValue(-1); //beaten
@@ -535,6 +541,16 @@ void Controller::setAlive(int newAlive){
 
 void Controller::resetDelay(){
     delaySwitch = 0;
+}
+
+int Controller::getWin() const
+{
+    return Win;
+}
+
+void Controller::setWin(int newWin)
+{
+    Win = newWin;
 }
 
 float Controller::getWhiteValue() const

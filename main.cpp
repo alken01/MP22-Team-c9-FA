@@ -19,7 +19,6 @@ int main(int argc, char* argv[]){
     if(choose == 0){
         QApplication app(argc, argv);
         auto c = std::make_shared<Controller>();
-        c->initWorlds(QString(":/images/world_images/worldmap.png"));
         MainWindow w = MainWindow(NULL, c);
         w.initViews();
         w.show();

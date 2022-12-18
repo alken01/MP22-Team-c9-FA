@@ -62,6 +62,9 @@ public:
     float getWhiteValue() const;
     void setWhiteValue(float newWhiteValue);
 
+    int getWin() const;
+    void setWin(int newWin);
+
 public slots:
     void switchToGraphic();
     void switchToText();
@@ -71,7 +74,6 @@ public slots:
     QString commandReceived(QString input);
     void changeMap(QString mapName);
     void restart();
-    bool enemiesLeft();
 
 
 private:
@@ -95,6 +97,8 @@ private:
     std::shared_ptr<World> newMap;
     int animationSpeed;
     float whiteValue;
+    int enemiesCount;
+    int Win;
 
 };
 #endif // CONTROLLER_H
