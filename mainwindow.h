@@ -45,5 +45,7 @@ private:
     int viewStatus;
     void mapChanged();
     void getFeedback();
+    void setHeuristic();
+    void autoplay();
 };
 #endif // MAINWINDOW_H

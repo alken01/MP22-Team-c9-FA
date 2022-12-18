@@ -242,7 +242,7 @@ int Controller::goToHealthpack(){
         int x = world->getHealthPacks().at(i)->getXPos();
         int y = world->getHealthPacks().at(i)->getYPos();
         Tile end(x, y, 0.0);
-        vector<pair<int, int> > path = astar(world->getTiles(), world->getHeight(), world->getWidth(), start, end, 0.1);
+        vector<pair<int, int> > path = astar(world->getTiles(), world->getHeight(), world->getWidth(), start, end, whiteValue);
         float new_cost = pathCost(path);
         if(new_cost >= world->getProtagonist()->getEnergy() ) continue;
         if(new_cost < min_cost || min_cost==-1){
@@ -255,6 +255,7 @@ int Controller::goToHealthpack(){
         goToPath(health_pack);
         return min_cost;
     }
+    terminalOut = "No enemy in range";
     return -1;
 }
 
@@ -273,7 +274,7 @@ int Controller::goToEnemy(){
         int x = world->getEnemies().at(i)->getXPos();
         int y = world->getEnemies().at(i)->getYPos();
         Tile end(x, y, 0.0);
-        vector<pair<int, int> > path = astar(world->getTiles(), world->getHeight(), world->getWidth(), start, end, 0.1);
+        vector<pair<int, int> > path = astar(world->getTiles(), world->getHeight(), world->getWidth(), start, end, whiteValue);
         float new_cost = pathCost(path);
         if(new_cost >= world->getProtagonist()->getEnergy() ) continue;
         if(new_cost < min_cost || min_cost==-1){
@@ -286,6 +287,7 @@ int Controller::goToEnemy(){
         goToPath(enemy_path);
         return min_cost;
     }
+    terminalOut = "No enemy in range";
     return -1;
 }
 
@@ -294,7 +296,7 @@ void Controller::getPath(int x, int y){
     auto w = this->getWorld();
     Tile start(w->getProtagonist()->getXPos(), w->getProtagonist()->getYPos(), 0.0);
     Tile end(x, y, 0.0);
-    vector<pair<int, int> > path = astar(w->getTiles(), w->getHeight(), w->getWidth(), start, end, 0.1);
+    vector<pair<int, int> > path = astar(w->getTiles(), w->getHeight(), w->getWidth(), start, end, whiteValue);
     goToPath(path);
 }
 
@@ -533,6 +535,16 @@ void Controller::setAlive(int newAlive){
 
 void Controller::resetDelay(){
     delaySwitch = 0;
+}
+
+float Controller::getWhiteValue() const
+{
+    return whiteValue;
+}
+
+void Controller::setWhiteValue(float newWhiteValue)
+{
+    whiteValue = newWhiteValue;
 }
 
 const QString& Controller::getTerminalOut() const{

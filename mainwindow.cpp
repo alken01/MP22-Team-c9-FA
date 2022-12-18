@@ -55,11 +55,16 @@ MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> c)
     //mapSelector
     ui->comboBox->addItems(controller->getMapList());
 
+    //heurstic slider
+    controller->setWhiteValue(ui->heuristicSlider->value()/10);
+
     // Connect all
     connect(button, &QPushButton::clicked, this, &MainWindow::changeScene);
     connect(textInput, &QLineEdit::textChanged, this, &MainWindow::textEntered);
     connect(textInput, &QLineEdit::returnPressed, this, &MainWindow::pressEntered);
     connect(ui->comboBox, &QComboBox::currentIndexChanged, this, &MainWindow::mapChanged);
+    connect(ui->heuristicSlider, &QSlider::sliderMoved, this, &MainWindow::setHeuristic);
+    connect(ui->pushButton_3, &QPushButton::clicked, this, &MainWindow::autoplay);
 
     //empty line edit after autocomplete
     QObject::connect(completer, SIGNAL(activated(const QString&)),
@@ -207,4 +212,12 @@ void MainWindow::getFeedback(){
     if(message.isNull()) return;
     ui->textEdit_4->append(message);
     controller->setTerminalOut(NULL);
+}
+
+void MainWindow::setHeuristic(){
+    controller->setWhiteValue(ui->heuristicSlider->value()/10);
+}
+
+void MainWindow::autoplay(){
+    controller->autoPlay();
 }

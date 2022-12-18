@@ -59,6 +59,9 @@ public:
     const QString& getTerminalOut() const;
     void setTerminalOut(const QString& newTerminalOut);
 
+    float getWhiteValue() const;
+    void setWhiteValue(float newWhiteValue);
+
 public slots:
     void switchToGraphic();
     void switchToText();
@@ -91,6 +94,7 @@ private:
     QString terminalOut;
     std::shared_ptr<World> newMap;
     int animationSpeed;
+    float whiteValue;
 
 };
 #endif // CONTROLLER_H

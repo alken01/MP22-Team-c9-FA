@@ -24,7 +24,7 @@
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QTextEdit" name="textEdit_2">
        <property name="maximumSize">
         <size>
@@ -45,7 +45,7 @@ hr { height: 1px; border-width: 0; }
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
       <widget class="QProgressBar" name="progressBar">
        <property name="palette">
         <palette>
@@ -95,14 +95,14 @@ hr { height: 1px; border-width: 0; }
        </property>
       </widget>
      </item>
-     <item row="0" column="0">
+     <item row="1" column="0">
       <widget class="QComboBox" name="comboBox">
        <property name="placeholderText">
         <string>Map</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="0" rowspan="4">
+     <item row="7" column="0" rowspan="4">
       <widget class="QProgressBar" name="progressBar_2">
        <property name="palette">
         <palette>
@@ -146,14 +146,14 @@ hr { height: 1px; border-width: 0; }
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
+     <item row="2" column="0">
       <widget class="Line" name="line">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>
-     <item row="12" column="0">
+     <item row="13" column="0">
       <widget class="QTextEdit" name="textEdit_4">
        <property name="palette">
         <palette>
@@ -197,7 +197,7 @@ hr { height: 1px; border-width: 0; }
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="0">
       <widget class="QTextEdit" name="textEdit">
        <property name="maximumSize">
         <size>
@@ -218,7 +218,7 @@ hr { height: 1px; border-width: 0; }
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
+     <item row="11" column="0">
       <widget class="QTextEdit" name="textEdit_3">
        <property name="maximumSize">
         <size>
@@ -239,7 +239,7 @@ hr { height: 1px; border-width: 0; }
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
+     <item row="12" column="0">
       <widget class="QLCDNumber" name="lcdNumber">
        <property name="maximumSize">
         <size>
@@ -381,6 +381,50 @@ hr { height: 1px; border-width: 0; }
        </property>
        <property name="segmentStyle">
         <enum>QLCDNumber::Filled</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QPushButton" name="pushButton_3">
+       <property name="palette">
+        <palette>
+         <active>
+          <colorrole role="Button">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>78</red>
+             <green>154</green>
+             <blue>6</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </active>
+         <inactive>
+          <colorrole role="Button">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>239</red>
+             <green>239</green>
+             <blue>239</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </inactive>
+         <disabled>
+          <colorrole role="Button">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>78</red>
+             <green>154</green>
+             <blue>6</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </disabled>
+        </palette>
+       </property>
+       <property name="text">
+        <string>Autoplay</string>
        </property>
       </widget>
      </item>
@@ -670,11 +714,20 @@ hr { height: 1px; border-width: 0; }
        </item>
        <item>
         <widget class="QSlider" name="heuristicSlider">
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="singleStep">
+          <number>10</number>
+         </property>
          <property name="value">
-          <number>50</number>
+          <number>10</number>
          </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="invertedAppearance">
+          <bool>false</bool>
          </property>
         </widget>
        </item>
