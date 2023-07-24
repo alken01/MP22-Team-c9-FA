@@ -32,12 +32,12 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 using namespace std;
-class MainWindow: public QMainWindow
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget* parent,std::shared_ptr<Controller> c);
+    MainWindow(QWidget* parent, std::shared_ptr<Controller> c);
     ~MainWindow();
     void changeScene();
     void setController(std::shared_ptr<Controller>& c);
@@ -62,7 +62,7 @@ private:
     void getFeedback();
     void setHeuristic();
     void autoplay();
-     QCompleter* completer;
-     void changeSpeed();
+    QCompleter* completer;
+    void changeSpeed();
 };
 #endif // MAINWINDOW_H

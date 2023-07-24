@@ -1,0 +1,60 @@
+# Compiled files
+*.o
+*.o.*
+*.moc
+*.moc.*
+*.user
+*.pro.user
+*.pro.user.*
+*.qmake.stash
+*.moc
+*.moc.*
+*.moc.dep
+*.moc.dep.*
+*.qrc
+*.qrc.*
+*.cpp~
+*.h~
+*.log
+*.log.*
+*.cache
+*.cache.*
+*.json
+*.json.*
+*.qch
+*.qch.*
+*.o.*
+*.cpp.*
+*.gcno
+*.gcno.*
+*.gcda
+*.gcda.*
+
+# Build directory
+build/
+
+# Generated files
+Makefile
+qmake.conf
+Makefile.*
+*.xcodeproj/
+
+# Qt Creator files
+*.autosave
+*.creator
+*.creator.*
+*.file
+*.file.*
+*.includes
+*.includes.*
+*.layout
+*.layout.*
+*.pro.user.*
+
+# Qt project files
+*.pro.user
+*.pro.user.*
+
+# macOS files
+.DS_Store
+.svn/

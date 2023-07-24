@@ -1,7 +1,7 @@
 #include "graphicalview.h"
 #include "QtWidgets/qgraphicsitem.h"
 #include <iostream>
-#include "ImageWidget.h"
+#include "image_widget.h"
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsWidget>

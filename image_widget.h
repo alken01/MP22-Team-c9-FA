@@ -8,12 +8,12 @@
 using namespace std;
 
 // Custom widget for displaying the image and path
-class ImageWidget: public QWidget
+class ImageWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    ImageWidget(QWidget* parent = nullptr) : QWidget(parent){}
+    ImageWidget(QWidget* parent = nullptr): QWidget(parent){}
 
     void setImage(const QPixmap& image){
         this->image = image;

@@ -12,53 +12,51 @@ WorldModel::WorldModel(shared_ptr<World> w, int xEnemies){
     protagonist = move(prot);
     auto tilesUnique = w->getTiles();
 
-    //convert unique pointers to list of shared ptrs
+    // convert unique pointers to list of shared ptrs
     move(enemyUnique.begin(), enemyUnique.end(), back_inserter(enemies));
     move(healthUnique.begin(), healthUnique.end(), back_inserter(healthPacks));
     move(tilesUnique.begin(), tilesUnique.end(), back_inserter(tiles));
 
-    //add X enemies
-    for (unsigned long i = 0; i <enemies.size(); ++i) {
+    // add X enemies
+    for(unsigned long i = 0; i < enemies.size(); ++i){
         unsigned long x = enemies.at(i)->getXPos();
         unsigned long y = enemies.at(i)->getYPos();
 
-        //if normal enemy add x Xtype enemies
-        if(!dynamic_pointer_cast<PEnemy>(enemies.at(i)) && xEnemies>0){
-                auto xEnemy = make_shared<XEnemy>(x,y,enemies.at(i)->getValue());
-                enemies.at(i)=xEnemy;
-                xEnemies--;
-            }
+        // if normal enemy add x Xtype enemies
+        if(!dynamic_pointer_cast<PEnemy>(enemies.at(i)) && xEnemies > 0){
+            auto xEnemy = make_shared<XEnemy>(x, y, enemies.at(i)->getValue());
+            enemies.at(i) = xEnemy;
+            xEnemies--;
+        }
     }
 
-
-    //initialise 2D array of map tiles
+    // initialise 2D array of map tiles
     initMapVec();
 
-    //tiles
+    // tiles
     for(unsigned long i = 0; i < tiles.size(); ++i){
         int x = tiles.at(i)->getXPos();
         int y = tiles.at(i)->getYPos();
         worldMap.at(x).at(y) = tiles.at(i);
     }
 
-    //health
+    // health
     for(unsigned long i = 0; i < healthPacks.size(); ++i){
         int x = healthPacks.at(i)->getXPos();
         int y = healthPacks.at(i)->getYPos();
         worldMap.at(x).at(y) = healthPacks.at(i);
     }
 
-    //enemies
+    // enemies
     for(unsigned long i = 0; i < enemies.size(); ++i){
         int x = enemies.at(i)->getXPos();
         int y = enemies.at(i)->getYPos();
         worldMap.at(x).at(y) = enemies.at(i);
     }
-
 }
 
 void WorldModel::initMapVec(){
-    //init 2D array/check poison enemies
+    // init 2D array/check poison enemies
 
     vector<shared_ptr<Tile>> col;
     for(int i = 0; i < height; i++){
@@ -70,44 +68,35 @@ void WorldModel::initMapVec(){
     }
 }
 
-//Getters and Setters
-const vector<shared_ptr<Tile> >& WorldModel::getTiles() const{
-    return tiles;
-}
+// Getters and Setters
+const vector<shared_ptr<Tile>>& WorldModel::getTiles() const{ return tiles; }
 
-void WorldModel::setTiles(const vector<shared_ptr<Tile> >& newTiles){
+void WorldModel::setTiles(const vector<shared_ptr<Tile>>& newTiles){
     tiles = newTiles;
 }
 
-int WorldModel::getWidth() const{
-    return width;
-}
+int WorldModel::getWidth() const{ return width; }
 
-void WorldModel::setWidth(int newWidth){
-    width = newWidth;
-}
+void WorldModel::setWidth(int newWidth){ width = newWidth; }
 
-int WorldModel::getHeight() const{
-    return height;
-}
+int WorldModel::getHeight() const{ return height; }
 
-void WorldModel::setHeight(int newHeight){
-    height = newHeight;
-}
+void WorldModel::setHeight(int newHeight){ height = newHeight; }
 
-const vector<shared_ptr<Enemy> >& WorldModel::getEnemies() const{
+const vector<shared_ptr<Enemy>>& WorldModel::getEnemies() const{
     return enemies;
 }
 
-void WorldModel::setEnemies(const vector<shared_ptr<Enemy> >& newEnemies){
+void WorldModel::setEnemies(const vector<shared_ptr<Enemy>>& newEnemies){
     enemies = newEnemies;
 }
 
-const vector<shared_ptr<Tile> >& WorldModel::getHealthPacks() const{
+const vector<shared_ptr<Tile>>& WorldModel::getHealthPacks() const{
     return healthPacks;
 }
 
-void WorldModel::setHealthPacks(const vector<shared_ptr<Tile> >& newHealthPacks){
+void WorldModel::setHealthPacks(
+    const vector<shared_ptr<Tile>>& newHealthPacks){
     healthPacks = newHealthPacks;
 }
 
@@ -119,14 +108,14 @@ void WorldModel::setProtagonist(const shared_ptr<Protagonist>& newProtagonist){
     protagonist = newProtagonist;
 }
 
-const vector<vector<shared_ptr<Tile> > >& WorldModel::getWorldMap() const{
+const vector<vector<shared_ptr<Tile>>>& WorldModel::getWorldMap() const{
     return worldMap;
 }
 
 float WorldModel::getTileValue(int x, int y){
-    return getTiles()[x+y*getWidth()]->getValue();
+    return getTiles()[x + y * getWidth()]->getValue();
 }
-void WorldModel::setWorldMap(const vector<vector<shared_ptr<Tile> > >& newWorldMap){
+void WorldModel::setWorldMap(
+    const vector<vector<shared_ptr<Tile>>>& newWorldMap){
     worldMap = newWorldMap;
 }
-

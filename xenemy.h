@@ -15,7 +15,6 @@ public:
 
 private:
     float energy;
-
 };
 
 #endif // XENEMY_H

@@ -11,7 +11,6 @@ MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> c)
     // Create a text input field
     textInput = ui->lineEdit;
 
-
     // Create a button
     QPushButton* button = ui->pushButton;
 
@@ -36,7 +35,7 @@ MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> c)
     ui->comboBox->addItems(controller->getMapList());
 
     //heurstic slider
-    controller->setWhiteValue(ui->heuristicSlider->value()/10);
+    controller->setWhiteValue(ui->heuristicSlider->value() / 10);
 
     // Connect all
     connect(button, &QPushButton::clicked, this, &MainWindow::changeScene);
@@ -213,7 +212,7 @@ void MainWindow::getFeedback(){
 }
 
 void MainWindow::setHeuristic(){
-    controller->setWhiteValue(ui->heuristicSlider->value()/10);
+    controller->setWhiteValue(ui->heuristicSlider->value() / 10);
 }
 
 void MainWindow::autoplay(){
@@ -221,5 +220,5 @@ void MainWindow::autoplay(){
 }
 
 void MainWindow::changeSpeed(){
-    controller->setAnimationSpeed(ui->animationSlider->value()*10);
+    controller->setAnimationSpeed(ui->animationSlider->value() * 10);
 }

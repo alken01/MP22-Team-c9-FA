@@ -34,7 +34,7 @@ Controller::Controller(){
     }
 
     //base speed
-    animationSpeed=500;
+    animationSpeed = 500;
 }
 
 void Controller::initWorlds(){
@@ -42,7 +42,7 @@ void Controller::initWorlds(){
     world->getProtagonist()->setYPos(7);
     text_view->draw(world, Qtext_view);
     graphical_view->draw(world, Qgraphics_view);
-    enemiesCount=world->getEnemies().size();
+    enemiesCount = world->getEnemies().size();
 }
 
 //mapchanger
@@ -51,12 +51,12 @@ void::Controller::changeMap(QString mapName){
     newMap = make_shared<World>();
     QPixmap file(init_worldmap);
     int height = file.height();
-    newMap->createWorld(init_worldmap, height/2, height/2, 0.25);
-    world = make_shared<WorldModel>(newMap, height/2);
+    newMap->createWorld(init_worldmap, height / 2, height / 2, 0.25);
+    world = make_shared<WorldModel>(newMap, height / 2);
     alive = 1;
     poisoned = 0;
     text_view->stopTimer();
-    Win=0;
+    Win = 0;
     initWorlds();
 }
 
@@ -164,8 +164,7 @@ void Controller::movePlayer(QString input){
     else if(test == 6){
         cout.flush();
         cout << "Encountered XEnemy" << endl;
-    }
-    else if(test == 420){
+    } else if(test == 420){
         cout.flush();
         cout << "W" << endl;
     }
@@ -180,8 +179,8 @@ void Controller::movePlayer(QString input){
         dead(x2, y2);
     }
 
-    if(enemiesCount==0){
-        Win=1;
+    if(enemiesCount == 0){
+        Win = 1;
         return;
     }
 
@@ -367,7 +366,7 @@ float Controller::pathCost(vector<pair<int, int> > path){
 }
 
 int Controller::goToHealthpack(){
-    move=0;
+    move = 0;
     auto world = getWorld();
     Tile start(world->getProtagonist()->getXPos(), world->getProtagonist()->getYPos(), 0.0);
     vector<pair<int, int> > health_pack = {};
@@ -380,14 +379,14 @@ int Controller::goToHealthpack(){
         Tile end(x, y, 0.0);
         vector<pair<int, int> > path = astar(world, start, end, whiteValue);
         float new_cost = pathCost(path);
-        if(new_cost >= world->getProtagonist()->getEnergy() ) continue;
-        if(new_cost < min_cost || min_cost==-1){
+        if(new_cost >= world->getProtagonist()->getEnergy()) continue;
+        if(new_cost < min_cost || min_cost == -1){
             health_pack = path;
             min_cost = new_cost;
         }
     }
 
-    if(min_cost>-1){
+    if(min_cost > -1){
         goToPath(health_pack);
         return min_cost;
     }
@@ -396,16 +395,16 @@ int Controller::goToHealthpack(){
 }
 
 int Controller::goToEnemy(){
-    move=0;
+    move = 0;
     auto world = getWorld();
     Tile start(world->getProtagonist()->getXPos(), world->getProtagonist()->getYPos(), 0.0);
     vector<pair<int, int> > enemy_path = {};
     //max int value, yeah not the most elegant :(
     float min_cost = -1;
     //find the path with the smallest length
-    cout<< "there are "<< world->getEnemies().size() << "enemies" << endl;
+    cout << "there are " << world->getEnemies().size() << "enemies" << endl;
     for(unsigned long i = 0; i < world->getEnemies().size(); ++i){
-        cout<< "enemy hp: " << world->getEnemies().at(i)->getValue() << endl;
+        cout << "enemy hp: " << world->getEnemies().at(i)->getValue() << endl;
         if(world->getEnemies().at(i)->getValue() == -1) continue;
         cout << world->getEnemies().at(i)->getValue() << endl;
         int x = world->getEnemies().at(i)->getXPos();
@@ -413,14 +412,14 @@ int Controller::goToEnemy(){
         Tile end(x, y, 0.0);
         vector<pair<int, int> > path = astar(world, start, end, whiteValue);
         float new_cost = pathCost(path);
-        if(new_cost >= world->getProtagonist()->getEnergy() ) continue;
-        if(new_cost < min_cost || min_cost==-1){
+        if(new_cost >= world->getProtagonist()->getEnergy()) continue;
+        if(new_cost < min_cost || min_cost == -1){
             enemy_path = path;
             min_cost = new_cost;
         }
     }
 
-    if(min_cost>0){
+    if(min_cost > 0){
         goToPath(enemy_path);
         return min_cost;
     }
@@ -430,7 +429,7 @@ int Controller::goToEnemy(){
 
 
 void Controller::getPath(int x, int y){
-    move=0;
+    move = 0;
     auto w = getWorld();
     Tile start(w->getProtagonist()->getXPos(), w->getProtagonist()->getYPos(), 0.0);
     Tile end(x, y, 0.0);
@@ -442,14 +441,14 @@ void Controller::goToPath(vector<pair<int, int> > path){
     if(path.empty()) return;
     vector<QString> textPath = pathToText(path);
 
-    QTimer::singleShot(animationSpeed, [this, textPath]() { makePathMoves(textPath); } );
+    QTimer::singleShot(animationSpeed, [this, textPath]() { makePathMoves(textPath); });
 }
 
 void Controller::makePathMoves(vector<QString> textPath){
-    if(move<textPath.size()){
+    if(move < textPath.size()){
         commandReceived(textPath.at(move));
         move++;
-        QTimer::singleShot(animationSpeed, [this, textPath]() { makePathMoves(textPath); } );
+        QTimer::singleShot(animationSpeed, [this, textPath]() { makePathMoves(textPath); });
     }
 }
 
@@ -482,10 +481,9 @@ vector<QString> Controller::pathToText(vector<pair<int, int> > path){
 
 //autoplay
 void Controller::autoPlay(){
-       if(alive && loop && Win==0){
-            QTimer::singleShot(animationSpeed*2, [this]() { autoPlayLoop(); } );
-       }
-       else loop =1; return;
+    if(alive && loop && Win == 0){
+        QTimer::singleShot(animationSpeed * 2, [this]() { autoPlayLoop(); });
+    } else loop = 1; return;
 }
 
 void Controller::autoPlayLoop(){
@@ -493,8 +491,8 @@ void Controller::autoPlayLoop(){
         if(goToEnemy() != -1){
             autoPlay();
         }
-        if(goToHealthpack() ==-1){
-            loop=0;
+        if(goToHealthpack() == -1){
+            loop = 0;
         }
         autoPlay();
     }
@@ -557,33 +555,27 @@ void Controller::resetDelay(){
     delaySwitch = 0;
 }
 
-int Controller::getAnimationSpeed() const
-{
+int Controller::getAnimationSpeed() const{
     return animationSpeed;
 }
 
-void Controller::setAnimationSpeed(int newAnimationSpeed)
-{
+void Controller::setAnimationSpeed(int newAnimationSpeed){
     animationSpeed = newAnimationSpeed;
 }
 
-int Controller::getWin() const
-{
+int Controller::getWin() const{
     return Win;
 }
 
-void Controller::setWin(int newWin)
-{
+void Controller::setWin(int newWin){
     Win = newWin;
 }
 
-float Controller::getWhiteValue() const
-{
+float Controller::getWhiteValue() const{
     return whiteValue;
 }
 
-void Controller::setWhiteValue(float newWhiteValue)
-{
+void Controller::setWhiteValue(float newWhiteValue){
     whiteValue = newWhiteValue;
 }
 

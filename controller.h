@@ -83,7 +83,7 @@ private:
     float whiteValue;
     int enemiesCount;
     int Win;
-    unsigned long move,loop;
+    unsigned long move, loop;
     int delaySwitch;
 
     int checkMove(int x, int y);
@@ -91,7 +91,7 @@ private:
     void printHelp();
     void fighting();
     void resetDelay();
-    void makePathMoves(vector<QString> textPath); 
+    void makePathMoves(vector<QString> textPath);
     void autoPlayLoop();
 };
 #endif // CONTROLLER_H

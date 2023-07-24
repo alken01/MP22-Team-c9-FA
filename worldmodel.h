@@ -25,10 +25,8 @@ public:
   const std::vector<std::shared_ptr<Tile> >& getHealthPacks() const;
   void setHealthPacks(const std::vector<std::shared_ptr<Tile> >& newHealthPacks);
 
-
   const std::shared_ptr<Protagonist>& getProtagonist() const;
   void setProtagonist(const std::shared_ptr<Protagonist>& newProtagonist);
-
 
   const std::vector<std::vector<std::shared_ptr<Tile> > >& getWorldMap() const;
   void setWorldMap(const std::vector<std::vector<std::shared_ptr<Tile> > >& newWorldMap);

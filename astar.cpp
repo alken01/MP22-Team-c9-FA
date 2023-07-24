@@ -20,12 +20,12 @@ vector<pair<int, int> > astar(shared_ptr<WorldModel>& world, Tile start, Tile en
     // Set the grid elements
     for(int col = 0; col < cols; col++){
         for(int row = 0; row < rows; row++){
-            grid[col][row] = world->getTileValue(col,row);
-            if(world->getTileValue(col,row) != INFINITY) {
-                if(white_value>0.99){
+            grid[col][row] = world->getTileValue(col, row);
+            if(world->getTileValue(col, row) != INFINITY){
+                if(white_value > 0.99){
                     grid[col][row] = 1;
-                }else{
-                grid[col][row] = 1+white_value - grid[col][row]; //if it is not infinte, flip the value around, whiter tiles << darker tiles
+                } else{
+                    grid[col][row] = 1 + white_value - grid[col][row]; //if it is not infinte, flip the value around, whiter tiles << darker tiles
                 }
             }
         }

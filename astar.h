@@ -12,7 +12,7 @@ using namespace std;
 struct Node {
     int x, y; // Position on the grid (x, y)
     int cost; // Cost of reaching this position
-    Node(int x, int y, int cost) : x(x), y(y), cost(cost){}
+    Node(int x, int y, int cost): x(x), y(y), cost(cost){}
 };
 
 struct NodeComparator {

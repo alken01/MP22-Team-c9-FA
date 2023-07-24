@@ -12,15 +12,16 @@ class WORLDSHARED_EXPORT Tile
 {
 public:
     Tile(int xPosition, int yPosition, float tileWeight);
-    virtual ~Tile() =default;
-    float getValue() const {return value;};
-    void setValue(float newValue) {value = newValue;};
-    int getXPos() const {return xPos;};
-    int getYPos() const {return yPos;};
-    void setXPos(int newPos) {xPos = newPos;};
-    void setYPos(int newPos) {yPos = newPos;}
-    bool operator== (const Tile & other) const
-        {return (getXPos() == other.getXPos()) && (getYPos() == other.getYPos());};
+    virtual ~Tile() = default;
+    float getValue() const{ return value; };
+    void setValue(float newValue){ value = newValue; };
+    int getXPos() const{ return xPos; };
+    int getYPos() const{ return yPos; };
+    void setXPos(int newPos){ xPos = newPos; };
+    void setYPos(int newPos){ yPos = newPos; }
+    bool operator== (const Tile& other) const{
+        return (getXPos() == other.getXPos()) && (getYPos() == other.getYPos());
+    };
     virtual std::string serialize();
 
 protected:
@@ -35,18 +36,18 @@ class WORLDSHARED_EXPORT Enemy : public QObject, public Tile
 public:
     Enemy(int xPosition, int yPosition, float strength);
     ~Enemy() override = default;
-    bool getDefeated() const {return defeated;}
-    void setDefeated(bool value) {defeated = value; if (defeated) emit dead();};
+    bool getDefeated() const{ return defeated; }
+    void setDefeated(bool value){ defeated = value; if(defeated) emit dead(); };
     std::string serialize() override;
 
-  signals:
+signals:
     void dead();
 
 private:
     bool defeated; //false by construction
 };
 
-class WORLDSHARED_EXPORT PEnemy: public Enemy
+class WORLDSHARED_EXPORT PEnemy : public Enemy
 {
     Q_OBJECT
 public:
@@ -66,19 +67,19 @@ private:
     float poisonLevel;
 };
 
-class WORLDSHARED_EXPORT Protagonist: public QObject, public Tile
+class WORLDSHARED_EXPORT Protagonist : public QObject, public Tile
 {
     Q_OBJECT
 public:
     Protagonist();
-    void setXPos(int newPos) {if (xPos != newPos){xPos = newPos; emit posChanged(xPos, yPos);}}
-    void setYPos(int newPos) {if (yPos != newPos){yPos = newPos; emit posChanged(xPos, yPos);}}
-    void setPos(int newX, int newY) {if (xPos != newX || yPos != newY) {xPos = newX; yPos = newY; emit posChanged(xPos, yPos);}}
-    float getHealth() const {return health;};
-    void setHealth(float value) {health = value; emit healthChanged(static_cast<int>(health));}
+    void setXPos(int newPos){ if(xPos != newPos){ xPos = newPos; emit posChanged(xPos, yPos); } }
+    void setYPos(int newPos){ if(yPos != newPos){ yPos = newPos; emit posChanged(xPos, yPos); } }
+    void setPos(int newX, int newY){ if(xPos != newX || yPos != newY){ xPos = newX; yPos = newY; emit posChanged(xPos, yPos); } }
+    float getHealth() const{ return health; };
+    void setHealth(float value){ health = value; emit healthChanged(static_cast<int>(health)); }
 
-    float getEnergy() const {return energy;}
-    void setEnergy(float value) {energy = value; emit energyChanged(static_cast<int>(energy));}
+    float getEnergy() const{ return energy; }
+    void setEnergy(float value){ energy = value; emit energyChanged(static_cast<int>(energy)); }
     std::string serialize() override;
 
 signals:
@@ -102,8 +103,8 @@ public:
     std::vector<std::unique_ptr<Enemy>> getEnemies();
     std::vector<std::unique_ptr<Tile>> getHealthPacks();
     std::unique_ptr<Protagonist> getProtagonist() const;
-    int getRows() const {return rows;};
-    int getCols() const {return cols;};
+    int getRows() const{ return rows; };
+    int getCols() const{ return cols; };
 
 private:
     int rows, cols;
