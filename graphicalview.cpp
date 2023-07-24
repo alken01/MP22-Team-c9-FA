@@ -1,17 +1,18 @@
 #include "graphicalview.h"
-#include "QtWidgets/qgraphicsitem.h"
-#include <iostream>
-#include "image_widget.h"
-#include <QGraphicsView>
-#include <QGraphicsScene>
-#include <QGraphicsWidget>
+
 #include <QGraphicsProxyWidget>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QGraphicsWidget>
+#include <iostream>
 
-GraphicalView::GraphicalView(){
+#include "QtWidgets/qgraphicsitem.h"
+#include "image_widget.h"
 
-}
+GraphicalView::GraphicalView() {}
 
-void GraphicalView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphicsView> graphicsView){
+void GraphicalView::draw(std::shared_ptr<WorldModel> w,
+                         std::shared_ptr<QGraphicsView> graphicsView) {
     height = w->getHeight();
     width = w->getWidth();
     startposX = w->getProtagonist()->getXPos();
@@ -35,5 +36,4 @@ void GraphicalView::draw(std::shared_ptr<WorldModel> w, std::shared_ptr<QGraphic
 
     scene->addItem(proxy.get());
     graphicsView->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
-
 }

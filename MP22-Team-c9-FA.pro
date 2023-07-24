@@ -22,10 +22,8 @@ SOURCES += \
 HEADERS += \
     controller.h \
     graphicalview.h \
-    ImageWidget.h \
+    image_widget.h \
     astar.h \
-    lib/world.h \
-    lib/world_global.h \
     mainwindow.h \
     view.h \
     world.h \

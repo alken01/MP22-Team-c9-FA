@@ -1,31 +1,23 @@
-#include "mainwindow.h"
-#include "controller.h"
 #include <QApplication>
 #include <memory>
+
+#include "controller.h"
+#include "mainwindow.h"
 
 // #include <iostream>
 // #include <QWidget>
 // #include <QPixmap>
 // #include <QPainter>
 // #include <vector>
-// #include <chrono> 
+// #include <chrono>
 // #include "image_widget.h"
 // #include <memory>
 // #include "astar.h"
 // #include "worldmodel.h"
 // using namespace std;
 
-int main(int argc, char* argv[]){
-
-    int choose = 0;
-    if(choose == 0){
-        // QApplication app(argc, argv);
-        // auto c = std::make_shared<Controller>();
-        // MainWindow w = MainWindow(NULL, c);
-        // w.initViews();
-        // w.show();
-        // return app.exec();
-
+int main(int argc, char* argv[]) {
+    if (true) {
         QApplication app(argc, argv);
         shared_ptr<Controller> controller = std::make_shared<Controller>();
         MainWindow* mainWindow = new MainWindow(nullptr, controller);
@@ -85,7 +77,8 @@ int main(int argc, char* argv[]){
             int rows = wm->getHeight();
             int cols = wm->getWidth();
 
-            std::cout << "world_grid size: " << cols << "x" << rows << std::endl;
+            std::cout << "world_grid size: " << cols << "x" << rows <<
+    std::endl;
 
             // Start the timer
             auto start_timer = std::chrono::high_resolution_clock::now();
@@ -101,12 +94,16 @@ int main(int argc, char* argv[]){
             cout << "Path:\n";
 
             for (const auto& pair : path)
-                std::cout << "(" << pair.first << ", " << pair.second << ")" << std::endl;
+                std::cout << "(" << pair.first << ", " << pair.second << ")" <<
+    std::endl;
             // Calculate the elapsed time in milliseconds
-            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_timer - start_timer);
+            auto elapsed =
+    std::chrono::duration_cast<std::chrono::milliseconds>(end_timer -
+    start_timer);
 
             // Print the elapsed time
-            std::cout << "Elapsed time: " << elapsed.count() << " ms" << std::endl;
+            std::cout << "Elapsed time: " << elapsed.count() << " ms" <<
+    std::endl;
 
             ImageWidget widget;
             widget.setImage(QPixmap(init_worldmap));

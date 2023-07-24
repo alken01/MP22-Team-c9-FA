@@ -1,20 +1,21 @@
 #ifndef TEXTVIEW_H
 #define TEXTVIEW_H
+#include <QTimer>
+
 #include "view.h"
 #include "worldmodel.h"
-#include <QTimer>
 #include "xenemy.h"
 using namespace std;
 
-class TextView : public View
-{
-public:
+class TextView : public View {
+   public:
     TextView();
 
     void changeSignAtCoord(unsigned long x, unsigned long y, QChar input);
     void draw(shared_ptr<WorldModel> w, shared_ptr<QGraphicsView> textView);
     void createMap();
-    void movProtagonist(int x1, int y1, int x2, int y2, shared_ptr<WorldModel> w);
+    void movProtagonist(int x1, int y1, int x2, int y2,
+                        shared_ptr<WorldModel> w);
     void updateView();
     void protDead(int x, int y);
     void togglePoisoned();
@@ -25,7 +26,7 @@ public:
     QChar grayscaleToASCII(float intensity);
     void fighting();
 
-private:
+   private:
     QVector<QString> qVec, qVecPlayer;
     shared_ptr<QString> stringWorld;
     shared_ptr<QString> playerString;
@@ -44,4 +45,4 @@ private:
     void resetBg();
 };
 
-#endif // TEXTVIEW_H
+#endif  // TEXTVIEW_H

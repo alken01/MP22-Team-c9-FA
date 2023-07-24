@@ -2,19 +2,19 @@
 #define XENEMY_H
 
 #include <QObject>
+
 #include "world.h"
 
-class XEnemy : public Enemy
-{
+class XEnemy : public Enemy {
     Q_OBJECT
-public:
+   public:
     XEnemy(int xPosition, int yPosition, float strength);
     ~XEnemy() override = default;
     float getEnergy() const;
     void setEnergy(float newEnergy);
 
-private:
+   private:
     float energy;
 };
 
-#endif // XENEMY_H
+#endif  // XENEMY_H

@@ -4,9 +4,9 @@
 #include <QtCore/qglobal.h>
 
 #if defined(WORLD_LIBRARY)
-#  define WORLDSHARED_EXPORT Q_DECL_EXPORT
+#define WORLDSHARED_EXPORT Q_DECL_EXPORT
 #else
-#  define WORLDSHARED_EXPORT Q_DECL_IMPORT
+#define WORLDSHARED_EXPORT Q_DECL_IMPORT
 #endif
 
-#endif // WORLD_GLOBAL_H
+#endif  // WORLD_GLOBAL_H

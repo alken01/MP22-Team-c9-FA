@@ -1,42 +1,42 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QLineEdit>
-#include "controller.h"
-#include <QLabel>
-#include <QComboBox>
-#include <QProgressBar>
-#include <QTimer>
-#include <QLCDNumber>
-#include <QStringList>
-#include <QCompleter>
-#include <memory>
-#include "QtWidgets/qgraphicsview.h"
-#include "ui_mainwindow.h"
-#include <iostream>
 #include <QApplication>
+#include <QComboBox>
+#include <QCompleter>
 #include <QGraphicsRectItem>
 #include <QGraphicsScene>
+#include <QLCDNumber>
+#include <QLabel>
+#include <QLineEdit>
+#include <QMainWindow>
 #include <QPainter>
 #include <QPixmap>
+#include <QProgressBar>
 #include <QPushButton>
-#include <Qt>
-#include <QtGui>
+#include <QScrollBar>
+#include <QStringList>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <Qt>
+#include <QtGui>
+#include <iostream>
+#include <memory>
+
+#include "QtWidgets/qgraphicsview.h"
 #include "controller.h"
-#include <QScrollBar>
+#include "ui_mainwindow.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui {
+class MainWindow;
+}
 QT_END_NAMESPACE
 using namespace std;
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
-public:
+   public:
     MainWindow(QWidget* parent, std::shared_ptr<Controller> c);
     ~MainWindow();
     void changeScene();
@@ -44,25 +44,25 @@ public:
     void updateImage(int, QComboBox* comboBox, QLabel* label);
     void setScroll();
     void goToPath(int x, int y);
-    vector<QString> pathToText(vector<pair<int, int> > path);
     void updatePath(QString input);
     void pressEntered();
     void initCamera();
     void initViews();
+    vector<QString> pathToText(vector<pair<int, int>> path);
 
-private:
+   private:
     Ui::MainWindow* ui;
     QLineEdit* textInput;
-    void textEntered();
     std::shared_ptr<Controller> controller;
     QGraphicsView textView;
-    QProgressBar* health, * energy;
+    QProgressBar *health, *energy;
+    QCompleter* completer;
     int viewStatus;
+    void textEntered();
     void mapChanged();
     void getFeedback();
     void setHeuristic();
     void autoplay();
-    QCompleter* completer;
     void changeSpeed();
 };
-#endif // MAINWINDOW_H
+#endif  // MAINWINDOW_H
