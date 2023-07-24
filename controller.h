@@ -1,14 +1,12 @@
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#pragma once
 
 #include <QObject>
 #include <QPixmap>
+#include <QTime>
 #include <QTimer>
 #include <QWidget>
 #include <iostream>
 #include <memory>
-
-#include "QTime"
 #include "astar.h"
 #include "graphicalview.h"
 #include "textview.h"
@@ -23,16 +21,29 @@ class Controller {
     void update();
     void autoPlay();
 
-   public:
-    int getAlive() const;
-    void setAlive(int newAlive);
-    int getPoisoned() const;
-    const std::shared_ptr<QGraphicsView>& getQtext_view() const;
-    const std::shared_ptr<WorldModel>& getWorld() const;
-    const std::shared_ptr<QGraphicsView>& getQgraphics_view() const;
-    void setQgraphics_view(
-        const std::shared_ptr<QGraphicsView>& newQgraphics_view);
-    const QStringList& getCommands() const;
+    bool isAlive() const { return alive; }
+    void setAlive(int newAlive) { alive = newAlive; }
+    int getPoisoned() const { return poisoned; }
+    const QStringList& getCommands() const { return commands; }
+    const QStringList& getMapList() const { return mapList; }
+    const QString& getTerminalOut() const { return terminalOut; }
+    void setTerminalOut(const QString& newOut) { terminalOut = newOut; }
+    bool getWin() const { return win; }
+    void setAnimationSpeed(int newSpeed) { animationSpeed = newSpeed; }
+
+    const std::shared_ptr<QGraphicsView>& getQtext_view() const {
+        return Qtext_view;
+    }
+    const std::shared_ptr<WorldModel>& getWorld() const { return world; }
+    const std::shared_ptr<QGraphicsView>& getQgraphics_view() const {
+        return Qgraphics_view;
+    }
+    void setQgraphics_view(const std::shared_ptr<QGraphicsView>& newView) {
+        Qgraphics_view = newView;
+    }
+    void setWhiteValue(float newWhiteValue) { whiteValue = newWhiteValue; }
+
+   private:
     void getPath(int x, int y);
     int goToEnemy();
     int goToHealthpack();
@@ -40,12 +51,6 @@ class Controller {
     std::vector<QString> pathToText(std::vector<std::pair<int, int>> path);
     void goToPath(std::vector<std::pair<int, int>> path);
     float pathCost(std::vector<std::pair<int, int>> path);
-    const QStringList& getMapList() const;
-    const QString& getTerminalOut() const;
-    void setTerminalOut(const QString& newTerminalOut);
-    void setWhiteValue(float newWhiteValue);
-    int getWin() const;
-    void setAnimationSpeed(int newAnimationSpeed);
 
    public slots:
     void switchToGraphic();
@@ -65,8 +70,9 @@ class Controller {
     std::shared_ptr<GraphicalView> graphical_view;
     std::shared_ptr<TextView> text_view;
     std::shared_ptr<QGraphicsView> Qtext_view, Qgraphics_view;
-    int alive = 1;
+    bool alive = true;
     int poisoned = 0;
+    bool win;
 
     QTimer delayTimer;
     QString terminalOut;
@@ -74,13 +80,11 @@ class Controller {
     int animationSpeed;
     float whiteValue;
     int enemiesCount;
-    int Win;
     std::size_t move, loop;
     int delaySwitch;
 
    private:
     void initializeWorld();
-
     int checkMove(int x, int y);
     void dead(int x, int y);
     void printHelp();
@@ -89,5 +93,3 @@ class Controller {
     void makePathMoves(std::vector<QString> textPath);
     void autoPlayLoop();
 };
-
-#endif  // CONTROLLER_H

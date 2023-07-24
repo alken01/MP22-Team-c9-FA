@@ -1,22 +1,19 @@
 #include "controller.h"
 
-Controller::Controller() {
-    QString init_worldmap = ":/images/world_images/maze1.png";
-    newMap = make_shared<World>();
-    newMap->createWorld(init_worldmap, 5, 5, 0.5);
-    world = make_shared<WorldModel>(newMap, 250);
-
-    graphical_view = make_shared<GraphicalView>();
-    text_view = make_shared<TextView>();
-    Qtext_view = make_shared<QGraphicsView>();
-    Qgraphics_view = make_shared<QGraphicsView>();
+Controller::Controller()
+    : graphical_view(std::make_shared<GraphicalView>()),
+      text_view(std::make_shared<TextView>()),
+      Qtext_view(std::make_shared<QGraphicsView>()),
+      Qgraphics_view(std::make_shared<QGraphicsView>()),
+      animationSpeed(500) {
     initializeWorld();
-    animationSpeed = 500;
 }
 
 void Controller::initializeWorld() {
     QString init_worldmap = ":/images/world_images/maze1.png";
+    newMap = make_shared<World>();
     newMap->createWorld(init_worldmap, 5, 5, 0.5);
+    world = make_shared<WorldModel>(newMap, 250);
 }
 
 void Controller::initWorlds() {
@@ -35,10 +32,10 @@ void ::Controller::changeMap(QString mapName) {
     int height = file.height();
     newMap->createWorld(init_worldmap, height / 2, height / 2, 0.25);
     world = make_shared<WorldModel>(newMap, height / 2);
-    alive = 1;
+    alive = true;
     poisoned = 0;
     text_view->stopTimer();
-    Win = 0;
+    win = false;
     initWorlds();
 }
 
@@ -170,7 +167,7 @@ void Controller::movePlayer(QString input) {
     }
 
     if (enemiesCount == 0) {
-        Win = 1;
+        win = true;
         return;
     }
 
@@ -479,7 +476,7 @@ vector<QString> Controller::pathToText(vector<pair<int, int>> path) {
 
 // TODO: fix
 void Controller::autoPlay() {
-    if (alive && loop && Win == 0) {
+    if (alive && loop && win == 0) {
         QTimer::singleShot(animationSpeed * 2, [this]() { autoPlayLoop(); });
     } else
         loop = 1;
@@ -509,63 +506,6 @@ void Controller::fighting() {
     text_view->fighting();
 }
 
-// Setters and getters
-const QStringList& Controller::getMapList() const {
-    return mapList;
-}
-
-const QStringList& Controller::getCommands() const {
-    return commands;
-}
-
-int Controller::getPoisoned() const {
-    return poisoned;
-}
-
-int Controller::getAlive() const {
-    return alive;
-}
-
-void Controller::setAlive(int newAlive) {
-    alive = newAlive;
-}
-
 void Controller::resetDelay() {
     delaySwitch = 0;
-}
-
-void Controller::setAnimationSpeed(int newAnimationSpeed) {
-    animationSpeed = newAnimationSpeed;
-}
-
-int Controller::getWin() const {
-    return Win;
-}
-
-void Controller::setWhiteValue(float newWhiteValue) {
-    whiteValue = newWhiteValue;
-}
-
-const QString& Controller::getTerminalOut() const {
-    return terminalOut;
-}
-
-void Controller::setTerminalOut(const QString& newTerminalOut) {
-    terminalOut = newTerminalOut;
-}
-
-const shared_ptr<QGraphicsView>& Controller::getQgraphics_view() const {
-    return Qgraphics_view;
-}
-
-void Controller::setQgraphics_view(
-    const shared_ptr<QGraphicsView>& newQgraphics_view) {
-    Qgraphics_view = newQgraphics_view;
-}
-
-const shared_ptr<WorldModel>& Controller::getWorld() const {
-    return world;
-}
-const shared_ptr<QGraphicsView>& Controller::getQtext_view() const {
-    return Qtext_view;
 }

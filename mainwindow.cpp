@@ -134,7 +134,7 @@ void MainWindow::pressEntered() {
         ui->pushButton_2->show();
         return;
     }
-    if (controller->getAlive() != 1) {
+    if (!controller->isAlive()) {
         ui->textEdit_4->setText("Player died - press restart button");
         ui->pushButton->hide();
         ui->pushButton_2->show();
