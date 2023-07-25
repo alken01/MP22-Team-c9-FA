@@ -10,7 +10,7 @@ Controller::Controller()
 }
 
 void Controller::initializeWorld() {
-    QString init_worldmap = ":/images/resources/world_images/maze1.png";
+    QString init_worldmap = getMapPath(mapList[0]);
     newMap = make_shared<World>();
     newMap->createWorld(init_worldmap, 5, 5, 0.5);
     world = make_shared<WorldModel>(newMap, 250);
@@ -26,7 +26,7 @@ void Controller::initWorlds() {
 
 // mapchanger
 void ::Controller::changeMap(QString mapName) {
-    QString init_worldmap = ":/images/resources/world_images/" + mapName + ".png";
+    QString init_worldmap = getMapPath(mapName);
     newMap = make_shared<World>();
     QPixmap file(init_worldmap);
     int height = file.height();
@@ -79,7 +79,7 @@ QString Controller::commandReceived(QString input) {
 
 // move protagonist
 void Controller::movePlayer(QString input) {
-    if (alive != 1) {
+    if (!alive) {
         return;
     }
     // store old coordinate
@@ -421,8 +421,8 @@ int Controller::goToEnemy() {
 void Controller::getPath(int x, int y) {
     move = 0;
     auto w = getWorld();
-    Tile start(w->getProtagonist()->getXPos(), w->getProtagonist()->getYPos(),
-               0.0);
+    Protagonist::Coordinates coord = w->getProtagonist()->getCoordinates();
+    Tile start(coord.xPos, coord.yPos,0.0);
     Tile end(x, y, 0.0);
     vector<pair<int, int>> path = astar(world, start, end, whiteValue);
     goToPath(path);

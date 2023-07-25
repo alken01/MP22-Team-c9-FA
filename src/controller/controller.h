@@ -63,9 +63,13 @@ class Controller {
     void restart();
 
    private:
+   
     QStringList commands = {"up",       "down",       "left",    "right",
                             "goto x y", "goto enemy", "goto hp", "help"};
     QStringList mapList = {"maze1", "maze2", "maze3", "worldmap", "worldmap4"};
+    QString mapPath = ":/resources/world_images/";
+    QString getMapPath(QString mapName) { return mapPath + mapName + ".png"; }
+    
     std::shared_ptr<WorldModel> world;
     std::shared_ptr<GraphicalView> graphical_view;
     std::shared_ptr<TextView> text_view;

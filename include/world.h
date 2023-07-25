@@ -73,6 +73,13 @@ class WORLDSHARED_EXPORT Protagonist : public QObject, public Tile {
     Q_OBJECT
    public:
     Protagonist();
+    struct Coordinates {
+        int xPos;
+        int yPos;
+    };
+    
+    Coordinates getCoordinates() const { return {xPos, yPos}; }
+
     void setXPos(int newPos) {
         if (xPos != newPos) {
             xPos = newPos;
