@@ -15,7 +15,7 @@ SOURCES += \
     src/view/mainwindow.cpp \
     src/view/graphicalview.cpp \
     src/view/textview.cpp \
-    src/controller/controller.cpp \
+    src/controller/game_controller.cpp \
     src/pathfinder/astar.cpp \
     src/main.cpp
 
@@ -28,7 +28,7 @@ HEADERS += \
     src/view/textview.h \
     src/view/view.h \
     src/view/image_widget.h \
-    src/controller/controller.h \
+    src/controller/game_controller.h \
     src/pathfinder/astar.h \
     include/world_global.h \
     include/world.h

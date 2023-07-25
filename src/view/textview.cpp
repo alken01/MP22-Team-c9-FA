@@ -51,16 +51,19 @@ void TextView::draw(shared_ptr<WorldModel> w,
     auto h = QString("|");   // Create Qstring for height
 
     // for each column +---+ x width
-    for (int i = 0; i < width; i++) {
+    for (int i = 0; i < width; i++)
+    {
         wi.append("---+");
     }
     // for each column |   | x width
-    for (int i = 0; i < width; i++) {
+    for (int i = 0; i < width; i++)
+    {
         h.append("   |");
     }
 
     // for each row repeat shape x height
-    for (int q = 0; q < height; q++) {
+    for (int q = 0; q < height; q++)
+    {
         qVec.push_back(wi);
         // qVec.append("\n");
         qVec.push_back(h);
@@ -70,31 +73,39 @@ void TextView::draw(shared_ptr<WorldModel> w,
     // close map bottom line
     qVec.push_back(wi);
     // add walls
-    for (unsigned long i = 0; i < tiles.size(); ++i) {
+    for (unsigned long i = 0; i < tiles.size(); ++i)
+    {
         int x = tiles.at(i)->getXPos();
         int y = tiles.at(i)->getYPos();
         changeSignAtCoord(x, y, grayscaleToASCII(tiles.at(i)->getValue()));
     }
 
     // add enemies
-    for (unsigned long i = 0; i < enemies.size(); ++i) {
+    for (unsigned long i = 0; i < enemies.size(); ++i)
+    {
         unsigned long x = enemies.at(i)->getXPos();
         unsigned long y = enemies.at(i)->getYPos();
 
         auto temp = dynamic_pointer_cast<PEnemy>(enemies.at(i));
 
-        if (temp != nullptr) {
+        if (temp != nullptr)
+        {
             changeSignAtCoord(x, y, 'P');
             cout.flush();
             cout << "P enemy at Y:" << y << "X:" << x << endl;
-        } else {
+        }
+        else
+        {
             auto temp2 = dynamic_pointer_cast<XEnemy>(enemies.at(i));
 
-            if (temp2 != nullptr) {
+            if (temp2 != nullptr)
+            {
                 changeSignAtCoord(x, y, 'X');
                 cout.flush();
                 cout << "X enemy at Y:" << y << "X:" << x << "added" << endl;
-            } else {
+            }
+            else
+            {
                 changeSignAtCoord(x, y, 'E');
                 cout << "Normal enemy at Y:" << y << "X:" << x << "added"
                      << endl;
@@ -103,7 +114,8 @@ void TextView::draw(shared_ptr<WorldModel> w,
     }
 
     // add health
-    for (unsigned long i = 0; i < healthPacks.size(); ++i) {
+    for (unsigned long i = 0; i < healthPacks.size(); ++i)
+    {
         int x = healthPacks.at(i)->getXPos();
         int y = healthPacks.at(i)->getYPos();
         changeSignAtCoord(x, y, 'H');
@@ -122,7 +134,8 @@ void TextView::draw(shared_ptr<WorldModel> w,
     // couldn't make newline characters work when printing text seperately -->
     // combine all first into single string
     stringWorld = make_shared<QString>();
-    for (int i = 0; i < qVecPlayer.size(); ++i) {
+    for (int i = 0; i < qVecPlayer.size(); ++i)
+    {
         stringWorld->append(qVecPlayer.at(i));
     }
 
@@ -156,7 +169,8 @@ void TextView::movProtagonist(int x1, int y1, int x2, int y2,
     moveCamera();
 
     stringWorld = make_shared<QString>();
-    for (int i = 0; i < qVecPlayer.size(); ++i) {
+    for (int i = 0; i < qVecPlayer.size(); ++i)
+    {
         stringWorld->append(qVecPlayer.at(i));
     }
 
@@ -172,7 +186,8 @@ void TextView::changeSignAtCoord(unsigned long x, unsigned long y,
 
     // update display
     stringWorld = make_shared<QString>();
-    for (int i = 0; i < qVecPlayer.size(); ++i) {
+    for (int i = 0; i < qVecPlayer.size(); ++i)
+    {
         stringWorld->append(qVecPlayer.at(i));
     }
 }
@@ -212,17 +227,23 @@ void TextView::moveCamera() {
     auto before = ((world->getProtagonist()->getYPos() - 4) * 2) + 1;
 
     // take world edges into account
-    if (before <= 0) {
+    if (before <= 0)
+    {
         qVecPlayer = qVecPlayer.mid(before, 17 - before);
-    } else
+    }
+    else
         qVecPlayer = qVecPlayer.mid(before, 17);
 
-    for (int i = 0; i < qVecPlayer.size(); i++) {
+    for (int i = 0; i < qVecPlayer.size(); i++)
+    {
         // take world edges into account
         before = (world->getProtagonist()->getXPos() - 7) * 4;
-        if (before <= 0) {
+        if (before <= 0)
+        {
             temp = qVecPlayer[i].mid(before, 60 - before);
-        } else {
+        }
+        else
+        {
             temp = qVecPlayer[i].mid(before, 60);
         }
         temp.append("\n");

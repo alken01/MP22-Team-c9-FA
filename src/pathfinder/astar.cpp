@@ -23,13 +23,19 @@ vector<pair<int, int>> astar(shared_ptr<WorldModel>& world, Tile start,
     vector<vector<float>> grid(cols, vector<float>(rows));
 
     // Set the grid elements
-    for (int col = 0; col < cols; col++) {
-        for (int row = 0; row < rows; row++) {
+    for (int col = 0; col < cols; col++)
+    {
+        for (int row = 0; row < rows; row++)
+        {
             grid[col][row] = world->getTileValue(col, row);
-            if (world->getTileValue(col, row) != INFINITY) {
-                if (white_value > 0.99) {
+            if (world->getTileValue(col, row) != INFINITY)
+            {
+                if (white_value > 0.99)
+                {
                     grid[col][row] = 1;
-                } else {
+                }
+                else
+                {
                     grid[col][row] =
                         1 + white_value -
                         grid[col][row];  // if it is not infinte, flip the value
@@ -59,16 +65,19 @@ vector<pair<int, int>> astar(shared_ptr<WorldModel>& world, Tile start,
     vector<pair<int, int>> moves = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
     // While the priority queue is not empty
-    while (!pq.empty()) {
+    while (!pq.empty())
+    {
         // Get the top node (node with the lowest cost) from the queue
         Node curr = pq.top();
         pq.pop();
 
         // If the current node is the end position, return the path to the end
         // position
-        if (curr.x == ex && curr.y == ey) {
+        if (curr.x == ex && curr.y == ey)
+        {
             pair<int, int> start = make_pair(curr.x, curr.y);
-            while (start.first != sx || start.second != sy) {
+            while (start.first != sx || start.second != sy)
+            {
                 result.push_back(start);
                 start = make_pair(path[start.first][start.second].first,
                                   path[start.first][start.second].second);
@@ -78,7 +87,8 @@ vector<pair<int, int>> astar(shared_ptr<WorldModel>& world, Tile start,
             break;
         }
 
-        for (auto move : moves) {
+        for (auto move : moves)
+        {
             int nx = curr.x + move.first;   // New x-coordinate
             int ny = curr.y + move.second;  // New y-coordinate
 
@@ -91,7 +101,8 @@ vector<pair<int, int>> astar(shared_ptr<WorldModel>& world, Tile start,
             // Update the minimum cost and the priority queue if the new
             // position has a lower cost
             if (dist[nx][ny] == -1 ||
-                dist[nx][ny] > dist[curr.x][curr.y] + grid[nx][ny]) {
+                dist[nx][ny] > dist[curr.x][curr.y] + grid[nx][ny])
+            {
                 dist[nx][ny] = dist[curr.x][curr.y] + grid[nx][ny];
                 pq.push(Node(nx, ny, dist[nx][ny]));
                 path[nx][ny] = make_pair(curr.x, curr.y);

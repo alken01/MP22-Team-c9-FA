@@ -5,16 +5,17 @@
 
 #include "world.h"
 
-class XEnemy : public Enemy {
-    Q_OBJECT
-   public:
-    XEnemy(int xPosition, int yPosition, float strength);
-    ~XEnemy() override = default;
-    float getEnergy() const;
-    void setEnergy(float newEnergy);
+class XEnemy : public Enemy
+{
+        Q_OBJECT
+    public:
+        XEnemy(int xPosition, int yPosition, float strength);
+        ~XEnemy() override = default;
+        float getEnergy() const;
+        void setEnergy(float newEnergy);
 
-   private:
-    float energy;
+    private:
+        float energy;
 };
 
 #endif  // XENEMY_H

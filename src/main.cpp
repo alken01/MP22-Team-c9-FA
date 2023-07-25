@@ -17,7 +17,8 @@
 // using namespace std;
 
 int main(int argc, char* argv[]) {
-    if (true) {
+    if (true)
+    {
         QApplication app(argc, argv);
         shared_ptr<Controller> controller = std::make_shared<Controller>();
         MainWindow* mainWindow = new MainWindow(nullptr, controller);

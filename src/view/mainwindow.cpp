@@ -65,37 +65,38 @@ MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> c)
     ui->comboBox->setCurrentIndex(0);
 }
 
-class ImageAndSelector {
-    Q_OBJECT
+class ImageAndSelector
+{
+        Q_OBJECT
 
-   public:
-    // Constructor
-    ImageAndSelector();
+    public:
+        // Constructor
+        ImageAndSelector();
 
-    // Other member functions
-    QComboBox* getQcomboBox() { return comboBox; }
-    QLabel* getQLabel() { return label; }
+        // Other member functions
+        QComboBox* getQcomboBox() { return comboBox; }
+        QLabel* getQLabel() { return label; }
 
-    void setQcomboBox(QComboBox* newCombo) { comboBox = newCombo; }
+        void setQcomboBox(QComboBox* newCombo) { comboBox = newCombo; }
 
-    void setQLabel(QLabel* newLabel) { label = newLabel; }
+        void setQLabel(QLabel* newLabel) { label = newLabel; }
 
-    // Slot function
-    Q_SLOT void updateImage(int index) {
-        // Get the selected item from the QComboBox
-        QString selectedItem = comboBox->itemText(index);
+        // Slot function
+        Q_SLOT void updateImage(int index) {
+            // Get the selected item from the QComboBox
+            QString selectedItem = comboBox->itemText(index);
 
-        // Create a QPixmap object with the selected item's image path
-        QPixmap pixmap(selectedItem);
+            // Create a QPixmap object with the selected item's image path
+            QPixmap pixmap(selectedItem);
 
-        // Set the QLabel's pixmap to the QPixmap object
-        label->setPixmap(pixmap);
-    }
+            // Set the QLabel's pixmap to the QPixmap object
+            label->setPixmap(pixmap);
+        }
 
-   private:
-    // Private member variables
-    QComboBox* comboBox;
-    QLabel* label;
+    private:
+        // Private member variables
+        QComboBox* comboBox;
+        QLabel* label;
 };
 
 MainWindow::~MainWindow() {
@@ -109,14 +110,17 @@ void MainWindow::initViews() {
 }
 
 void MainWindow::changeScene() {
-    if (viewStatus == 1) {  // textview
+    if (viewStatus == 1)
+    {  // textview
         controller->getQtext_view().get()->show();
         controller->getQgraphics_view().get()->hide();
         ui->lineEdit->show();
         ui->zoomSlider->hide();
         ui->textEdit_11->hide();
         viewStatus = 0;
-    } else {  // graphicsView
+    }
+    else
+    {  // graphicsView
         controller->getQgraphics_view().get()->show();
         controller->getQtext_view().get()->hide();
         ui->zoomSlider->show();
@@ -128,13 +132,15 @@ void MainWindow::changeScene() {
 }
 
 void MainWindow::pressEntered() {
-    if (controller->getWin() == 1) {
+    if (controller->getWin() == 1)
+    {
         ui->textEdit_4->setText("You win!");
         ui->pushButton->hide();
         ui->pushButton_2->show();
         return;
     }
-    if (!controller->isAlive()) {
+    if (!controller->isAlive())
+    {
         ui->textEdit_4->setText("Player died - press restart button");
         ui->pushButton->hide();
         ui->pushButton_2->show();
@@ -143,11 +149,13 @@ void MainWindow::pressEntered() {
     QString input = textInput->text();
     // updatePath(input);
     QString result = controller->commandReceived(input);
-    if (result == "help") {
+    if (result == "help")
+    {
         auto s = controller->getCommands();
         ui->textEdit_4->append("--------------------------------");
         ui->textEdit_4->append("Possible commands:");
-        for (int i = 0; i < s.length(); i++) {
+        for (int i = 0; i < s.length(); i++)
+        {
             ui->textEdit_4->append(s.at(i));
         }
         ui->textEdit_4->append("--------------------------------");
@@ -155,10 +163,12 @@ void MainWindow::pressEntered() {
 
     // maybe need to change this back
     // needs to be fixed somehow anyway
-    else if (!result.isNull() || input.left(4) == "goto") {
+    else if (!result.isNull() || input.left(4) == "goto")
+    {
         ui->textEdit_4->append(result);
         getFeedback();
-    } else
+    }
+    else
         ui->textEdit_4->append(
             "Unrecognized input - type 'help' for possible commands");
 

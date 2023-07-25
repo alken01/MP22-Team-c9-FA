@@ -20,12 +20,14 @@ WorldModel::WorldModel(shared_ptr<World> w, int xEnemies) {
     move(tilesUnique.begin(), tilesUnique.end(), back_inserter(tiles));
 
     // add X enemies
-    for (unsigned long i = 0; i < enemies.size(); ++i) {
+    for (unsigned long i = 0; i < enemies.size(); ++i)
+    {
         unsigned long x = enemies.at(i)->getXPos();
         unsigned long y = enemies.at(i)->getYPos();
 
         // if normal enemy add x Xtype enemies
-        if (!dynamic_pointer_cast<PEnemy>(enemies.at(i)) && xEnemies > 0) {
+        if (!dynamic_pointer_cast<PEnemy>(enemies.at(i)) && xEnemies > 0)
+        {
             auto xEnemy = make_shared<XEnemy>(x, y, enemies.at(i)->getValue());
             enemies.at(i) = xEnemy;
             xEnemies--;
@@ -36,21 +38,24 @@ WorldModel::WorldModel(shared_ptr<World> w, int xEnemies) {
     initMapVec();
 
     // tiles
-    for (unsigned long i = 0; i < tiles.size(); ++i) {
+    for (unsigned long i = 0; i < tiles.size(); ++i)
+    {
         int x = tiles.at(i)->getXPos();
         int y = tiles.at(i)->getYPos();
         worldMap.at(x).at(y) = tiles.at(i);
     }
 
     // health
-    for (unsigned long i = 0; i < healthPacks.size(); ++i) {
+    for (unsigned long i = 0; i < healthPacks.size(); ++i)
+    {
         int x = healthPacks.at(i)->getXPos();
         int y = healthPacks.at(i)->getYPos();
         worldMap.at(x).at(y) = healthPacks.at(i);
     }
 
     // enemies
-    for (unsigned long i = 0; i < enemies.size(); ++i) {
+    for (unsigned long i = 0; i < enemies.size(); ++i)
+    {
         int x = enemies.at(i)->getXPos();
         int y = enemies.at(i)->getYPos();
         worldMap.at(x).at(y) = enemies.at(i);
@@ -61,11 +66,13 @@ void WorldModel::initMapVec() {
     // init 2D array/check poison enemies
 
     vector<shared_ptr<Tile>> col;
-    for (int i = 0; i < height; i++) {
+    for (int i = 0; i < height; i++)
+    {
         col.push_back(nullptr);
     }
 
-    for (int i = 0; i < width; i++) {
+    for (int i = 0; i < width; i++)
+    {
         worldMap.push_back(col);
     }
 }
