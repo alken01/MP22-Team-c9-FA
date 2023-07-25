@@ -10,7 +10,7 @@ Controller::Controller()
 }
 
 void Controller::initializeWorld() {
-    QString init_worldmap = ":/images/world_images/maze1.png";
+    QString init_worldmap = ":/images/resources/world_images/maze1.png";
     newMap = make_shared<World>();
     newMap->createWorld(init_worldmap, 5, 5, 0.5);
     world = make_shared<WorldModel>(newMap, 250);
@@ -26,7 +26,7 @@ void Controller::initWorlds() {
 
 // mapchanger
 void ::Controller::changeMap(QString mapName) {
-    QString init_worldmap = ":/images/world_images/" + mapName + ".png";
+    QString init_worldmap = ":/images/resources/world_images/" + mapName + ".png";
     newMap = make_shared<World>();
     QPixmap file(init_worldmap);
     int height = file.height();

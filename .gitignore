@@ -30,8 +30,10 @@
 *.gcda
 *.gcda.*
 
-# Build directory
+# Directory
 build/
+.vscode/
+.idea/
 
 # Generated files
 Makefile

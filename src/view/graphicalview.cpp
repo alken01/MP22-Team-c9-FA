@@ -30,7 +30,7 @@ void GraphicalView::draw(std::shared_ptr<WorldModel> w,
 
     auto proxy = std::make_shared<QGraphicsProxyWidget>();
     auto imageWidget = new ImageWidget();
-    QString init_worldmap = ":/images/world_images/worldmap.png";
+    QString init_worldmap = ":/images/resources/world_images/worldmap.png";
     imageWidget->setImage(QPixmap(init_worldmap));
     proxy->setWidget(imageWidget);
 
