@@ -9,9 +9,15 @@
 
 #include "world_global.h"
 
-class WORLDSHARED_EXPORT Tile
-{
+class WORLDSHARED_EXPORT Tile {
     public:
+        struct Coordinates {
+                int xPos;
+                int yPos;
+                Coordinates(int xPos, int yPos) : xPos(xPos), yPos(yPos) {}
+        };
+        Coordinates getCoordinates() const { return Coordinates(xPos, yPos); }
+
         Tile(int xPosition, int yPosition, float tileWeight);
         virtual ~Tile() = default;
         float getValue() const { return value; };
@@ -32,8 +38,7 @@ class WORLDSHARED_EXPORT Tile
         float value;
 };
 
-class WORLDSHARED_EXPORT Enemy : public QObject, public Tile
-{
+class WORLDSHARED_EXPORT Enemy : public QObject, public Tile {
         Q_OBJECT
     public:
         Enemy(int xPosition, int yPosition, float strength);
@@ -41,8 +46,7 @@ class WORLDSHARED_EXPORT Enemy : public QObject, public Tile
         bool getDefeated() const { return defeated; }
         void setDefeated(bool value) {
             defeated = value;
-            if (defeated)
-                emit dead();
+            if (defeated) emit dead();
         };
         std::string serialize() override;
 
@@ -53,8 +57,7 @@ class WORLDSHARED_EXPORT Enemy : public QObject, public Tile
         bool defeated;  // false by construction
 };
 
-class WORLDSHARED_EXPORT PEnemy : public Enemy
-{
+class WORLDSHARED_EXPORT PEnemy : public Enemy {
         Q_OBJECT
     public:
         PEnemy(int xPosition, int yPosition, float strength);
@@ -73,28 +76,24 @@ class WORLDSHARED_EXPORT PEnemy : public Enemy
         float poisonLevel;
 };
 
-class WORLDSHARED_EXPORT Protagonist : public QObject, public Tile
-{
+class WORLDSHARED_EXPORT Protagonist : public QObject, public Tile {
         Q_OBJECT
     public:
         Protagonist();
         void setXPos(int newPos) {
-            if (xPos != newPos)
-            {
+            if (xPos != newPos) {
                 xPos = newPos;
                 emit posChanged(xPos, yPos);
             }
         }
         void setYPos(int newPos) {
-            if (yPos != newPos)
-            {
+            if (yPos != newPos) {
                 yPos = newPos;
                 emit posChanged(xPos, yPos);
             }
         }
         void setPos(int newX, int newY) {
-            if (xPos != newX || yPos != newY)
-            {
+            if (xPos != newX || yPos != newY) {
                 xPos = newX;
                 yPos = newY;
                 emit posChanged(xPos, yPos);
@@ -123,8 +122,7 @@ class WORLDSHARED_EXPORT Protagonist : public QObject, public Tile
         float energy;  // 100.0f by construction
 };
 
-class WORLDSHARED_EXPORT World
-{
+class WORLDSHARED_EXPORT World {
     public:
         World() = default;
         // createWorld may throw a std::logic_error exception

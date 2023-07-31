@@ -4,7 +4,7 @@ Controller::Controller()
     : graphical_view(std::make_shared<GraphicalView>()),
       text_view(std::make_shared<TextView>()),
       Qtext_view(std::make_shared<QGraphicsView>()),
-      Qgraphics_view(std::make_shared<QGraphicsView>()),
+      QgraphicsView(std::make_shared<QGraphicsView>()),
       animationSpeed(500) {
     initializeWorld();
 }
@@ -20,7 +20,7 @@ void Controller::initWorlds() {
     world->getProtagonist()->setXPos(7);
     world->getProtagonist()->setYPos(7);
     text_view->draw(world, Qtext_view);
-    graphical_view->draw(world, Qgraphics_view);
+    graphical_view->draw(world, QgraphicsView);
     enemiesCount = world->getEnemies().size();
 }
 
@@ -45,10 +45,8 @@ QString Controller::commandReceived(QString input) {
     vector<QString> resultSet;
 
     // goto
-    if (input.size() >= 4)
-    {
-        if (input.left(4) == "goto")
-        {
+    if (input.size() >= 4) {
+        if (input.left(4) == "goto") {
             gotoHelper(input);
             return NULL;
         }
@@ -56,27 +54,21 @@ QString Controller::commandReceived(QString input) {
 
     // compare each letter with all options in commands vector, once there is
     // only 1 match left it accepts it
-    for (qsizetype i = 0; i < commands.size(); ++i)
-    {
-        for (int j = 0; j < input.size(); ++j)
-        {
-            if (j < commands[i].size())
-            {
-                if (input.at(j) == commands[i].at(j))
-                {
+    for (qsizetype i = 0; i < commands.size(); ++i) {
+        for (int j = 0; j < input.size(); ++j) {
+            if (j < commands[i].size()) {
+                if (input.at(j) == commands[i].at(j)) {
                     count++;
                 }
             }
         }
-        if (count == input.size())
-        {
+        if (count == input.size()) {
             resultSet.push_back(commands[i]);
         }
         count = 0;
     }
 
-    if (resultSet.size() == 1)
-    {
+    if (resultSet.size() == 1) {
         QString result = resultSet[0];
         cout << result.toStdString() << endl;
         movePlayer(result);
@@ -87,8 +79,7 @@ QString Controller::commandReceived(QString input) {
 
 // move protagonist
 void Controller::movePlayer(QString input) {
-    if (!alive)
-    {
+    if (!alive) {
         return;
     }
     // store old coordinate
@@ -100,8 +91,7 @@ void Controller::movePlayer(QString input) {
     int y2 = y;
 
     // follows order of commands added
-    switch (commands.indexOf(input))
-    {
+    switch (commands.indexOf(input)) {
         case 0:  // up
             y2--;
             break;
@@ -127,47 +117,39 @@ void Controller::movePlayer(QString input) {
     // 0 health, 1 enemy, 2 poison enemy, 3 wall, 4 tile
     auto test = checkMove(x2, y2);
 
-    if (test == 3)
-    {
+    if (test == 3) {
         cout.flush();
         cout << "you can't walk through walls" << endl;
         return;
     }
 
-    else if (test == 2)
-    {
+    else if (test == 2) {
         cout.flush();
         cout << "encountered poison enemy" << endl;
     }
 
-    else if (test == 1)
-    {
+    else if (test == 1) {
         cout.flush();
         cout << "encountered enemy" << endl;
     }
 
-    else if (test == 0)
-    {
+    else if (test == 0) {
         cout.flush();
         cout << "got health yay" << endl;
     }
 
-    else if (test == -1)
-    {
+    else if (test == -1) {
         cout.flush();
         cout << "Lost the fight :(" << endl;
-        dead(x, y);
+        dead();
         text_view->updateView();
         return;
     }
 
-    else if (test == 6)
-    {
+    else if (test == 6) {
         cout.flush();
         cout << "Encountered XEnemy" << endl;
-    }
-    else if (test == 420)
-    {
+    } else if (test == 420) {
         cout.flush();
         cout << "W" << endl;
     }
@@ -175,18 +157,16 @@ void Controller::movePlayer(QString input) {
     world->getProtagonist()->setXPos(x2);
     world->getProtagonist()->setYPos(y2);
 
-    text_view->movProtagonist(x, y, world->getProtagonist()->getXPos(),
-                              world->getProtagonist()->getYPos(), world);
+    text_view->moveProtagonist(
+    Tile::Coordinates(x, y), world->getProtagonist()->getCoordinates(), world);
 
     // check if alive
     if (world->getProtagonist()->getHealth() <= 0 ||
-        world->getProtagonist()->getEnergy() <= 0)
-    {
-        dead(x2, y2);
+        world->getProtagonist()->getEnergy() <= 0) {
+        dead();
     }
 
-    if (enemiesCount == 0)
-    {
+    if (enemiesCount == 0) {
         win = true;
         return;
     }
@@ -199,47 +179,39 @@ int Controller::checkMove(int x, int y) {
     auto test = world.get()->getWorldMap().at(x).at(y);
 
     // beaten enemy or used healthpack = -1 nothing happens
-    if (test->getValue() == -1)
-    {
+    if (test->getValue() == -1) {
         return 4;  //
     }
 
     // WALL
-    if (test->getValue() == INFINITY)
-    {
+    if (test->getValue() == INFINITY) {
         terminalOut = "You can't walk into a wall";
         return 3;  // is wall
     }
 
     // POISONED
-    if (poisoned > 1)
-    {
+    if (poisoned > 1) {
         poisoned--;  // one tile less poisoned
         world->getProtagonist()->setHealth(
-            world->getProtagonist()->getHealth() - 1);
-    }
-    else
-    {
+        world->getProtagonist()->getHealth() - 1);
+    } else {
         text_view->stopTimer();  // stop poison effect
         poisoned = 0;
     }
 
     // TILE + beaten enemy or used healthpack = -1
-    if (test->getValue() <= 1 && test->getValue() >= 0)
-    {
+    if (test->getValue() <= 1 && test->getValue() >= 0) {
         world->getProtagonist()->setEnergy(
-            world->getProtagonist()->getEnergy() - test->getValue());
+        world->getProtagonist()->getEnergy() - test->getValue());
 
         return 4;
     }
 
     // HEALTHPACK
-    for (unsigned long i = 0; i < world->getHealthPacks().size(); ++i)
-    {
+    for (unsigned long i = 0; i < world->getHealthPacks().size(); ++i) {
         int x = world->getHealthPacks().at(i)->getXPos();
         int y = world->getHealthPacks().at(i)->getYPos();
-        if (test->getXPos() == x && test->getYPos() == y)
-        {
+        if (test->getXPos() == x && test->getYPos() == y) {
             // adding health
             auto health = world->getProtagonist()->getHealth();
 
@@ -249,14 +221,12 @@ int Controller::checkMove(int x, int y) {
             terminalOut = "health added:";
             terminalOut.append(QString::number(test->getValue()));
 
-            if (health + test->getValue() >= 100)
-            {
+            if (health + test->getValue() >= 100) {
                 world->getProtagonist()->setHealth(100);
-            }
-            else
+            } else
                 world->getProtagonist()->setHealth(health + test->getValue());
 
-            text_view->healed();
+            text_view->setHealed();
 
             test.get()->setValue(-1);  // beaten
             return 0;                  // is health
@@ -264,8 +234,7 @@ int Controller::checkMove(int x, int y) {
     }
 
     // POISON ENEMY
-    if (dynamic_pointer_cast<PEnemy>(test))
-    {
+    if (dynamic_pointer_cast<PEnemy>(test)) {
         terminalOut = "Poisoned for:";
         terminalOut.append(QString::number(test->getValue()));
         terminalOut.append(" steps");
@@ -277,15 +246,14 @@ int Controller::checkMove(int x, int y) {
         test.get()->setValue(-1);  // beaten
 
         // start poison textview animation
-        text_view->activatePoisoned();
+        text_view->setPoisoned();
 
         return 2;  // is poison enemy
     }
 
     // XEnemy
     auto xEn = dynamic_pointer_cast<XEnemy>(test);
-    if (xEn)
-    {
+    if (xEn) {
         fighting();
 
         auto energy = world->getProtagonist()->getEnergy();
@@ -295,8 +263,7 @@ int Controller::checkMove(int x, int y) {
 
         energy = energy - xEn->getEnergy();
 
-        if (energy <= 0)
-        {  // lost fight
+        if (energy <= 0) {  // lost fight
             world->getProtagonist()->setEnergy(0);
             return -1;
         }
@@ -309,19 +276,16 @@ int Controller::checkMove(int x, int y) {
         terminalOut.append(QString::number(xEn->getValue()));
 
         auto health = world->getProtagonist()->getHealth();
-        if (health + test->getValue() >= 100)
-        {
+        if (health + test->getValue() >= 100) {
             world->getProtagonist()->setHealth(100);
-        }
-        else
+        } else
             world->getProtagonist()->setHealth(health + test->getValue());
 
         return 6;  // is X enemy
     }
 
     // NORMAL ENEMY
-    if (dynamic_pointer_cast<Enemy>(test))
-    {
+    if (dynamic_pointer_cast<Enemy>(test)) {
         // fighting
         fighting();
 
@@ -330,10 +294,9 @@ int Controller::checkMove(int x, int y) {
 
         // damage done
         auto currentHealth =
-            world->getProtagonist()->getHealth() - test->getValue();
+        world->getProtagonist()->getHealth() - test->getValue();
 
-        if (currentHealth <= 0)
-        {  // lost fight
+        if (currentHealth <= 0) {  // lost fight
             world->getProtagonist()->setHealth(0);
             return -1;
         }
@@ -352,18 +315,14 @@ void Controller::gotoHelper(QString input) {
 
     QString strX = strList.last();  // gets the last substring
     bool ok;
-    int x = strX.toInt(
-        &ok);  // convert the QString to an int, store the result in x
+    int x =
+    strX.toInt(&ok);  // convert the QString to an int, store the result in x
 
-    if (!ok)
-    {
-        if (strX == "hp" || strX == "healthpack")
-        {
+    if (!ok) {
+        if (strX == "hp" || strX == "healthpack") {
             goToHealthpack();
             return;
-        }
-        else if (strX == "enemy")
-        {
+        } else if (strX == "enemy") {
             goToEnemy();
             return;
         }
@@ -375,8 +334,7 @@ void Controller::gotoHelper(QString input) {
     QString strY = strList.last();  // gets the second-to-last substring
 
     int y = strY.toInt(&ok);
-    if (!ok)
-    {
+    if (!ok) {
         qDebug() << "Error converting string to int";
         return;
     }
@@ -386,8 +344,7 @@ void Controller::gotoHelper(QString input) {
 
 float Controller::pathCost(vector<pair<int, int>> path) {
     float sum = 0.0;
-    for (const auto& elem : path)
-    {
+    for (const auto& elem : path) {
         sum += world->getTileValue(elem.first, elem.second);
     }
     return sum;
@@ -401,26 +358,21 @@ int Controller::goToHealthpack() {
     vector<pair<int, int>> health_pack = {};
     float min_cost = -1;
     // find the path with the smallest length
-    for (unsigned long i = 0; i < world->getHealthPacks().size(); ++i)
-    {
-        if (world->getHealthPacks().at(i)->getValue() == -1)
-            continue;
+    for (unsigned long i = 0; i < world->getHealthPacks().size(); ++i) {
+        if (world->getHealthPacks().at(i)->getValue() == -1) continue;
         int x = world->getHealthPacks().at(i)->getXPos();
         int y = world->getHealthPacks().at(i)->getYPos();
         Tile end(x, y, 0.0);
         vector<pair<int, int>> path = astar(world, start, end, whiteValue);
         float new_cost = pathCost(path);
-        if (new_cost >= world->getProtagonist()->getEnergy())
-            continue;
-        if (new_cost < min_cost || min_cost == -1)
-        {
+        if (new_cost >= world->getProtagonist()->getEnergy()) continue;
+        if (new_cost < min_cost || min_cost == -1) {
             health_pack = path;
             min_cost = new_cost;
         }
     }
 
-    if (min_cost > -1)
-    {
+    if (min_cost > -1) {
         goToPath(health_pack);
         return min_cost;
     }
@@ -438,28 +390,23 @@ int Controller::goToEnemy() {
     float min_cost = -1;
     // find the path with the smallest length
     cout << "there are " << world->getEnemies().size() << "enemies" << endl;
-    for (unsigned long i = 0; i < world->getEnemies().size(); ++i)
-    {
+    for (unsigned long i = 0; i < world->getEnemies().size(); ++i) {
         cout << "enemy hp: " << world->getEnemies().at(i)->getValue() << endl;
-        if (world->getEnemies().at(i)->getValue() == -1)
-            continue;
+        if (world->getEnemies().at(i)->getValue() == -1) continue;
         cout << world->getEnemies().at(i)->getValue() << endl;
         int x = world->getEnemies().at(i)->getXPos();
         int y = world->getEnemies().at(i)->getYPos();
         Tile end(x, y, 0.0);
         vector<pair<int, int>> path = astar(world, start, end, whiteValue);
         float new_cost = pathCost(path);
-        if (new_cost >= world->getProtagonist()->getEnergy())
-            continue;
-        if (new_cost < min_cost || min_cost == -1)
-        {
+        if (new_cost >= world->getProtagonist()->getEnergy()) continue;
+        if (new_cost < min_cost || min_cost == -1) {
             enemy_path = path;
             min_cost = new_cost;
         }
     }
 
-    if (min_cost > 0)
-    {
+    if (min_cost > 0) {
         goToPath(enemy_path);
         return min_cost;
     }
@@ -478,8 +425,7 @@ void Controller::getPath(int x, int y) {
 }
 
 void Controller::goToPath(vector<pair<int, int>> path) {
-    if (path.empty())
-        return;
+    if (path.empty()) return;
     vector<QString> textPath = pathToText(path);
 
     QTimer::singleShot(animationSpeed,
@@ -487,8 +433,7 @@ void Controller::goToPath(vector<pair<int, int>> path) {
 }
 
 void Controller::makePathMoves(vector<QString> textPath) {
-    if (move < textPath.size())
-    {
+    if (move < textPath.size()) {
         commandReceived(textPath.at(move));
         move++;
         QTimer::singleShot(animationSpeed,
@@ -502,28 +447,20 @@ vector<QString> Controller::pathToText(vector<pair<int, int>> path) {
 
     // Loop through the path and convert each pair of coordinates into a
     // direction
-    for (size_t i = 1; i < path.size(); i++)
-    {
+    for (size_t i = 1; i < path.size(); i++) {
         // Get the current and previous coordinates
         auto current = path[i];
         auto prev = path[i - 1];
 
         // Compare the coordinates and add the corresponding direction to the
         // result vector
-        if (current.first > prev.first)
-        {
+        if (current.first > prev.first) {
             directions.push_back(QString("right"));
-        }
-        else if (current.first < prev.first)
-        {
+        } else if (current.first < prev.first) {
             directions.push_back(QString("left"));
-        }
-        else if (current.second > prev.second)
-        {
+        } else if (current.second > prev.second) {
             directions.push_back(QString("down"));
-        }
-        else if (current.second < prev.second)
-        {
+        } else if (current.second < prev.second) {
             directions.push_back(QString("up"));
         }
     }
@@ -534,39 +471,34 @@ vector<QString> Controller::pathToText(vector<pair<int, int>> path) {
 
 // TODO: fix
 void Controller::autoPlay() {
-    if (alive && loop && win == 0)
-    {
+    if (alive && loop && win == 0) {
         QTimer::singleShot(animationSpeed * 2, [this]() { autoPlayLoop(); });
-    }
-    else
+    } else
         loop = 1;
     return;
 }
 
 void Controller::autoPlayLoop() {
-    if (loop)
-    {
-        if (goToEnemy() != -1)
-        {
+    if (loop) {
+        if (goToEnemy() != -1) {
             autoPlay();
         }
-        if (goToHealthpack() == -1)
-        {
+        if (goToHealthpack() == -1) {
             loop = 0;
         }
         autoPlay();
     }
 }
 
-void Controller::dead(int x, int y) {
+void Controller::dead() {
     terminalOut = "Protagonist died :c";
-    text_view->protDead(x, y);
+    text_view->protagonistDies(world->getProtagonist()->getCoordinates());
     text_view->stopTimer();
     alive = 0;
 }
 
 void Controller::fighting() {
-    text_view->fighting();
+    text_view->setFighting();
 }
 
 void Controller::resetDelay() {

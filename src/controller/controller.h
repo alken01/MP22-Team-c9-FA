@@ -13,8 +13,7 @@
 #include "worldmodel.h"
 #include "xenemy.h"
 
-class Controller
-{
+class Controller {
     public:
         Controller();
 
@@ -37,10 +36,10 @@ class Controller
         }
         const std::shared_ptr<WorldModel>& getWorld() const { return world; }
         const std::shared_ptr<QGraphicsView>& getQgraphics_view() const {
-            return Qgraphics_view;
+            return QgraphicsView;
         }
         void setQgraphics_view(const std::shared_ptr<QGraphicsView>& newView) {
-            Qgraphics_view = newView;
+            QgraphicsView = newView;
         }
         void setWhiteValue(float newWhiteValue) { whiteValue = newWhiteValue; }
 
@@ -76,7 +75,7 @@ class Controller
         std::shared_ptr<WorldModel> world;
         std::shared_ptr<GraphicalView> graphical_view;
         std::shared_ptr<TextView> text_view;
-        std::shared_ptr<QGraphicsView> Qtext_view, Qgraphics_view;
+        std::shared_ptr<QGraphicsView> Qtext_view, QgraphicsView;
         bool alive = true;
         int poisoned = 0;
         bool win;
@@ -93,7 +92,7 @@ class Controller
     private:
         void initializeWorld();
         int checkMove(int x, int y);
-        void dead(int x, int y);
+        void dead();
         void printHelp();
         void fighting();
         void resetDelay();
