@@ -1,40 +1,21 @@
 #ifndef WORLDMODEL_H
 #define WORLDMODEL_H
 
-#include <QObject>
-#include <QWidget>
-
 #include "world.h"
+#include "xenemy.h"
 
-class WorldModel
-{
+class WorldModel {
     public:
-        WorldModel(std::shared_ptr<World> w, int xEnemies);
+        WorldModel(std::shared_ptr<World> w, int xEnemiesNumber);
 
         const std::vector<std::shared_ptr<Tile>>& getTiles() const;
-        void setTiles(const std::vector<std::shared_ptr<Tile>>& newTiles);
-
         int getWidth() const;
-        void setWidth(int newWidth);
-
         int getHeight() const;
-        void setHeight(int newHeight);
-
         const std::vector<std::shared_ptr<Enemy>>& getEnemies() const;
-        void setEnemies(const std::vector<std::shared_ptr<Enemy>>& newEnemies);
-
         const std::vector<std::shared_ptr<Tile>>& getHealthPacks() const;
-        void setHealthPacks(
-            const std::vector<std::shared_ptr<Tile>>& newHealthPacks);
-
         const std::shared_ptr<Protagonist>& getProtagonist() const;
-        void setProtagonist(const std::shared_ptr<Protagonist>& newProtagonist);
-
         const std::vector<std::vector<std::shared_ptr<Tile>>>& getWorldMap()
-            const;
-        void setWorldMap(
-            const std::vector<std::vector<std::shared_ptr<Tile>>>& newWorldMap);
-
+        const;
         float getTileValue(int x, int y);
 
     private:
@@ -45,6 +26,7 @@ class WorldModel
         std::vector<std::shared_ptr<Tile>> healthPacks;
         std::shared_ptr<Protagonist> protagonist;
         std::vector<std::vector<std::shared_ptr<Tile>>> worldMap;
+
         void initMapVec();
 };
 
