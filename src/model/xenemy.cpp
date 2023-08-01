@@ -7,7 +7,7 @@ XEnemy::XEnemy(int xPosition, int yPosition, float strength)
     // generate random energy value
     std::random_device rd;  // Only used once to initialise (seed) engine
     std::mt19937 rng(
-        rd());  // Random-number engine used (Mersenne-Twister in this case)
+    rd());  // Random-number engine used (Mersenne-Twister in this case)
     std::uniform_int_distribution<int> uni(1, 30);  // Guaranteed unbiased
 
     energy = uni(rng);

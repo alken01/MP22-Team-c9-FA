@@ -345,7 +345,8 @@ void Controller::gotoHelper(QString input) {
 float Controller::pathCost(vector<pair<int, int>> path) {
     float sum = 0.0;
     for (const auto& elem : path) {
-        sum += world->getTileValue(elem.first, elem.second);
+        Tile::Coordinates coord(elem.first, elem.second);
+        sum += world->getTileValue(coord);
     }
     return sum;
 }

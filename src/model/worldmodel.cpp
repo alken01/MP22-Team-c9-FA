@@ -1,54 +1,54 @@
 #include "worldmodel.h"
 
-WorldModel::WorldModel(std::shared_ptr<World> w, int xEnemiesNumber)
-    : width(w->getCols()),
-      height(w->getRows()),
-      protagonist(w->getProtagonist()) {
-    auto enemyUnique = w->getEnemies();
-    auto healthUnique = w->getHealthPacks();
-    auto tilesUnique = w->getTiles();
+WorldModel::WorldModel(std::shared_ptr<World> world, int xEnemiesNumber)
+    : width(world->getCols()), height(world->getRows()) {
+    //  print initialzing world
+    std::cout << "Initializing world..." << std::endl;
 
-     // Convert unique pointers to list of shared pointers using std::move
-    std::move(enemyUnique.begin(), enemyUnique.end(), std::back_inserter(enemies));
-    std::move(healthUnique.begin(), healthUnique.end(), std::back_inserter(healthPacks));
-    std::move(tilesUnique.begin(), tilesUnique.end(), std::back_inserter(tiles));
+    // Get vectors of unique pointers from World
+    std::vector<std::unique_ptr<Enemy>> enemyUnique = world->getEnemies();
+    std::vector<std::unique_ptr<Tile>> healthUnique = world->getHealthPacks();
+    std::vector<std::unique_ptr<Tile>> tilesUnique = world->getTiles();
+    std::unique_ptr<Protagonist> protagonistUnique = world->getProtagonist();
 
-    for (const auto& enemy : enemies) {
-        unsigned long x = enemy->getXPos();
-        unsigned long y = enemy->getYPos();
+    // Convert unique pointers to shared pointers using the helper function
+    enemies = convertToShared(enemyUnique);
+    healthPacks = convertToShared(healthUnique);
+    tiles = convertToShared(tilesUnique);
+    protagonist = std::move(protagonistUnique);
 
-        // if normal enemy add x Xtype enemies
-        if (xEnemiesNumber > 0) {
-            enemies.push_back(
-            std::make_shared<XEnemy>(x, y, enemy->getValue()));
-            xEnemiesNumber--;
-        }
-    }
-
-    initMapVec();
+    std::cout << "populateWorldMap" << std::endl;
+    populateWorldMap();
 }
 
-void WorldModel::initMapVec() {
+template <typename T>
+std::vector<std::shared_ptr<T>> WorldModel::convertToShared(
+std::vector<std::unique_ptr<T>>& uniqueVector) {
+    std::vector<std::shared_ptr<T>> sharedVector;
+    std::transform(uniqueVector.begin(), uniqueVector.end(),
+                   std::back_inserter(sharedVector),
+                   [](std::unique_ptr<T>& ptr) { return std::move(ptr); });
+    return sharedVector;
+}
+
+void WorldModel::populateWorldMap() {
     // init 2D array/check poison enemies
     std::vector<std::shared_ptr<Tile>> col(height, nullptr);
     worldMap = std::vector<std::vector<std::shared_ptr<Tile>>>(width, col);
 
-    for (const auto& tile : tiles) {
-        int x = tile->getXPos();
-        int y = tile->getYPos();
-        worldMap[x][y] = tile;
+    for (const std::shared_ptr<Tile>& tile : tiles) {
+        const Tile::Coordinates& coords = tile->getCoordinates();
+        worldMap[coords.xPos][coords.yPos] = tile;
     }
 
-    for (const auto& healthPack : healthPacks) {
-        int x = healthPack->getXPos();
-        int y = healthPack->getYPos();
-        worldMap[x][y] = healthPack;
+    for (const std::shared_ptr<Tile>& healthPack : healthPacks) {
+        const Tile::Coordinates& coords = healthPack->getCoordinates();
+        worldMap[coords.xPos][coords.yPos] = healthPack;
     }
 
-    for (const auto& enemy : enemies) {
-        int x = enemy->getXPos();
-        int y = enemy->getYPos();
-        worldMap[x][y] = enemy;
+    for (const std::shared_ptr<Enemy>& enemy : enemies) {
+        const Tile::Coordinates& coords = enemy->getCoordinates();
+        worldMap[coords.xPos][coords.yPos] = enemy;
     }
 }
 
@@ -82,6 +82,6 @@ const {
     return worldMap;
 }
 
-float WorldModel::getTileValue(int x, int y) {
-    return getTiles()[x + y * getWidth()]->getValue();
+float WorldModel::getTileValue(Tile::Coordinates coord) {
+    return getTiles()[coord.xPos + coord.yPos * getWidth()]->getValue();
 }

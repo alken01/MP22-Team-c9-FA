@@ -15,9 +15,11 @@ SOURCES += \
     src/view/mainwindow.cpp \
     src/view/graphicalview.cpp \
     src/view/textview.cpp \
-    src/controller/game_controller.cpp \
+    src/controller/controller.cpp \
     src/pathfinder/astar.cpp \
-    src/main.cpp
+    src/main.cpp \
+    # main_test.cpp \
+    tests/worldmodel_test.cpp 
 
 # Header files
 HEADERS += \
@@ -28,14 +30,16 @@ HEADERS += \
     src/view/textview.h \
     src/view/view.h \
     src/view/image_widget.h \
-    src/controller/game_controller.h \
+    src/controller/controller.h \
     src/pathfinder/astar.h \
     include/world_global.h \
     include/world.h
 
+# Forms
 FORMS += \
     mainwindow.ui
 
+# Resources
 RESOURCES += \
     resources.qrc
 
@@ -43,21 +47,19 @@ RESOURCES += \
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/model
 INCLUDEPATH += $$PWD/src/view
-INCLUDEPATH += $$PWD/src/controller   
-INCLUDEPATH += $$PWD/src/pathfinder   
+INCLUDEPATH += $$PWD/src/controller
+INCLUDEPATH += $$PWD/src/pathfinder
+INCLUDEPATH += $$PWD/googletest/googletest/include
 
 # Add the library directories
 LIBS += -L$$PWD/lib
+LIBS += -L$$PWD/googletest/build/lib
 
-# Link the world library for macOS
-macx: LIBS += -L$$PWD/lib -lworld
+# Libraries to link
+LIBS += -lworld 
 
-# Link the world library for Windows (both debug and release builds)
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib -lworld
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib -lworld
-
-# Link the world library for other Unix-based systems
-else:unix: LIBS += -L$$PWD/lib -lworld
+# Link the world and Google Test libraries for all platforms
+LIBS += -lgtest -lgtest_main
 
 # Additional platform-specific configurations can be added here if necessary.
 

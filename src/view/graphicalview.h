@@ -6,8 +6,7 @@
 
 #include "view.h"
 
-class GraphicalView : public View
-{
+class GraphicalView : public View {
     public:
         GraphicalView();
         void handleInput();
@@ -19,8 +18,7 @@ class GraphicalView : public View
         std::shared_ptr<QString> stringWorld;
         QGraphicsScene* graphicsscene;
         std::shared_ptr<QGraphicsPixmapItem> worldPix;
-
-        QVector<QString> qVec, qVecPlayer;
+        QVector<QString> vectorMap, qVecPlayer;
         std::shared_ptr<QString> playerString;
         std::shared_ptr<QGraphicsView> outputView;
         int width;

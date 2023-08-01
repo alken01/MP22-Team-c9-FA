@@ -10,15 +10,13 @@
 #include "worldmodel.h"
 using namespace std;
 
-struct Node
-{
+struct Node {
         int x, y;  // Position on the grid (x, y)
         int cost;  // Cost of reaching this position
         Node(int x, int y, int cost) : x(x), y(y), cost(cost) {}
 };
 
-struct NodeComparator
-{
+struct NodeComparator {
         bool operator()(const Node& a, const Node& b) {
             return a.cost > b.cost;
         }

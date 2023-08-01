@@ -5,8 +5,7 @@
 
 #include "world.h"
 
-class XEnemy : public Enemy
-{
+class XEnemy : public Enemy {
         Q_OBJECT
     public:
         XEnemy(int xPosition, int yPosition, float strength);

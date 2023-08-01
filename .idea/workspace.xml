@@ -7,26 +7,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2244325d-5cc8-4db2-aeee-c0bddf227a72" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/googletest" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main_test.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MP22-Team-c9-FA.pro" beforeDir="false" afterPath="$PROJECT_DIR$/MP22-Team-c9-FA.pro" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/XEnemy.h" beforeDir="false" afterPath="$PROJECT_DIR$/XEnemy.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/astar.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/astar.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/astar.h" beforeDir="false" afterPath="$PROJECT_DIR$/astar.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/controller.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller.h" beforeDir="false" afterPath="$PROJECT_DIR$/controller.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/graphicalview.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/graphicalview.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/graphicalview.h" beforeDir="false" afterPath="$PROJECT_DIR$/graphicalview.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image_widget.h" beforeDir="false" afterPath="$PROJECT_DIR$/image_widget.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainwindow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindow.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainwindow.h" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindow.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/textview.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/textview.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/textview.h" beforeDir="false" afterPath="$PROJECT_DIR$/textview.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view.h" beforeDir="false" afterPath="$PROJECT_DIR$/view.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/world.h" beforeDir="false" afterPath="$PROJECT_DIR$/world.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/world_global.h" beforeDir="false" afterPath="$PROJECT_DIR$/world_global.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/worldmodel.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/worldmodel.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/worldmodel.h" beforeDir="false" afterPath="$PROJECT_DIR$/worldmodel.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xenemy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/xenemy.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/game_controller.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/game_controller.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/game_controller.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/game_controller.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/worldmodel.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/worldmodel.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/worldmodel.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/worldmodel.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/view/graphicalview.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/graphicalview.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/view/image_widget.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/image_widget.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/view/mainwindow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/mainwindow.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/view/mainwindow.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/mainwindow.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/view/textview.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/textview.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,11 +34,15 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="2T29RMRkxJBnB8PkRNEzU3TYUUa" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
@@ -53,6 +51,7 @@
     <property name="cf.first.check.clang-format" value="false" />
     <property name="cidr.known.project.marker" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
   </component>
   <component name="RunManager">
     <configuration name="Makefile" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
@@ -77,10 +76,25 @@
       <updated>1690230300688</updated>
       <workItem from="1690230303215" duration="394000" />
       <workItem from="1690234747555" duration="61000" />
+      <workItem from="1690848358114" duration="876000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
 </project>

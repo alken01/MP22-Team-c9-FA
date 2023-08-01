@@ -8,8 +8,7 @@
 using namespace std;
 
 // Custom widget for displaying the image and path
-class ImageWidget : public QWidget
-{
+class ImageWidget : public QWidget {
         Q_OBJECT
 
     public:
@@ -33,8 +32,7 @@ class ImageWidget : public QWidget
             imageY += dy;
 
             // Update the path coordinates
-            for (auto& point : path)
-            {
+            for (auto& point : path) {
                 point.first += dx;
                 point.second += dy;
             }
@@ -55,8 +53,8 @@ class ImageWidget : public QWidget
 
             // Update the scaled image
             scaledImage =
-                image.scaled(zoomFactor * image.width(),
-                             zoomFactor * image.height(), Qt::KeepAspectRatio);
+            image.scaled(zoomFactor * image.width(),
+                         zoomFactor * image.height(), Qt::KeepAspectRatio);
 
             // Trigger a repaint of the widget
             update();
@@ -71,8 +69,7 @@ class ImageWidget : public QWidget
 
             // Scale the path coordinates
             QVector<QPoint> scaledPath;
-            for (const auto& point : path)
-            {
+            for (const auto& point : path) {
                 scaledPath.append(QPoint(point.first * image.width(),
                                          point.second * image.height()));
             }
@@ -86,8 +83,7 @@ class ImageWidget : public QWidget
 
             // Draw the path
             painter.setPen(QPen(Qt::blue, 3));
-            for (auto point : path)
-            {
+            for (auto point : path) {
                 painter.drawPoint(point.first, point.second);
             }
 
@@ -98,20 +94,13 @@ class ImageWidget : public QWidget
 
         void keyPressEvent(QKeyEvent* event) {
             // Handle the arrow keys
-            if (event->key() == Qt::Key_Right)
-            {
+            if (event->key() == Qt::Key_Right) {
                 moveImage(-10, 0);  // Move the image 10 pixels to the left
-            }
-            else if (event->key() == Qt::Key_Left)
-            {
+            } else if (event->key() == Qt::Key_Left) {
                 moveImage(10, 0);  // Move the image 10 pixels to the right
-            }
-            else if (event->key() == Qt::Key_Down)
-            {
+            } else if (event->key() == Qt::Key_Down) {
                 moveImage(0, -10);  // Move the image 10 pixels upwards
-            }
-            else if (event->key() == Qt::Key_Up)
-            {
+            } else if (event->key() == Qt::Key_Up) {
                 moveImage(0, 10);  // Move the image 10 pixels downwards
             }
         }

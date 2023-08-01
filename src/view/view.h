@@ -8,8 +8,7 @@
 #include "world.h"
 #include "worldmodel.h"
 
-class View : public QGraphicsView
-{
+class View : public QGraphicsView {
         Q_OBJECT
     public:
         ~View(){};

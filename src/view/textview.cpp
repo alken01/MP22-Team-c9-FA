@@ -1,5 +1,4 @@
 #include "textview.h"
-#include <iostream>
 
 #ifdef __APPLE__
 QFont TEXT_FONT("SF Mono");
@@ -14,7 +13,7 @@ const int TIMER_ANIMATION = 1000;
 
 const QChar EMPTY_SYMBOL = QChar(' ');
 const QChar CLOUD_SYMBOL = QChar(0x2591);  // ░
-const QChar WALL_SYMBOL = QChar(0x2588);  // █
+const QChar WALL_SYMBOL = QChar(0x2588);   // █
 
 const QChar PROTAGONIST_SYMBOL = QChar(0x263A);  // ☺
 const QChar HEALTHPACK_SYMBOL = QChar(0x2665);   // ♥
@@ -171,7 +170,7 @@ void TextView::setPoisoned() {
 }
 
 void TextView::setTextViewState(const QColor& color) {
-    textScene->setBackgroundBrush(color);   
+    textScene->setBackgroundBrush(color);
 }
 
 void TextView::updateText() {

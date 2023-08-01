@@ -17,8 +17,21 @@
 // using namespace std;
 
 int main(int argc, char* argv[]) {
-    if (true)
-    {
+    if (true) {
+        // QApplication app(argc, argv);
+
+        // unsigned int enemies = 10, healthpacks = 5;
+        // float ratio = 0.25f;
+
+        // std::unique_ptr<GameController> gameController =
+        //     std::make_unique<GameController>(enemies, healthpacks, ratio);
+
+        // std::unique_ptr<MainWindow> mainWindow =
+        //     std::make_unique<MainWindow>(nullptr, *gameController);
+        // mainWindow->initViews();
+        // mainWindow->show();
+
+        // return app.exec();
         QApplication app(argc, argv);
         shared_ptr<Controller> controller = std::make_shared<Controller>();
         MainWindow* mainWindow = new MainWindow(nullptr, controller);
