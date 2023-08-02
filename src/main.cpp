@@ -35,7 +35,6 @@ int main(int argc, char* argv[]) {
         QApplication app(argc, argv);
         shared_ptr<Controller> controller = std::make_shared<Controller>();
         MainWindow* mainWindow = new MainWindow(nullptr, controller);
-        mainWindow->initViews();
         mainWindow->show();
         int exitCode = app.exec();
         delete mainWindow;

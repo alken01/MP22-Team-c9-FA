@@ -158,7 +158,7 @@ void Controller::movePlayer(QString input) {
     world->getProtagonist()->setYPos(y2);
 
     text_view->moveProtagonist(
-    Tile::Coordinates(x, y), world->getProtagonist()->getCoordinates(), world);
+    Tile::Coordinates(x, y), world);
 
     // check if alive
     if (world->getProtagonist()->getHealth() <= 0 ||

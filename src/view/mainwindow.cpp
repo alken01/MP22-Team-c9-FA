@@ -1,44 +1,56 @@
 #include "mainwindow.h"
+#include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> c)
+const int TEXT_VIEW = true;
+const int GRAPHICS_VIEW = false;
+
+const QString WIN_MESSAGE = "Congratulations! You won!";
+const QString LOSE_MESSAGE = "Your journey ends here. Press restart.";
+const QString UNRECOGNIZED_INPUT_MESSAGE =
+"Invalid command. Type 'help' for options.";
+const QString HELP_MESSAGE_TITLE = "Need guidance? Available commands:";
+const QString HELP_MESSAGE_FOOTER = "Type any command to continue.";
+const QString HELP_COMMAND = "help";
+
+MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> controller)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
+    this->controller = controller;
     ui->setupUi(this);
+    setupUIComponents();
+    setupConnections();
+    filterCommands();
+    ui->comboBox->setCurrentIndex(0);
+    initViews();
+}
 
-    controller = c;
-
-    // Create a text input field
+void MainWindow::setupUIComponents() {
     textInput = ui->lineEdit;
-
-    // Create a button
-    QPushButton* button = ui->pushButton;
-
-    // hide scrollbar terminal
     ui->textEdit_4->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    // progressBar health
     health = ui->progressBar;
     health->setRange(0, 100);
-    health->setValue(c->getWorld()->getProtagonist()->getHealth());
+    health->setValue(controller->getWorld()->getProtagonist()->getHealth());
 
-    // progressBar energy
     energy = ui->progressBar_2;
     energy->setRange(0, 100);
-    energy->setValue(c->getWorld()->getProtagonist()->getEnergy());
+    energy->setValue(controller->getWorld()->getProtagonist()->getEnergy());
 
-    // autocomplete
-    completer = new QCompleter(c->getCommands(), this);
+    completer = new QCompleter(controller->getCommands(), this);
     ui->lineEdit->setCompleter(completer);
 
-    // mapSelector
     ui->comboBox->addItems(controller->getMapList());
+    
+    viewStatus = TEXT_VIEW;
+    changeScene();
+}
 
-    // heurstic slider
-    controller->setWhiteValue(ui->heuristicSlider->value() / 10);
-
-    // Connect all
-    connect(button, &QPushButton::clicked, this, &MainWindow::changeScene);
-    connect(textInput, &QLineEdit::textChanged, this, &MainWindow::textEntered);
-    connect(textInput, &QLineEdit::returnPressed, this,
+// Set up the signal-slot connections
+void MainWindow::setupConnections() {
+    connect(ui->pushButton, &QPushButton::clicked, this,
+            &MainWindow::changeScene);
+    connect(ui->lineEdit, &QLineEdit::textChanged, this,
+            &MainWindow::textEntered);
+    connect(ui->lineEdit, &QLineEdit::returnPressed, this,
             &MainWindow::pressEntered);
     connect(ui->comboBox, &QComboBox::currentIndexChanged, this,
             &MainWindow::mapChanged);
@@ -51,53 +63,8 @@ MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> c)
     connect(ui->animationSlider, &QSlider::sliderMoved, this,
             &MainWindow::changeSpeed);
 
-    // empty line edit after autocomplete
     QObject::connect(completer, SIGNAL(activated(const QString&)), ui->lineEdit,
                      SLOT(clear()), Qt::QueuedConnection);
-
-    // hide graphicsview stuff
-    ui->zoomSlider->hide();
-    ui->textEdit_11->hide();
-    ui->pushButton_2->hide();
-
-    ui->comboBox->setCurrentIndex(0);
-}
-
-class ImageAndSelector {
-        Q_OBJECT
-
-    public:
-        // Constructor
-        ImageAndSelector();
-
-        // Other member functions
-        QComboBox* getQcomboBox() { return comboBox; }
-        QLabel* getQLabel() { return label; }
-
-        void setQcomboBox(QComboBox* newCombo) { comboBox = newCombo; }
-
-        void setQLabel(QLabel* newLabel) { label = newLabel; }
-
-        // Slot function
-        Q_SLOT void updateImage(int index) {
-            // Get the selected item from the QComboBox
-            QString selectedItem = comboBox->itemText(index);
-
-            // Create a QPixmap object with the selected item's image path
-            QPixmap pixmap(selectedItem);
-
-            // Set the QLabel's pixmap to the QPixmap object
-            label->setPixmap(pixmap);
-        }
-
-    private:
-        // Private member variables
-        QComboBox* comboBox;
-        QLabel* label;
-};
-
-MainWindow::~MainWindow() {
-    delete ui;
 }
 
 void MainWindow::initViews() {
@@ -107,96 +74,108 @@ void MainWindow::initViews() {
 }
 
 void MainWindow::changeScene() {
-    if (viewStatus == 1) {  // textview
-        controller->getQtext_view().get()->show();
-        controller->getQgraphics_view().get()->hide();
-        ui->lineEdit->show();
-        ui->zoomSlider->hide();
-        ui->textEdit_11->hide();
-        viewStatus = 0;
-    } else {  // graphicsView
-        controller->getQgraphics_view().get()->show();
-        controller->getQtext_view().get()->hide();
-        ui->zoomSlider->show();
-        ui->textEdit_11->show();
-        ui->lineEdit->hide();
-        ui->textEdit_4->clear();
-        viewStatus = 1;
-    }
+    // true if text view is active
+    const bool isTextView = (viewStatus == TEXT_VIEW);
+
+    // hide text view and show graphics view
+    controller->getQtext_view().get()->setVisible(isTextView);
+    controller->getQgraphics_view().get()->setVisible(!isTextView);
+
+    // change these elements
+    ui->zoomSlider->setVisible(!isTextView);   // hide zoom slider
+    ui->lineEdit->setVisible(isTextView);      // hide line edit
+    ui->textEdit_11->setVisible(!isTextView);  // show text edit
+    ui->textEdit_4->clear();                   // clear terminal
+
+    viewStatus = isTextView ? GRAPHICS_VIEW : TEXT_VIEW;  // flip view status
 }
 
 void MainWindow::pressEntered() {
-    if (controller->getWin() == 1) {
-        ui->textEdit_4->setText("You win!");
-        ui->pushButton->hide();
-        ui->pushButton_2->show();
-        return;
-    }
-    if (!controller->isAlive()) {
-        ui->textEdit_4->setText("Player died - press restart button");
-        ui->pushButton->hide();
-        ui->pushButton_2->show();
-        return;
-    }
+    if (isGameOver()) return;
     QString input = textInput->text();
-    // updatePath(input);
-    QString result = controller->commandReceived(input);
-    if (result == "help") {
-        auto s = controller->getCommands();
-        ui->textEdit_4->append("--------------------------------");
-        ui->textEdit_4->append("Possible commands:");
-        for (int i = 0; i < s.length(); i++) {
-            ui->textEdit_4->append(s.at(i));
-        }
-        ui->textEdit_4->append("--------------------------------");
+    QString commandEntered = controller->commandReceived(input);
+
+    if (commandEntered == HELP_COMMAND) {
+        printHelpCommands();
+    } else if (!commandEntered.isNull() || input.left(4) == "goto") {
+        printTerminal(commandEntered);
+    } else {
+        printTerminal(UNRECOGNIZED_INPUT_MESSAGE);
     }
-
-    // maybe need to change this back
-    // needs to be fixed somehow anyway
-    else if (!result.isNull() || input.left(4) == "goto") {
-        ui->textEdit_4->append(result);
-        getFeedback();
-    } else
-        ui->textEdit_4->append(
-        "Unrecognized input - type 'help' for possible commands");
-
-    // clear input
     textInput->clear();
-
-    // getfeedback if textview
     getFeedback();
-
-    // update visualisations
-    health->setValue(controller->getWorld()->getProtagonist()->getHealth());
-    energy->setValue(controller->getWorld()->getProtagonist()->getEnergy());
-    ui->lcdNumber->display(controller->getPoisoned());
+    updateVitals();
 }
-void MainWindow::textEntered() {}
 
-void MainWindow::setController(std::shared_ptr<Controller>& c) {
-    controller = c;
+void MainWindow::textEntered() {
+    QString input = textInput->text().trimmed();
+    if (input.length() < 1) return;
+    for (const QString& command : filteredCommands) {
+        // if the command starts with the input, autocomplete
+        if (command.startsWith(input)) {
+            textInput->setText(command);
+            pressEntered();
+        }
+    }
+}
+
+bool MainWindow::isGameOver(){
+    bool isPlayerDead = !controller->isAlive();
+    bool isGameWon = controller->getWin();
+
+    if (isPlayerDead || isGameWon) {
+        QString message = isGameWon ? WIN_MESSAGE : LOSE_MESSAGE;
+        printTerminal(message);
+        showRestartButton(true);
+        return true;
+    }
+    return false;
+}
+
+void MainWindow::filterCommands() {
+    for (const QString& command : controller->getCommands())
+        if (!command.startsWith("goto")) filteredCommands.append(command);
 }
 
 void MainWindow::mapChanged() {
     controller->changeMap(ui->comboBox->currentText());
-    // update visualisations
-    health->setValue(controller->getWorld()->getProtagonist()->getHealth());
-    energy->setValue(controller->getWorld()->getProtagonist()->getEnergy());
-    ui->lcdNumber->display(controller->getPoisoned());
+
+    updateVitals();
     ui->textEdit_4->clear();
-    ui->pushButton_2->hide();
-    ui->pushButton->show();
+    showRestartButton(false);
 
     // empty line edit after autocomplete
     QObject::connect(completer, SIGNAL(activated(const QString&)), ui->lineEdit,
                      SLOT(clear()), Qt::QueuedConnection);
 }
 
-// get terminal message from controller
+void MainWindow::updateVitals() {
+    health->setValue(controller->getWorld()->getProtagonist()->getHealth());
+    energy->setValue(controller->getWorld()->getProtagonist()->getEnergy());
+    ui->lcdNumber->display(controller->getPoisoned());
+}
+
+void MainWindow::printHelpCommands() {
+    printTerminal(HELP_MESSAGE_TITLE);
+    for (QString command : controller->getCommands()) {
+        printTerminal(command);
+    }
+    printTerminal(HELP_MESSAGE_FOOTER);
+}
+
+void MainWindow::showRestartButton(bool show) {
+    ui->pushButton->setVisible(!show);
+    ui->pushButton_2->setVisible(show);
+}
+
+void MainWindow::printTerminal(QString message) {
+    ui->textEdit_4->append(message);
+}
+
 void MainWindow::getFeedback() {
     auto message = controller->getTerminalOut();
     if (message.isNull()) return;
-    ui->textEdit_4->append(message);
+    printTerminal(message);
     controller->setTerminalOut(NULL);
 }
 

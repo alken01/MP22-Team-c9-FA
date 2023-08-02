@@ -11,9 +11,11 @@ const QColor HEALED_COLOR = QColor("green");
 const QColor FIGHTING_COLOR = QColor("orange");
 const int TIMER_ANIMATION = 1000;
 
-const QChar EMPTY_SYMBOL = QChar(' ');
-const QChar CLOUD_SYMBOL = QChar(0x2591);  // ░
-const QChar WALL_SYMBOL = QChar(0x2588);   // █
+const QChar WALL_SYMBOL = QChar(0x2588);     // █
+const QChar DARKEST_SYMBOL = QChar(0x2593);  // ▓
+const QChar DARKER_SYMBOL = QChar(0x2592);   // ▒
+const QChar DARK_SYMBOL = QChar(0x2591);     // ░
+const QChar EMPTY_SYMBOL = QChar(' ');       // _
 
 const QChar PROTAGONIST_SYMBOL = QChar(0x263A);  // ☺
 const QChar HEALTHPACK_SYMBOL = QChar(0x2665);   // ♥
@@ -102,8 +104,9 @@ void TextView::combineLinesToString() {
 // This code will be used in controller / changed so it gets input from
 // controller
 void TextView::moveProtagonist(Tile::Coordinates currentCoord,
-                               Tile::Coordinates newCoord,
                                std::shared_ptr<WorldModel> world) {
+
+    Tile::Coordinates newCoord = world->getProtagonist()->getCoordinates();
     int worldPos = currentCoord.yPos * world->getWidth() + currentCoord.xPos;
     float tileValue = world->getTiles().at(worldPos)->getValue();
     changeSignAtCoord(currentCoord, grayscaleToASCII(tileValue));
@@ -140,18 +143,19 @@ void TextView::updateVisibleMap() {
 
 void TextView::changeSignAtCoord(Tile::Coordinates coord, QChar input) {
     vectorMap[coord.yPos][coord.xPos] = input;
-    // updateVisibleMap();
 }
 
 QChar TextView::grayscaleToASCII(float intensity) {
     if (intensity == INFINITY) return WALL_SYMBOL;
-    if (intensity == 1) return EMPTY_SYMBOL;
-    return CLOUD_SYMBOL;
+    if (intensity > 1) return HEALTHPACK_SYMBOL;
+    if (intensity < 0.2) return DARKEST_SYMBOL;
+    if (intensity < 0.5) return DARKER_SYMBOL;
+    if (intensity < 0.8) return DARK_SYMBOL;
+    return EMPTY_SYMBOL;
 }
 
 void TextView::protagonistDies(Tile::Coordinates coord) {
     changeSignAtCoord(coord, DEAD_SYMBOL);
-    // updateText();
 }
 
 void TextView::setHealed() {

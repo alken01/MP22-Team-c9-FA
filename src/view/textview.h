@@ -14,7 +14,6 @@ class TextView : public View {
         void draw(std::shared_ptr<WorldModel> w,
                   std::shared_ptr<QGraphicsView> textView);
         void moveProtagonist(Tile::Coordinates currentCoord,
-                             Tile::Coordinates newCoord,
                              std::shared_ptr<WorldModel> w);
         void updateView();
         void protagonistDies(Tile::Coordinates coord);
