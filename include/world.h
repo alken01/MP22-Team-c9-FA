@@ -6,17 +6,35 @@
 #include <exception>
 #include <memory>
 #include <vector>
-
 #include "world_global.h"
 
+#include <iostream>
 class WORLDSHARED_EXPORT Tile {
     public:
+        enum Type {
+            ConsumedHealthpack = -2,
+            DefeatedEnemy = -1,
+            NormalTile = 0,
+            Wall,
+            Healthpack,
+            Enemy,
+            PEnemy,
+            XEnemy,
+            Protagonist
+        };
+
         struct Coordinates {
                 int xPos;
                 int yPos;
+                Coordinates() : xPos(0), yPos(0) {}
                 Coordinates(int xPos, int yPos) : xPos(xPos), yPos(yPos) {}
         };
+
         Coordinates getCoordinates() const { return Coordinates(xPos, yPos); }
+        void setCoordinates(Coordinates newCoordinates) {
+            setXPos(newCoordinates.xPos);
+            setYPos(newCoordinates.yPos);
+        }
 
         Tile(int xPosition, int yPosition, float tileWeight);
         virtual ~Tile() = default;
@@ -31,6 +49,13 @@ class WORLDSHARED_EXPORT Tile {
                    (getYPos() == other.getYPos());
         };
         virtual std::string serialize();
+        Tile::Type getTileType() const {
+            std::cout << "Tile: " << this->getValue() << std::endl;
+            if (this->getValue() == INFINITY) return Tile::Wall;
+            if (this->getValue() > 1) return Tile::Healthpack;
+            if (this->getValue() == -1) return Tile::ConsumedHealthpack;
+            return Tile::NormalTile;
+        }
 
     protected:
         int xPos;
@@ -49,6 +74,10 @@ class WORLDSHARED_EXPORT Enemy : public QObject, public Tile {
             if (defeated) emit dead();
         };
         std::string serialize() override;
+        Tile::Type getTileType() const  {
+            if (this->getValue() == -1) return Tile::DefeatedEnemy;
+            return Tile::Enemy;
+        }
 
     signals:
         void dead();
@@ -65,6 +94,11 @@ class WORLDSHARED_EXPORT PEnemy : public Enemy {
         float getPoisonLevel() const;
         void setPoisonLevel(float value);
         std::string serialize() override;
+        Tile::Type getTileType() const  {
+            if (this->getValue() == -1) return Tile::DefeatedEnemy;
+            std::cout << "PEnemy" << std::endl;
+            return Tile::PEnemy;
+        }
 
     public slots:
         bool poison();
@@ -111,6 +145,30 @@ class WORLDSHARED_EXPORT Protagonist : public QObject, public Tile {
             emit energyChanged(static_cast<int>(energy));
         }
         std::string serialize() override;
+
+        void decreaseEnergy(float damageValue) {
+            float newEnergy = this->getEnergy() - damageValue;
+            this->setEnergy(std::max(newEnergy, 0.0f));
+        }
+
+        void decreaseHealth(float damageValue) {
+            float newHealth = this->getHealth() - damageValue;
+            this->setHealth(std::max(newHealth, 0.0f));
+        }
+
+        void increaseEnergy(float addedValue) {
+            float newEnergy = this->getEnergy() + addedValue;
+            this->setEnergy(std::min(newEnergy, 100.0f));
+        }
+
+        void increaseHealth(float addedValue) {
+            float newHealth = this->getHealth() + addedValue;
+            this->setHealth(std::min(newHealth, 100.0f));
+        }
+
+        Tile::Type getTileType() const {
+            return Tile::Protagonist;
+        }
 
     signals:
         void posChanged(int x, int y);

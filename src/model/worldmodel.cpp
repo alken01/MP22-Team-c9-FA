@@ -1,9 +1,10 @@
 #include "worldmodel.h"
 
-WorldModel::WorldModel(std::shared_ptr<World> world, int xEnemiesNumber)
+WorldModel::WorldModel(std::shared_ptr<World> world,
+                       unsigned int xEnemiesNumber)
     : width(world->getCols()), height(world->getRows()) {
     //  print initialzing world
-    std::cout << "Initializing world..." << std::endl;
+    // std::cout << "Initializing world..." << std::endl;
 
     // Get vectors of unique pointers from World
     std::vector<std::unique_ptr<Enemy>> enemyUnique = world->getEnemies();
@@ -17,8 +18,8 @@ WorldModel::WorldModel(std::shared_ptr<World> world, int xEnemiesNumber)
     tiles = convertToShared(tilesUnique);
     protagonist = std::move(protagonistUnique);
 
-    std::cout << "populateWorldMap" << std::endl;
     populateWorldMap();
+    createXEnemeies(xEnemiesNumber);
 }
 
 template <typename T>
@@ -49,6 +50,22 @@ void WorldModel::populateWorldMap() {
     for (const std::shared_ptr<Enemy>& enemy : enemies) {
         const Tile::Coordinates& coords = enemy->getCoordinates();
         worldMap[coords.xPos][coords.yPos] = enemy;
+    }
+}
+
+void WorldModel::createXEnemeies(unsigned int xEnemiesNumber) {
+    if (xEnemiesNumber > enemies.size()) {
+        xEnemiesNumber = enemies.size();
+    }
+    for (unsigned int i = 0; i < xEnemiesNumber; i++) {
+        // get the position of the first enemies
+        int xPos = enemies[i]->getCoordinates().xPos;
+        int yPos = enemies[i]->getCoordinates().yPos;
+        float strength = enemies[i]->getValue();
+        // remove the enemy
+        enemies.erase(enemies.begin() + i);
+        // add the XEnemy
+        enemies.push_back(std::make_shared<XEnemy>(xPos, yPos, strength));
     }
 }
 

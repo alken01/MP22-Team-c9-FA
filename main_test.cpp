@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
-// Include your test files here
 #include "tests/worldmodel_test.cpp"
 
 int main(int argc, char** argv) {

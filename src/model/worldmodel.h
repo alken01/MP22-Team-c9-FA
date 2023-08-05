@@ -10,8 +10,8 @@
 
 class WorldModel {
     public:
-        WorldModel(std::shared_ptr<World> w, int xEnemiesNumber);
-
+        WorldModel(std::shared_ptr<World> world, unsigned int xEnemiesNumber);
+        
         const std::vector<std::shared_ptr<Tile>>& getTiles() const;
         const std::vector<std::shared_ptr<Enemy>>& getEnemies() const;
         const std::vector<std::shared_ptr<Tile>>& getHealthPacks() const;
@@ -35,6 +35,7 @@ class WorldModel {
         template <typename T>
         std::vector<std::shared_ptr<T>> convertToShared(
         std::vector<std::unique_ptr<T>>& uniqueVector);
+        void createXEnemeies(unsigned int xEnemiesNumber);
 };
 
 #endif  // WORLDMODEL_H
