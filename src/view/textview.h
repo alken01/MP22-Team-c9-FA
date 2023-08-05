@@ -11,12 +11,11 @@ class TextView : public View {
     public:
         TextView();
 
-        void draw(std::shared_ptr<WorldModel> w,
+        void draw(std::shared_ptr<WorldModel> worldModel,
                   std::shared_ptr<QGraphicsView> textView);
-        void moveProtagonist(Tile::Coordinates currentCoord,
-                             std::shared_ptr<WorldModel> w);
+        void moveProtagonist(Tile::Coordinates currentCoord);
         void updateView();
-        void protagonistDies(Tile::Coordinates coord);
+        void protagonistDies();
         void setHealed();
         void setFighting();
         void setPoisoned();
@@ -42,7 +41,7 @@ class TextView : public View {
         QGraphicsScene* textScene;
         QTimer poisonedEffectTimer;
         QTimer healthFightTimer;
-        std::shared_ptr<WorldModel> world;
+        std::shared_ptr<WorldModel> worldModel;
 };
 
 #endif  // TEXTVIEW_H

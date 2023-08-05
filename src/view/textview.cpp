@@ -34,9 +34,9 @@ TextView::TextView() {
     textScene = new QGraphicsScene();
 }
 
-void TextView::draw(std::shared_ptr<WorldModel> world,
+void TextView::draw(std::shared_ptr<WorldModel> worldModel,
                     std::shared_ptr<QGraphicsView> textView) {
-    this->world = world;
+    this->worldModel = worldModel;
     outputView = textView;
     textScene->clear();
     textScene->setBackgroundBrush(Qt::transparent);
@@ -62,35 +62,37 @@ void TextView::setupTimers() {
 }
 
 void TextView::initializeMap() {
-    vectorMap = QVector<QString>(world->getHeight() + 1);
-    for (int i = 0; i < world->getWidth(); ++i) {
-        vectorMap[i] = QString(world->getWidth(), EMPTY_SYMBOL);
+    vectorMap = QVector<QString>(worldModel->getHeight() + 1);
+    for (int i = 0; i < worldModel->getWidth(); ++i) {
+        vectorMap[i] = QString(worldModel->getWidth(), EMPTY_SYMBOL);
     }
 }
 
 void TextView::populateWorldMap() {
-    for (const std::shared_ptr<Tile>& tile : world->getTiles()) {
+    for (const std::shared_ptr<Tile>& tile : worldModel->getTiles()) {
         Tile::Coordinates coord = tile->getCoordinates();
         changeSignAtCoord(coord, grayscaleToASCII(tile->getValue()));
     }
 
-    for (const std::shared_ptr<Enemy>& enemy : world->getEnemies()) {
-        Tile::Coordinates coord = enemy->getCoordinates();
+    for (const std::shared_ptr<Enemy>& enemy : worldModel->getEnemies()) {
 
-        if (std::dynamic_pointer_cast<PEnemy>(enemy)) {
-            changeSignAtCoord(coord, PENEMY_SYMBOL);
-        } else if (std::dynamic_pointer_cast<XEnemy>(enemy)) {
-            changeSignAtCoord(coord, XENEMY_SYMBOL);
-        } else {
+        Tile::Coordinates coord = enemy->getCoordinates();
+        Tile::Type enemyType = enemy->getTileType();
+        if (enemyType == Tile::Enemy) {
             changeSignAtCoord(coord, ENEMY_SYMBOL);
+        } else if (enemyType == Tile::PEnemy) {
+            changeSignAtCoord(coord, PENEMY_SYMBOL);
+        } else if (enemyType == Tile::XEnemy) {
+            changeSignAtCoord(coord, XENEMY_SYMBOL);
         }
     }
 
-    for (const std::shared_ptr<Tile>& healthPack : world->getHealthPacks()) {
+    for (const std::shared_ptr<Tile>& healthPack :
+         worldModel->getHealthPacks()) {
         changeSignAtCoord(healthPack->getCoordinates(), HEALTHPACK_SYMBOL);
     }
 
-    Tile::Coordinates coord = world->getProtagonist()->getCoordinates();
+    Tile::Coordinates coord = worldModel->getProtagonist()->getCoordinates();
     changeSignAtCoord(coord, PROTAGONIST_SYMBOL);
 }
 
@@ -103,12 +105,12 @@ void TextView::combineLinesToString() {
 
 // This code will be used in controller / changed so it gets input from
 // controller
-void TextView::moveProtagonist(Tile::Coordinates currentCoord,
-                               std::shared_ptr<WorldModel> world) {
+void TextView::moveProtagonist(Tile::Coordinates currentCoord) {
 
-    Tile::Coordinates newCoord = world->getProtagonist()->getCoordinates();
-    int worldPos = currentCoord.yPos * world->getWidth() + currentCoord.xPos;
-    float tileValue = world->getTiles().at(worldPos)->getValue();
+    Tile::Coordinates newCoord = worldModel->getProtagonist()->getCoordinates();
+    int worldPos =
+    currentCoord.yPos * worldModel->getWidth() + currentCoord.xPos;
+    float tileValue = worldModel->getTiles().at(worldPos)->getValue();
     changeSignAtCoord(currentCoord, grayscaleToASCII(tileValue));
     changeSignAtCoord(newCoord, QChar(PROTAGONIST_SYMBOL));
     updateVisibleMap();
@@ -121,7 +123,8 @@ void TextView::moveProtagonist(Tile::Coordinates currentCoord,
 }
 
 void TextView::updateVisibleMap() {
-    Tile::Coordinates protCoord = world->getProtagonist()->getCoordinates();
+    Tile::Coordinates protCoord =
+    worldModel->getProtagonist()->getCoordinates();
 
     // Calculate the top position of the view (number of rows to skip)
     int viewTop = protCoord.yPos - Y_OFFSET + 1;
@@ -154,8 +157,12 @@ QChar TextView::grayscaleToASCII(float intensity) {
     return EMPTY_SYMBOL;
 }
 
-void TextView::protagonistDies(Tile::Coordinates coord) {
+void TextView::protagonistDies() {
+    Tile::Coordinates coord = worldModel->getProtagonist()->getCoordinates();
     changeSignAtCoord(coord, DEAD_SYMBOL);
+    updateVisibleMap();
+    // updateText();
+    updateView();
 }
 
 void TextView::setHealed() {
