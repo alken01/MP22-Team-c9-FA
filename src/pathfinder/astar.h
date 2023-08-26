@@ -5,9 +5,11 @@
 #include <queue>
 #include <utility>
 #include <vector>
-
+#include <iostream>
 #include "world.h"
 #include "worldmodel.h"
+#include "coordinates.h"
+
 using namespace std;
 
 struct Node {

@@ -5,7 +5,7 @@
 #include <QGraphicsView>
 #include <QObject>
 
-#include "world.h"
+// #include "world.h"
 #include "worldmodel.h"
 
 class View : public QGraphicsView {

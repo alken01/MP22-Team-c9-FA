@@ -24,11 +24,17 @@ The project uses the provided header file `include/world.h` and `include/world_g
 
 ### Bugs
 #### Text-based representation
+- [x] When consuming a health pack, the green background color is removed on next move and not based on the timer.
+- [x] The prevCoordinate of the protagonist is not updated when the protagonist moves.
 - [ ] The protagonist symbol is not changing to the defeated symbol when the protagonist is defeated. 
 - [ ] Switching from the system's dark mode to light mode does not change the background color of the text-based representation. 
 
 #### Other
+- [ ] Update poisoned in mainwindow
+- [x] Make the maps a class, so that you can add properties like the starting position of the protagonist.
 - [ ] Need to test on Linux.
+- [ ] Make one of the enemy types that moves randomly. If in the proximity of the protagonist, it will move towards the protagonist. If the protagonist is in the same tile, it will attack the protagonist.
+- [ ] Setup the strategy pattern on how to deal with fighting the enemies
 
 ### Subtask A: "Graphical" Representation
 - [ ] Create the graphical representation of the world using QGraphicsView, QGraphicsScene, and QGraphicsItem.
@@ -77,4 +83,3 @@ The project uses the provided header file `include/world.h` and `include/world_g
 - [ ] Test the application thoroughly and fix any bugs or issues found during testing.
 - [ ] Optimize the performance of the application to ensure smooth gameplay and user experience.
 - [ ] Consider implementing a simple mini-map to show the protagonist's location in the world.
-

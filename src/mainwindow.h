@@ -4,7 +4,9 @@
 #include <QtWidgets>
 #include <iostream>
 #include <memory>
+#include "aicontroller.h"
 #include "controller.h"
+#include "viewcontroller.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -16,25 +18,27 @@ class MainWindow : public QMainWindow {
         Q_OBJECT
 
     public:
-        MainWindow(QWidget* parent, std::shared_ptr<Controller> c);
+        MainWindow(QWidget* parent, std::shared_ptr<Controller> controller,
+                   std::shared_ptr<ViewController> viewController);
         void changeScene();
         void updateImage(int, QComboBox* comboBox, QLabel* label);
         void goToPath(int x, int y);
         void updatePath(QString input);
         void pressEntered();
         void initCamera();
-        vector<QString> pathToText(vector<pair<int, int>> path);
+        std::vector<QString> pathToText(std::vector<std::pair<int, int>> path);
 
     private:
         Ui::MainWindow* ui;
         QLineEdit* textInput;
         std::shared_ptr<Controller> controller;
+        std::shared_ptr<ViewController> viewController;
         QGraphicsView textView;
         QProgressBar *health, *energy;
         QCompleter* completer;
         bool viewStatus;
         QStringList filteredCommands;
-        
+
         void initViews();
         void setupUIComponents();
         void setupConnections();

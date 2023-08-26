@@ -6,9 +6,11 @@
 #include <exception>
 #include <memory>
 #include <vector>
+#include "coordinates.h"
 #include "world_global.h"
 
 #include <iostream>
+
 class WORLDSHARED_EXPORT Tile {
     public:
         enum Type {
@@ -23,43 +25,34 @@ class WORLDSHARED_EXPORT Tile {
             Protagonist
         };
 
-        struct Coordinates {
-                int xPos;
-                int yPos;
-                Coordinates() : xPos(0), yPos(0) {}
-                Coordinates(int xPos, int yPos) : xPos(xPos), yPos(yPos) {}
-        };
-
-        Coordinates getCoordinates() const { return Coordinates(xPos, yPos); }
-        void setCoordinates(Coordinates newCoordinates) {
-            setXPos(newCoordinates.xPos);
-            setYPos(newCoordinates.yPos);
-        }
-
         Tile(int xPosition, int yPosition, float tileWeight);
         virtual ~Tile() = default;
-        float getValue() const { return value; };
-        void setValue(float newValue) { value = newValue; };
-        int getXPos() const { return xPos; };
-        int getYPos() const { return yPos; };
-        void setXPos(int newPos) { xPos = newPos; };
-        void setYPos(int newPos) { yPos = newPos; }
+        float getValue() const { return value; }
+        void setValue(float newValue) { value = newValue; }
+        int getXPos() const { return coordinates.getX(); }
+        int getYPos() const { return coordinates.getY(); }
+        void setXPos(int newPos) { coordinates.setX(newPos); }
+        void setYPos(int newPos) { coordinates.setY(newPos); }
         bool operator==(const Tile& other) const {
             return (getXPos() == other.getXPos()) &&
                    (getYPos() == other.getYPos());
-        };
+        }
         virtual std::string serialize();
+
         Tile::Type getTileType() const {
-            std::cout << "Tile: " << this->getValue() << std::endl;
             if (this->getValue() == INFINITY) return Tile::Wall;
             if (this->getValue() > 1) return Tile::Healthpack;
             if (this->getValue() == -1) return Tile::ConsumedHealthpack;
             return Tile::NormalTile;
         }
+        
+        Coordinates getCoordinates() const { return coordinates; }
+        void setCoordinates(Coordinates newCoordinates) {
+            coordinates = newCoordinates;
+        }
 
     protected:
-        int xPos;
-        int yPos;
+        Coordinates coordinates;
         float value;
 };
 
@@ -74,8 +67,8 @@ class WORLDSHARED_EXPORT Enemy : public QObject, public Tile {
             if (defeated) emit dead();
         };
         std::string serialize() override;
-        Tile::Type getTileType() const  {
-            if (this->getValue() == -1) return Tile::DefeatedEnemy;
+        Tile::Type getTileType() const {
+            if (getDefeated()) return Tile::DefeatedEnemy;
             return Tile::Enemy;
         }
 
@@ -94,9 +87,8 @@ class WORLDSHARED_EXPORT PEnemy : public Enemy {
         float getPoisonLevel() const;
         void setPoisonLevel(float value);
         std::string serialize() override;
-        Tile::Type getTileType() const  {
-            if (this->getValue() == -1) return Tile::DefeatedEnemy;
-            std::cout << "PEnemy" << std::endl;
+        Tile::Type getTileType() const {
+            if (getDefeated()) return Tile::DefeatedEnemy;
             return Tile::PEnemy;
         }
 
@@ -115,24 +107,27 @@ class WORLDSHARED_EXPORT Protagonist : public QObject, public Tile {
     public:
         Protagonist();
         void setXPos(int newPos) {
-            if (xPos != newPos) {
-                xPos = newPos;
-                emit posChanged(xPos, yPos);
+            if (coordinates.getX() != newPos) {
+                coordinates.setX(newPos);
+                emit posChanged(coordinates.getX(), coordinates.getY());
             }
         }
+
         void setYPos(int newPos) {
-            if (yPos != newPos) {
-                yPos = newPos;
-                emit posChanged(xPos, yPos);
+            if (coordinates.getY() != newPos) {
+                coordinates.setY(newPos);
+                emit posChanged(coordinates.getX(), coordinates.getY());
             }
         }
+
         void setPos(int newX, int newY) {
-            if (xPos != newX || yPos != newY) {
-                xPos = newX;
-                yPos = newY;
-                emit posChanged(xPos, yPos);
+            if (coordinates.getX() != newX || coordinates.getY() != newY) {
+                coordinates.setX(newX);
+                coordinates.setY(newY);
+                emit posChanged(coordinates.getX(), coordinates.getY());
             }
         }
+
         float getHealth() const { return health; };
         void setHealth(float value) {
             health = value;
@@ -166,9 +161,12 @@ class WORLDSHARED_EXPORT Protagonist : public QObject, public Tile {
             this->setHealth(std::min(newHealth, 100.0f));
         }
 
-        Tile::Type getTileType() const {
-            return Tile::Protagonist;
-        }
+        Tile::Type getTileType() const { return Tile::Protagonist; }
+
+        void setPoison(int value) { poison = value; }
+        int getPoison() const { return poison; }
+        void increasePoison(int addPoison) { poison += addPoison; }
+        void decreasePoison(int decreasePoison) { poison -= decreasePoison; }
 
     signals:
         void posChanged(int x, int y);
@@ -178,6 +176,8 @@ class WORLDSHARED_EXPORT Protagonist : public QObject, public Tile {
     private:
         float health;  // 100.0f by construction
         float energy;  // 100.0f by construction
+        int poison = 0;
+        Coordinates prevCoord;
 };
 
 class WORLDSHARED_EXPORT World {

@@ -30,12 +30,14 @@ const int Y_OFFSET = 5;
 const int X_OFFSET = 7;
 
 TextView::TextView() {
+    std::cout << "Creating text view" << std::endl;
     healthFightTimer.isSingleShot();
     textScene = new QGraphicsScene();
 }
 
 void TextView::draw(std::shared_ptr<WorldModel> worldModel,
                     std::shared_ptr<QGraphicsView> textView) {
+    std::cout << "Drawing text view" << std::endl;
     this->worldModel = worldModel;
     outputView = textView;
     textScene->clear();
@@ -70,13 +72,13 @@ void TextView::initializeMap() {
 
 void TextView::populateWorldMap() {
     for (const std::shared_ptr<Tile>& tile : worldModel->getTiles()) {
-        Tile::Coordinates coord = tile->getCoordinates();
+        Coordinates coord = tile->getCoordinates();
         changeSignAtCoord(coord, grayscaleToASCII(tile->getValue()));
     }
 
-    for (const std::shared_ptr<Enemy>& enemy : worldModel->getEnemies()) {
-
-        Tile::Coordinates coord = enemy->getCoordinates();
+    for (const auto& enemyPair : worldModel->getEnemies()) {
+        const std::shared_ptr<Enemy>& enemy = enemyPair.second;
+        Coordinates coord = enemy->getCoordinates();
         Tile::Type enemyType = enemy->getTileType();
         if (enemyType == Tile::Enemy) {
             changeSignAtCoord(coord, ENEMY_SYMBOL);
@@ -87,12 +89,12 @@ void TextView::populateWorldMap() {
         }
     }
 
-    for (const std::shared_ptr<Tile>& healthPack :
-         worldModel->getHealthPacks()) {
+    for (const auto& healthPackPair : worldModel->getHealthPacks()) {
+        const std::shared_ptr<Tile>& healthPack = healthPackPair.second;
         changeSignAtCoord(healthPack->getCoordinates(), HEALTHPACK_SYMBOL);
     }
 
-    Tile::Coordinates coord = worldModel->getProtagonist()->getCoordinates();
+    Coordinates coord = worldModel->getProtagonist()->getCoordinates();
     changeSignAtCoord(coord, PROTAGONIST_SYMBOL);
 }
 
@@ -105,36 +107,42 @@ void TextView::combineLinesToString() {
 
 // This code will be used in controller / changed so it gets input from
 // controller
-void TextView::moveProtagonist(Tile::Coordinates currentCoord) {
-
-    Tile::Coordinates newCoord = worldModel->getProtagonist()->getCoordinates();
-    int worldPos =
-    currentCoord.yPos * worldModel->getWidth() + currentCoord.xPos;
-    float tileValue = worldModel->getTiles().at(worldPos)->getValue();
-    changeSignAtCoord(currentCoord, grayscaleToASCII(tileValue));
-    changeSignAtCoord(newCoord, QChar(PROTAGONIST_SYMBOL));
+void TextView::moveProtagonist() {
+    std::cout << "Moving protagonist" << std::endl;
+    Coordinates protCoord = worldModel->getProtagonist()->getCoordinates();
+    
+    // check for all 6 pos around protagonist
+    // for (int x = std::max(0, protCoord.getX() - 1);
+    //      x <= std::min(worldModel->getWidth() - 1, protCoord.getX() + 1); x++) {
+    //     for (int y = std::max(0, protCoord.getY() - 1);
+    //          y <= std::min(worldModel->getHeight() - 1, protCoord.getY() + 1);
+    //          y++) {
+    //         Coordinates coord = Coordinates(x, y);
+    //         int worldPos = x + y * worldModel->getWidth();
+    //         float tileValue = worldModel->getTiles().at(worldPos)->getValue();
+    //         changeSignAtCoord(coord, grayscaleToASCII(tileValue));
+    //     }
+    // }
+    changeSignAtCoord(protCoord, QChar(PROTAGONIST_SYMBOL));
+    
     updateVisibleMap();
-
-    combinedMap = std::make_shared<QString>();
-    for (int i = 0; i < visibleVectorMap.size(); ++i) {
-        combinedMap->append(visibleVectorMap.at(i));
-    }
+    combineLinesToString();
     updateText();
 }
 
 void TextView::updateVisibleMap() {
-    Tile::Coordinates protCoord =
-    worldModel->getProtagonist()->getCoordinates();
+    std::cout << "Updating visible map" << std::endl;
+    Coordinates protCoord = worldModel->getProtagonist()->getCoordinates();
 
     // Calculate the top position of the view (number of rows to skip)
-    int viewTop = protCoord.yPos - Y_OFFSET + 1;
+    int viewTop = protCoord.getY() - Y_OFFSET + 1;
     int rowSkip = (viewTop > 0) ? 0 : viewTop;
 
     // Extract the relevant portion of the world map based on the viewTop position
     QVector<QString> tempMap = vectorMap.mid(viewTop, TOTAL_ROWS - rowSkip);
 
     // Calculate the left position of the view (number of columns to skip)
-    int viewLeft = protCoord.xPos - X_OFFSET + 1;
+    int viewLeft = protCoord.getX() - X_OFFSET + 1;
     int colSkip = (viewLeft > 0) ? 0 : viewLeft;
 
     // Adjust each line in the tempMap to show the visible portion of the world map
@@ -144,8 +152,8 @@ void TextView::updateVisibleMap() {
     visibleVectorMap = tempMap;
 }
 
-void TextView::changeSignAtCoord(Tile::Coordinates coord, QChar input) {
-    vectorMap[coord.yPos][coord.xPos] = input;
+void TextView::changeSignAtCoord(Coordinates coord, QChar input) {
+    vectorMap[coord.getY()][coord.getX()] = input;
 }
 
 QChar TextView::grayscaleToASCII(float intensity) {
@@ -158,7 +166,7 @@ QChar TextView::grayscaleToASCII(float intensity) {
 }
 
 void TextView::protagonistDies() {
-    Tile::Coordinates coord = worldModel->getProtagonist()->getCoordinates();
+    Coordinates coord = worldModel->getProtagonist()->getCoordinates();
     changeSignAtCoord(coord, DEAD_SYMBOL);
     updateVisibleMap();
     // updateText();
@@ -190,6 +198,7 @@ void TextView::updateText() {
 }
 
 void TextView::updateView() {
+    moveProtagonist();
     outputView->scene()->update();
 }
 

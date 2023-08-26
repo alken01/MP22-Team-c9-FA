@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include <iostream>
 #include "ui_mainwindow.h"
 
 const int TEXT_VIEW = true;
@@ -6,21 +7,32 @@ const int GRAPHICS_VIEW = false;
 
 const QString WIN_MESSAGE = "Congratulations! You won!";
 const QString LOSE_MESSAGE = "Your journey ends here. Press restart.";
-const QString UNRECOGNIZED_INPUT_MESSAGE =
-"Invalid command. Type 'help' for options.";
 const QString HELP_MESSAGE_TITLE = "Need guidance? Available commands:";
 const QString HELP_MESSAGE_FOOTER = "Type any command to continue.";
 const QString HELP_COMMAND = "help";
+const QString UNRECOGNIZED_INPUT_MESSAGE =
+"Invalid command. Type '" + HELP_COMMAND + "' for options.";
 
-MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> controller)
+MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> controller,
+                       std::shared_ptr<ViewController> viewController)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
     this->controller = controller;
+    this->viewController = viewController;
+
+    std::cout << "MainWindow constructor" << std::endl;
+
     ui->setupUi(this);
+    std::cout << "MainWindow setupUi" << std::endl;
     setupUIComponents();
+    std::cout << "MainWindow setupUIComponents" << std::endl;
     setupConnections();
+    std::cout << "MainWindow setupConnections" << std::endl;
     filterCommands();
+    std::cout << "MainWindow filterCommands" << std::endl;
     ui->comboBox->setCurrentIndex(0);
+    std::cout << "MainWindow constructor end" << std::endl;
     initViews();
+    std::cout << "MainWindow initViews" << std::endl;
 }
 
 void MainWindow::setupUIComponents() {
@@ -35,11 +47,11 @@ void MainWindow::setupUIComponents() {
     energy->setRange(0, 100);
     energy->setValue(controller->getWorld()->getProtagonist()->getEnergy());
 
-    completer = new QCompleter(controller->getCommands(), this);
+    completer = new QCompleter(CommandsMap::getCommands(), this);
     ui->lineEdit->setCompleter(completer);
 
     ui->comboBox->addItems(controller->getMapList());
-    
+
     viewStatus = TEXT_VIEW;
     changeScene();
 }
@@ -68,9 +80,10 @@ void MainWindow::setupConnections() {
 }
 
 void MainWindow::initViews() {
-    ui->verticalLayout_2->addWidget(controller->getQtext_view().get());
-    ui->verticalLayout_2->addWidget(controller->getQgraphics_view().get());
-    controller->getQgraphics_view().get()->hide();
+    ui->verticalLayout_2->addWidget(viewController->getQTextView().get());
+    ui->verticalLayout_2->addWidget(viewController->getQGraphicsView().get());
+    viewController->getQGraphicsView().get()->hide();
+    viewController->drawWorlds();
 }
 
 void MainWindow::changeScene() {
@@ -78,8 +91,8 @@ void MainWindow::changeScene() {
     const bool isTextView = (viewStatus == TEXT_VIEW);
 
     // hide text view and show graphics view
-    controller->getQtext_view().get()->setVisible(isTextView);
-    controller->getQgraphics_view().get()->setVisible(!isTextView);
+    viewController->getQTextView().get()->setVisible(isTextView);
+    viewController->getQGraphicsView().get()->setVisible(!isTextView);
 
     // change these elements
     ui->zoomSlider->setVisible(!isTextView);   // hide zoom slider
@@ -93,12 +106,16 @@ void MainWindow::changeScene() {
 void MainWindow::pressEntered() {
     if (isGameOver()) return;
     QString input = textInput->text();
-    QString commandEntered = controller->commandReceived(input);
+    std::cout << "MainWindow pressEntered" << std::endl;
+    controller->commandReceived(input);
+    // viewController->movePlayer?? or in controller
+    viewController->updateViews();
 
-    if (commandEntered == HELP_COMMAND) {
+    if (input == HELP_COMMAND) {
         printHelpCommands();
-    } else if (!commandEntered.isNull() || input.left(4) == "goto") {
-        printTerminal(commandEntered);
+    } else if (!input.isNull() || input.left(4) == "goto") {
+        printTerminal(input);
+
     } else {
         printTerminal(UNRECOGNIZED_INPUT_MESSAGE);
     }
@@ -119,13 +136,12 @@ void MainWindow::textEntered() {
     }
 }
 
-bool MainWindow::isGameOver(){
-    bool isPlayerDead = !controller->isAlive();
-    bool isGameWon = controller->getWin();
+bool MainWindow::isGameOver() {
+    bool isPlayerDead = !controller->isProtagonistAlive();
 
-    if (isPlayerDead || isGameWon) {
-        QString message = isGameWon ? WIN_MESSAGE : LOSE_MESSAGE;
-        printTerminal(message);
+    if (isPlayerDead) {
+        // QString message = isGameWon ? WIN_MESSAGE : LOSE_MESSAGE;
+        // printTerminal(message);
         showRestartButton(true);
         return true;
     }
@@ -133,12 +149,12 @@ bool MainWindow::isGameOver(){
 }
 
 void MainWindow::filterCommands() {
-    for (const QString& command : controller->getCommands())
+    for (const QString& command : CommandsMap::getCommands())
         if (!command.startsWith("goto")) filteredCommands.append(command);
 }
 
 void MainWindow::mapChanged() {
-    controller->changeMap(ui->comboBox->currentText());
+    viewController->changeMap(ui->comboBox->currentText());
 
     updateVitals();
     ui->textEdit_4->clear();
@@ -152,12 +168,12 @@ void MainWindow::mapChanged() {
 void MainWindow::updateVitals() {
     health->setValue(controller->getWorld()->getProtagonist()->getHealth());
     energy->setValue(controller->getWorld()->getProtagonist()->getEnergy());
-    ui->lcdNumber->display(controller->getPoisoned());
+    // ui->lcdNumber->display(controller->getPoisoned());
 }
 
 void MainWindow::printHelpCommands() {
     printTerminal(HELP_MESSAGE_TITLE);
-    for (QString command : controller->getCommands()) {
+    for (QString command : CommandsMap::getCommands()) {
         printTerminal(command);
     }
     printTerminal(HELP_MESSAGE_FOOTER);
@@ -173,20 +189,20 @@ void MainWindow::printTerminal(QString message) {
 }
 
 void MainWindow::getFeedback() {
-    auto message = controller->getTerminalOut();
-    if (message.isNull()) return;
-    printTerminal(message);
-    controller->setTerminalOut(NULL);
+    // auto message = controller->getTerminalOut();
+    // if (message.isNull()) return;
+    // printTerminal(message);
+    // controller->setTerminalOut(NULL);
 }
 
 void MainWindow::setHeuristic() {
-    controller->setWhiteValue(ui->heuristicSlider->value() / 10);
+    // aiController->setWhiteValue(ui->heuristicSlider->value() / 10);
 }
 
 void MainWindow::autoplay() {
-    controller->autoPlay();
+    // aiController->autoPlay();
 }
 
 void MainWindow::changeSpeed() {
-    controller->setAnimationSpeed(ui->animationSlider->value() * 10);
+    viewController->setAnimationSpeed(ui->animationSlider->value() * 10);
 }

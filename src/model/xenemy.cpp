@@ -5,8 +5,7 @@ const int MIN_ENERGY = 1;
 const int MAX_ENERGY = 30;
 
 XEnemy::XEnemy(int xPosition, int yPosition, float strength)
-    : Enemy(xPosition, yPosition, strength), energy(generateRandomEnergy()) {
-}
+    : Enemy(xPosition, yPosition, strength), energy(generateRandomEnergy()) {}
 
 float XEnemy::getEnergyLevel() const {
     return energy;

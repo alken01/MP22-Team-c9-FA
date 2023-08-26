@@ -12,25 +12,29 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 SOURCES += \
     src/model/worldmodel.cpp \
     src/model/xenemy.cpp \
-    src/view/mainwindow.cpp \
     src/view/graphicalview.cpp \
     src/view/textview.cpp \
     src/controller/controller.cpp \
+    src/controller/viewcontroller.cpp \
+    src/controller/aicontroller.cpp \
     src/pathfinder/astar.cpp \
+    src/mainwindow.cpp \
     src/main.cpp \
     # main_test.cpp \
     tests/worldmodel_test.cpp 
 
 # Header files
 HEADERS += \
+    src/mainwindow.h \
     src/model/worldmodel.h \
     src/model/xenemy.h \
-    src/view/mainwindow.h \
     src/view/graphicalview.h \
     src/view/textview.h \
     src/view/view.h \
     src/view/image_widget.h \
     src/controller/controller.h \
+    src/controller/viewcontroller.h \
+    src/controller/aicontroller.h \
     src/pathfinder/astar.h \
     include/world_global.h \
     include/world.h

@@ -1,128 +1,20 @@
 #include <QApplication>
 #include <memory>
-
-#include "controller.h"
 #include "mainwindow.h"
 
-// #include <iostream>
-// #include <QWidget>
-// #include <QPixmap>
-// #include <QPainter>
-// #include <vector>
-// #include <chrono>
-// #include "image_widget.h"
-// #include <memory>
-// #include "astar.h"
-// #include "worldmodel.h"
-// using namespace std;
-
 int main(int argc, char* argv[]) {
-    if (true) {
-        // QApplication app(argc, argv);
-
-        // unsigned int enemies = 10, healthpacks = 5;
-        // float ratio = 0.25f;
-
-        // std::unique_ptr<GameController> gameController =
-        //     std::make_unique<GameController>(enemies, healthpacks, ratio);
-
-        // std::unique_ptr<MainWindow> mainWindow =
-        //     std::make_unique<MainWindow>(nullptr, *gameController);
-        // mainWindow->initViews();
-        // mainWindow->show();
-
-        // return app.exec();
+    try {
         QApplication app(argc, argv);
-        shared_ptr<Controller> controller = std::make_shared<Controller>();
-        MainWindow* mainWindow = new MainWindow(nullptr, controller);
-        mainWindow->show();
+        std::shared_ptr<Controller> controller = std::make_shared<Controller>();
+        std::shared_ptr<ViewController> viewController =
+        std::make_shared<ViewController>(controller);
+        MainWindow* window =
+        new MainWindow(nullptr, controller, viewController);
+        window->show();
         int exitCode = app.exec();
-        delete mainWindow;
         return exitCode;
+    } catch (const std::exception& e) {
+        qDebug() << "An exception occurred: " << e.what();
+        return -1;
     }
-    /**
-    // main only for astar testing
-        else{
-            // Generate the world
-            QApplication app(argc, argv);
-
-            int i = 3;
-
-            QString init_worldmap;
-            Tile start(0, 0, 1.0);
-            Tile end(0, 1, 1.0);
-
-            if(i == 0){
-                init_worldmap = ":/images/world_images/worldmap.png";
-                start = Tile(3, 5, 1.0);
-                end = Tile(29, 5, 1.0);
-            }
-
-            if(i == 4){
-                init_worldmap = ":/images/world_images/worldmap4.png";
-                start = Tile(3, 44, 1.0);
-                end = Tile(999, 937, 1.0);
-            }
-
-
-            if(i == 1){
-                init_worldmap = ":/images/world_images/maze1.png";
-                start = Tile(0, 492, 1.0);
-                end = Tile(499, 334, 1.0);
-            }
-
-            if(i == 2){
-                init_worldmap = ":/images/world_images/maze2.png";
-                start = Tile(445, 430, 1.0);
-                end = Tile(440, 208, 1.0);
-            }
-            if(i == 3){
-                init_worldmap = ":/images/world_images/maze3.png";
-                start = Tile(0, 10, 1.0);
-                end = Tile(1146, 1179, 1.0);
-            }
-
-            auto test = std::make_shared<World>();
-            test->createWorld(init_worldmap, 100, 100, 0.5);
-            auto wm = std::make_shared<WorldModel>(test,1);
-
-
-            int rows = wm->getHeight();
-            int cols = wm->getWidth();
-
-            std::cout << "world_grid size: " << cols << "x" << rows <<
-    std::endl;
-
-            // Start the timer
-            auto start_timer = std::chrono::high_resolution_clock::now();
-
-            // Call the A* search function and
-            vector<pair<int, int>> path = astar(wm, start, end, 0.98);
-
-
-            // Stop the timer
-            auto end_timer = std::chrono::high_resolution_clock::now();
-
-            // Only show window if found path
-            cout << "Path:\n";
-
-            for (const auto& pair : path)
-                std::cout << "(" << pair.first << ", " << pair.second << ")" <<
-    std::endl;
-            // Calculate the elapsed time in milliseconds
-            auto elapsed =
-    std::chrono::duration_cast<std::chrono::milliseconds>(end_timer -
-    start_timer);
-
-            // Print the elapsed time
-            std::cout << "Elapsed time: " << elapsed.count() << " ms" <<
-    std::endl;
-
-            ImageWidget widget;
-            widget.setImage(QPixmap(init_worldmap));
-            widget.setPath(path);
-            widget.show();
-            return app.exec();
-        }
-        **/
 }

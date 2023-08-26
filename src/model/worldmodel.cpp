@@ -1,11 +1,9 @@
 #include "worldmodel.h"
 
 WorldModel::WorldModel(std::shared_ptr<World> world,
-                       unsigned int xEnemiesNumber)
-    : width(world->getCols()), height(world->getRows()) {
-    //  print initialzing world
-    // std::cout << "Initializing world..." << std::endl;
-
+                       unsigned int xEnemiesNumber) {
+    width = world->getCols();
+    height = world->getRows();
     // Get vectors of unique pointers from World
     std::vector<std::unique_ptr<Enemy>> enemyUnique = world->getEnemies();
     std::vector<std::unique_ptr<Tile>> healthUnique = world->getHealthPacks();
@@ -13,17 +11,16 @@ WorldModel::WorldModel(std::shared_ptr<World> world,
     std::unique_ptr<Protagonist> protagonistUnique = world->getProtagonist();
 
     // Convert unique pointers to shared pointers using the helper function
-    enemies = convertToShared(enemyUnique);
-    healthPacks = convertToShared(healthUnique);
-    tiles = convertToShared(tilesUnique);
+    enemies = convertToSharedUnorderedMap(enemyUnique);
+    healthPacks = convertToSharedUnorderedMap(healthUnique);
+    tiles = convertToSharedVector(tilesUnique);
     protagonist = std::move(protagonistUnique);
 
-    populateWorldMap();
     createXEnemeies(xEnemiesNumber);
 }
 
 template <typename T>
-std::vector<std::shared_ptr<T>> WorldModel::convertToShared(
+std::vector<std::shared_ptr<T>> WorldModel::convertToSharedVector(
 std::vector<std::unique_ptr<T>>& uniqueVector) {
     std::vector<std::shared_ptr<T>> sharedVector;
     std::transform(uniqueVector.begin(), uniqueVector.end(),
@@ -32,41 +29,35 @@ std::vector<std::unique_ptr<T>>& uniqueVector) {
     return sharedVector;
 }
 
-void WorldModel::populateWorldMap() {
-    // init 2D array/check poison enemies
-    std::vector<std::shared_ptr<Tile>> col(height, nullptr);
-    worldMap = std::vector<std::vector<std::shared_ptr<Tile>>>(width, col);
-
-    for (const std::shared_ptr<Tile>& tile : tiles) {
-        const Tile::Coordinates& coords = tile->getCoordinates();
-        worldMap[coords.xPos][coords.yPos] = tile;
+template <typename T>
+std::unordered_map<Coordinates, std::shared_ptr<T>>
+WorldModel::convertToSharedUnorderedMap(
+std::vector<std::unique_ptr<T>>& uniqueVector) {
+    std::vector<std::shared_ptr<T>> sharedVector =
+    convertToSharedVector(uniqueVector);
+    std::unordered_map<Coordinates, std::shared_ptr<T>> sharedMap;
+    for (auto elem : sharedVector) {
+        Coordinates coord = elem->getCoordinates();
+        sharedMap[coord] = elem;
     }
 
-    for (const std::shared_ptr<Tile>& healthPack : healthPacks) {
-        const Tile::Coordinates& coords = healthPack->getCoordinates();
-        worldMap[coords.xPos][coords.yPos] = healthPack;
-    }
-
-    for (const std::shared_ptr<Enemy>& enemy : enemies) {
-        const Tile::Coordinates& coords = enemy->getCoordinates();
-        worldMap[coords.xPos][coords.yPos] = enemy;
-    }
+    return sharedMap;
 }
 
 void WorldModel::createXEnemeies(unsigned int xEnemiesNumber) {
-    if (xEnemiesNumber > enemies.size()) {
-        xEnemiesNumber = enemies.size();
-    }
-    for (unsigned int i = 0; i < xEnemiesNumber; i++) {
-        // get the position of the first enemies
-        int xPos = enemies[i]->getCoordinates().xPos;
-        int yPos = enemies[i]->getCoordinates().yPos;
-        float strength = enemies[i]->getValue();
-        // remove the enemy
-        enemies.erase(enemies.begin() + i);
-        // add the XEnemy
-        enemies.push_back(std::make_shared<XEnemy>(xPos, yPos, strength));
-    }
+    // if (xEnemiesNumber > enemies.size()) {
+    //     xEnemiesNumber = enemies.size();
+    // }
+    // for (unsigned int i = 0; i < xEnemiesNumber; i++) {
+    //     // get the position of the first enemies
+    //     int xPos = enemies[i]->getCoordinates().xPos;
+    //     int yPos = enemies[i]->getCoordinates().yPos;
+    //     float strength = enemies[i]->getValue();
+    //     // remove the enemy
+    //     enemies.erase(enemies.begin() + i);
+    //     // add the XEnemy
+    //     enemies.push_back(std::make_shared<XEnemy>(xPos, yPos, strength));
+    // }
 }
 
 // Getters
@@ -82,11 +73,13 @@ int WorldModel::getHeight() const {
     return height;
 }
 
-const std::vector<std::shared_ptr<Enemy>>& WorldModel::getEnemies() const {
+const std::unordered_map<Coordinates, std::shared_ptr<Enemy>>&
+WorldModel::getEnemies() const {
     return enemies;
 }
 
-const std::vector<std::shared_ptr<Tile>>& WorldModel::getHealthPacks() const {
+const std::unordered_map<Coordinates, std::shared_ptr<Tile>>&
+WorldModel::getHealthPacks() const {
     return healthPacks;
 }
 
@@ -94,11 +87,38 @@ const std::shared_ptr<Protagonist>& WorldModel::getProtagonist() const {
     return protagonist;
 }
 
-const std::vector<std::vector<std::shared_ptr<Tile>>>& WorldModel::getWorldMap()
-const {
-    return worldMap;
+float WorldModel::getTileValue(Coordinates coord) {
+    return getTiles()[coord.getX() + coord.getY() * getWidth()]->getValue();
 }
 
-float WorldModel::getTileValue(Tile::Coordinates coord) {
-    return getTiles()[coord.xPos + coord.yPos * getWidth()]->getValue();
+std::shared_ptr<Enemy> WorldModel::getEnemyAtIndex(size_t index) {
+    if (index >= enemies.size()) {
+        return nullptr;
+    }
+
+    auto it = enemies.begin();
+    std::advance(it, index);
+    return it->second;
+}
+
+std::shared_ptr<Tile> WorldModel::getHealthPackAtIndex(size_t index) {
+    if (index >= healthPacks.size()) {
+        return nullptr;
+    }
+
+    auto it = healthPacks.begin();
+    std::advance(it, index);
+    return it->second;
+}
+
+Coordinates WorldModel::getClosestValidTile(Coordinates coord){
+    for (int i = 0; i < this->getHeight(); ++i) {
+        for (int j = 0; j < this->getWidth(); ++j) {
+            auto tile = this->getTiles()[i*this->getWidth() + j];
+            if (tile->getTileType() == Tile::NormalTile) {
+                return tile->getCoordinates();
+            }
+        }
+    }
+    return coord;
 }

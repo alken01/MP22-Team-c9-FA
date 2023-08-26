@@ -3,9 +3,8 @@
 #include <QFontMetrics>
 #include <QTimer>
 #include "view.h"
-#include "world.h"
+#include "coordinates.h"
 #include "worldmodel.h"
-#include "xenemy.h"
 
 class TextView : public View {
     public:
@@ -13,7 +12,7 @@ class TextView : public View {
 
         void draw(std::shared_ptr<WorldModel> worldModel,
                   std::shared_ptr<QGraphicsView> textView);
-        void moveProtagonist(Tile::Coordinates currentCoord);
+        void moveProtagonist();
         void updateView();
         void protagonistDies();
         void setHealed();
@@ -28,7 +27,7 @@ class TextView : public View {
         void populateWorldMap();
         void combineLinesToString();
         QChar grayscaleToASCII(float intensity);
-        void changeSignAtCoord(Tile::Coordinates coord, QChar input);
+        void changeSignAtCoord(Coordinates coord, QChar input);
         void updateVisibleMap();
         void updateText();
         void resetBackgroundColor();

@@ -1,8 +1,5 @@
 #include "astar.h"
 
-#include <iostream>
-
-#include "worldmodel.h"
 
 // A* search function that returns a path to the end position from the start
 // position
@@ -25,7 +22,7 @@ vector<pair<int, int>> astar(shared_ptr<WorldModel>& world, Tile start,
     // Set the grid elements
     for (int col = 0; col < cols; col++) {
         for (int row = 0; row < rows; row++) {
-            Tile::Coordinates coord(col, row);
+            Coordinates coord(col, row);
 
             grid[col][row] = world->getTileValue(coord);
             if (world->getTileValue(coord) != INFINITY) {
