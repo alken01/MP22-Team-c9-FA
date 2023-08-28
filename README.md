@@ -4,6 +4,8 @@
 
 This is the final project for the Media Processing course. The goal is to create a game-like application where the protagonist navigates a 2D grid-based world, attacking enemies and gathering health packs. The world can be visualized in 2D graphical and text-based representations. The project follows the MVC design pattern and aims to support easy extension with new enemy types and visualizations.
 
+![uml](uml.png)
+
 ## Subtasks
 
 - **Subtask A: "Graphical" Representation**: Create the graphical representation using QGraphicsView. Animate protagonist and enemies. Allow manual and automatic navigation with A* pathfinding.
