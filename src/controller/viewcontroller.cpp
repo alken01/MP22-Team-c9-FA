@@ -13,7 +13,7 @@ ViewController::ViewController(std::shared_ptr<WorldModel> world)
 void ViewController::drawWorlds() {
     std::cout << "viewcontroller drawWorlds" << std::endl;
     textView->draw(world, _QTextView);
-    graphicalView->draw(world, _QGraphicsView);
+    // graphicalView->draw(world, _QGraphicsView);
     std::cout << "drawWorlds done" << std::endl;
 }
 

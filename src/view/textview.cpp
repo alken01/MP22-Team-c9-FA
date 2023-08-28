@@ -37,16 +37,15 @@ TextView::TextView() {
 
 void TextView::draw(std::shared_ptr<WorldModel> worldModel,
                     std::shared_ptr<QGraphicsView> textView) {
-    std::cout << "Drawing text view" << std::endl;
     this->worldModel = worldModel;
+
     outputView = textView;
     textScene->clear();
     textScene->setBackgroundBrush(Qt::transparent);
-
     setupTimers();
     initializeMap();
-
     populateWorldMap();
+
     updateVisibleMap();
     combineLinesToString();
 
@@ -64,9 +63,14 @@ void TextView::setupTimers() {
 }
 
 void TextView::initializeMap() {
-    vectorMap = QVector<QString>(worldModel->getHeight() + 1);
-    for (int i = 0; i < worldModel->getWidth(); ++i) {
-        vectorMap[i] = QString(worldModel->getWidth(), EMPTY_SYMBOL);
+    // make vectorMap empty
+    vectorMap.clear();
+    // make vectorMap the size of the world
+    vectorMap.resize(worldModel->getHeight());
+    // fill vectorMap with empty spaces
+    for (int i = 0; i < worldModel->getHeight(); i++) {
+        vectorMap[i].resize(worldModel->getWidth());
+        vectorMap[i].fill(EMPTY_SYMBOL);
     }
 }
 
@@ -124,14 +128,13 @@ void TextView::moveProtagonist() {
         }
     }
     changeSignAtCoord(protCoord, QChar(PROTAGONIST_SYMBOL));
-    
+
     updateVisibleMap();
     combineLinesToString();
     updateText();
 }
 
 void TextView::updateVisibleMap() {
-    std::cout << "Updating visible map" << std::endl;
     Coordinates protCoord = worldModel->getProtagonist()->getCoordinates();
 
     // Calculate the top position of the view (number of rows to skip)
