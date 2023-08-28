@@ -1,83 +1,75 @@
 #include "controller.h"
 
-Controller::Controller(std::shared_ptr<WorldModel> world) : world(world) {
-    std::cout << "Controller created" << std::endl;
-}
+Controller::Controller(std::shared_ptr<WorldModel> world) : world(world) {}
 
-void Controller::handleInput(QString input) {
+int Controller::handleInput(QString input) {
     if (input.size() >= 4 && input.left(4) == "goto") {
         // gotoHelper(input);
-    } else {
-        handleMovement(CommandsMap::getMoveDirection(input));
     }
+    return handleMovement(CommandsMap::getMoveDirection(input));
 }
 
-void Controller::handleMovement(const Coordinates& direction) {
-    if (!world->isProtagonistAlive()) return;
+int Controller::handleMovement(const Coordinates& direction) {
+    if (!world->isProtagonistAlive()) return DIE;
 
     Coordinates oldCoord = world->getProtagonist()->getCoordinates();
     Coordinates newCoord(oldCoord.getX() + direction.getX(),
                          oldCoord.getY() + direction.getY());
 
-    if (!world->isValidCoordinate(newCoord)) return;
-
-    if (world->getTileType(newCoord) == Tile::Wall) {
-        newCoord = world->getClosestValidTile(newCoord);
-        return;
-    }
+    if (!world->isValidCoordinate(newCoord)) return MOVE;
 
     world->getProtagonist()->setCoordinates(newCoord);
-    handleTileInteraction(newCoord);
+    return handleTileInteraction(newCoord);
 }
 
-void Controller::handleTileInteraction(const Coordinates& coord) {
+int Controller::handleTileInteraction(const Coordinates& coord) {
     Tile::Type tileType = world->getTileType(coord);
-    std::cout << "Tile type: " << tileType << std::endl;
 
     if (world->getProtagonist()->getPoison() > 0) {
         world->getProtagonist()->decreasePoison(POISON_RESISTANCE_PER_TURN);
         world->getProtagonist()->decreaseHealth(POISON_DAMAGE);
     }
-    // MAYBE CONSTANTS?
-    world->getProtagonist()->decreaseEnergy(TILE_MAX - world->getTileValue(coord));
 
-    if (tileType == Tile::Enemy) {
-        handleEnemyInteraction(world->getEnemyAt(coord));
+    world->getProtagonist()->decreaseEnergy(TILE_MAX - world->getTileValue(coord)); 
+
+    if (tileType == Tile::Enemy || tileType == Tile::XEnemy || tileType == Tile::PEnemy) {
+        return handleEnemyInteraction(world->getEnemyAt(coord));
     } else if (tileType == Tile::Healthpack) {
-        handleHealthPackInteraction(world->getHealthPackAt(coord));
+        return handleHealthPackInteraction(world->getHealthPackAt(coord));
     }
 }
 
-void Controller::handleEnemyInteraction(std::shared_ptr<Enemy> enemy) {
-    if (enemy->getDefeated()) return;
-    std::cout << "Fighting enemy" << std::endl;
+int Controller::handleEnemyInteraction(std::shared_ptr<Enemy> enemy) {
+    if (enemy->getDefeated()) return MOVE;
+    int result = FIGHT;
     float enemyValue = enemy->getValue();
     Tile::Type enemyType = enemy->getTileType();
 
     std::shared_ptr<Protagonist> protagonist = world->getProtagonist();
-    std::cout << "Protagonist health: " << protagonist->getHealth() << std::endl;
     protagonist->decreaseHealth(enemyValue);
-    std::cout << "Protagonist health: " << protagonist->getHealth() << std::endl;
     if (enemyType == Tile::XEnemy) {
         float xEnemyEnergy =
         std::dynamic_pointer_cast<XEnemy>(enemy)->getEnergyLevel();
         protagonist->decreaseEnergy(xEnemyEnergy);
+        result = XFIGHT;
     } else if (enemyType == Tile::PEnemy) {
         protagonist->increasePoison(enemyValue);
+        result = POISON;
     }
-    
-    if (!world->isProtagonistAlive()) return;
+
+    if (!world->isProtagonistAlive()) return DIE;
+
     protagonist->setEnergy(MAX_ENERGY);
     std::dynamic_pointer_cast<Enemy>(enemy)->setDefeated(true);
+    return result;
 }
 
-void Controller::handleHealthPackInteraction(std::shared_ptr<Tile> healthpack) {
-    if (healthpack->getValue() == -1) return;
-
+int Controller::handleHealthPackInteraction(std::shared_ptr<Tile> healthpack) {
+    if (healthpack->getValue() == -1) return MOVE;
     std::shared_ptr<Protagonist> protagonist = world->getProtagonist();
     protagonist->increaseHealth(healthpack->getValue());
     healthpack->setValue(-1);
-    std::cout << "Healthpack used" << std::endl;
+    return HEAL;
 }
 
 void Controller::setWorld(std::shared_ptr<WorldModel> world) {

@@ -16,14 +16,10 @@ const QString UNRECOGNIZED_INPUT_MESSAGE =
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
     setupWorlds();
-    initControllers();
-
     setupUIComponents();
-    changeScene();
     setupConnections();
     filterCommands();
-
-    ui->comboBox->setCurrentIndex(0);
+    initControllers();
     initViews();
 }
 
@@ -41,7 +37,6 @@ void MainWindow::activateNewWorld(QString mapName) {
     if (worldList.find(mapName) != worldList.end()) {
         activeWorld = worldList[mapName];
     } else {
-        std::cout << "Key not found" << std::endl;
     }
 }
 
@@ -59,24 +54,29 @@ void MainWindow::setupUIComponents() {
     // set up command history
     terminalHistory = ui->textEdit_4;
     terminalHistory->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    
+
     // set up health bar
     healthBar = ui->progressBar;
     healthBar->setRange(0, 100);
     healthBar->setValue(activeWorld->getProtagonist()->getHealth());
-    
+
     // set up energy bar
     energyBar = ui->progressBar_2;
     energyBar->setRange(0, 100);
     energyBar->setValue(activeWorld->getProtagonist()->getEnergy());
-    
+
     // set up autocompleter
     completer = new QCompleter(CommandsMap::getCommands(), this);
     ui->lineEdit->setCompleter(completer);
-    
+
     // set up map list
     mapBoxList = ui->comboBox;
     mapBoxList->addItems(mapNameList);
+    mapBoxList->setCurrentIndex(0);
+
+    // change map and restart buttons
+    ui->pushButton->setVisible(true);
+    ui->pushButton_2->setVisible(true);
 
     viewStatus = TEXT_VIEW;
 }
@@ -131,8 +131,21 @@ void MainWindow::pressEntered() {
     if (isGameOver()) return;
 
     QString input = commandTerminalInput->text();
-    controller->handleInput(input);
-    viewController->updateViews();
+    int moveResult = controller->handleInput(input);
+
+    viewController->render();
+    if (moveResult == Controller::POISON) {
+        viewController->poisoned();
+    }
+    if (moveResult == Controller::DIE) {
+        viewController->dead();
+    }
+    if (moveResult == Controller::HEAL) {
+        viewController->healed();
+    }
+    if (moveResult == Controller::XFIGHT || moveResult == Controller::FIGHT) {
+        viewController->fighting();
+    }
 
     if (input == HELP_COMMAND) {
         printHelpCommands();
@@ -164,7 +177,6 @@ bool MainWindow::isGameOver() {
     if (isPlayerDead || isGameWon) {
         QString message = isGameWon ? WIN_MESSAGE : LOSE_MESSAGE;
         printTerminal(message);
-        showRestartButton(true);
         return true;
     }
     return false;
@@ -182,15 +194,10 @@ void MainWindow::mapChanged() {
     controller->setWorld(activeWorld);
     viewController->setWorld(activeWorld);
 
-    viewController->changeMap();
-    // controller->changeMap(newMap);
-    // viewController->updateViews();
+    viewController->drawWorlds();
 
     updateVitals();
     terminalHistory->clear();
-    showRestartButton(false);
-
-    // empty line edit after autocomplete
     QObject::connect(completer, SIGNAL(activated(const QString&)), ui->lineEdit,
                      SLOT(clear()), Qt::QueuedConnection);
 }
@@ -198,7 +205,7 @@ void MainWindow::mapChanged() {
 void MainWindow::updateVitals() {
     healthBar->setValue(activeWorld->getProtagonist()->getHealth());
     energyBar->setValue(activeWorld->getProtagonist()->getEnergy());
-    // ui->lcdNumber->display(controller->getPoisoned());
+    ui->lcdNumber->display(activeWorld->getProtagonist()->getPoison());
 }
 
 void MainWindow::printHelpCommands() {
@@ -207,11 +214,6 @@ void MainWindow::printHelpCommands() {
         printTerminal(command);
     }
     printTerminal(HELP_MESSAGE_FOOTER);
-}
-
-void MainWindow::showRestartButton(bool show) {
-    ui->pushButton->setVisible(!show);
-    ui->pushButton_2->setVisible(show);
 }
 
 void MainWindow::printTerminal(QString message) {

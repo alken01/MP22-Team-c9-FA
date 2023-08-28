@@ -45,7 +45,7 @@ class WORLDSHARED_EXPORT Tile {
             if (this->getValue() == -1) return Tile::ConsumedHealthpack;
             return Tile::NormalTile;
         }
-        
+
         Coordinates getCoordinates() const { return coordinates; }
         void setCoordinates(Coordinates newCoordinates) {
             coordinates = newCoordinates;
@@ -88,7 +88,7 @@ class WORLDSHARED_EXPORT PEnemy : public Enemy {
         void setPoisonLevel(float value);
         std::string serialize() override;
         Tile::Type getTileType() const {
-            if (getDefeated()) return Tile::DefeatedEnemy;
+            // if (getDefeated()) return Tile::DefeatedEnemy;
             return Tile::PEnemy;
         }
 
@@ -106,6 +106,7 @@ class WORLDSHARED_EXPORT Protagonist : public QObject, public Tile {
         Q_OBJECT
     public:
         Protagonist();
+
         void setXPos(int newPos) {
             if (coordinates.getX() != newPos) {
                 coordinates.setX(newPos);
@@ -128,40 +129,46 @@ class WORLDSHARED_EXPORT Protagonist : public QObject, public Tile {
             }
         }
 
-        float getHealth() const { return health; };
+        float getHealth() const { return health; }
         void setHealth(float value) {
-            health = value;
+            health = std::max(0.0f, std::min(value, 100.0f));
             emit healthChanged(static_cast<int>(health));
         }
 
         float getEnergy() const { return energy; }
         void setEnergy(float value) {
-            energy = value;
+            energy = std::max(0.0f, std::min(value, 100.0f));
             emit energyChanged(static_cast<int>(energy));
         }
+
         std::string serialize() override;
 
         void decreaseEnergy(float damageValue) {
             float newEnergy = this->getEnergy() - damageValue;
-            this->setEnergy(std::max(newEnergy, 0.0f));
+            this->setEnergy(newEnergy);
         }
 
         void decreaseHealth(float damageValue) {
             float newHealth = this->getHealth() - damageValue;
-            this->setHealth(std::max(newHealth, 0.0f));
+            this->setHealth(newHealth);
         }
 
         void increaseEnergy(float addedValue) {
             float newEnergy = this->getEnergy() + addedValue;
-            this->setEnergy(std::min(newEnergy, 100.0f));
+            this->setEnergy(newEnergy);
         }
 
         void increaseHealth(float addedValue) {
             float newHealth = this->getHealth() + addedValue;
-            this->setHealth(std::min(newHealth, 100.0f));
+            this->setHealth(newHealth);
         }
 
-        Tile::Type getTileType() const { return Tile::Protagonist; }
+        bool isAlive() const { return health > 0 && energy > 0; }
+
+        Tile::Type getTileType() const {
+            if (!isAlive()) return Tile::DefeatedEnemy;
+            return Tile::Protagonist;
+        }
 
         void setPoison(int value) { poison = value; }
         int getPoison() const { return poison; }
@@ -174,8 +181,8 @@ class WORLDSHARED_EXPORT Protagonist : public QObject, public Tile {
         void energyChanged(int e);
 
     private:
-        float health;  // 100.0f by construction
-        float energy;  // 100.0f by construction
+        float health;  // Ranges from 0.0f to 100.0f
+        float energy;  // Ranges from 0.0f to 100.0f
         int poison = 0;
         Coordinates prevCoord;
 };

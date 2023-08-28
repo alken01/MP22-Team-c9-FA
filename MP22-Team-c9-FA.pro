@@ -12,6 +12,7 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 SOURCES += \
     src/model/worldmodel.cpp \
     src/model/xenemy.cpp \
+    src/model/map.cpp \
     src/view/graphicalview.cpp \
     src/view/textview.cpp \
     src/view/constants.cpp \
@@ -20,15 +21,14 @@ SOURCES += \
     src/controller/aicontroller.cpp \
     src/pathfinder/astar.cpp \
     src/mainwindow.cpp \
-    src/main.cpp \
-    # main_test.cpp \
-    tests/worldmodel_test.cpp 
+    src/main.cpp 
 
 # Header files
 HEADERS += \
     src/mainwindow.h \
     src/model/worldmodel.h \
     src/model/xenemy.h \
+    src/model/map.h \
     src/view/graphicalview.h \
     src/view/textview.h \
     src/view/view.h \
@@ -55,17 +55,17 @@ INCLUDEPATH += $$PWD/src/model
 INCLUDEPATH += $$PWD/src/view
 INCLUDEPATH += $$PWD/src/controller
 INCLUDEPATH += $$PWD/src/pathfinder
-INCLUDEPATH += $$PWD/googletest/googletest/include
+# INCLUDEPATH += $$PWD/googletest/googletest/include
 
 # Add the library directories
 LIBS += -L$$PWD/lib
-LIBS += -L$$PWD/googletest/build/lib
+# LIBS += -L$$PWD/googletest/build/lib
 
 # Libraries to link
 LIBS += -lworld 
 
 # Link the world and Google Test libraries for all platforms
-LIBS += -lgtest -lgtest_main
+# LIBS += -lgtest -lgtest_main
 
 # Additional platform-specific configurations can be added here if necessary.
 

@@ -4,7 +4,7 @@
 WorldModel::WorldModel(Map map, unsigned int xEnemiesNumber) {
     // create world given map
     auto world = std::make_shared<World>();
-    world->createWorld(map.getPath(), ENEMY_NR, HEALTHPACK_NR, P_RATIO);
+    world->createWorld(map.getPath(), ENEMY_NR, HEALTHPACK_NR);
     width = world->getCols();
     height = world->getRows();
 
@@ -16,6 +16,8 @@ WorldModel::WorldModel(Map map, unsigned int xEnemiesNumber) {
 
     // Convert unique pointers to shared pointers using the helper function
     enemies = convertToSharedUnorderedMap(enemyUnique);
+
+
     healthPacks = convertToSharedUnorderedMap(healthUnique);
     tiles = convertToSharedVector(tilesUnique);
     protagonist = std::move(protagonistUnique);
@@ -57,20 +59,26 @@ std::vector<std::unique_ptr<T>>& uniqueVector) {
     return sharedMap;
 }
 
-void WorldModel::createXEnemeies(unsigned int xEnemiesNumber){
-    // for (unsigned int i = 0; i < xEnemiesNumber; ++i) {
-    //     auto xEnemy = std::make_shared<XEnemy>();
-    //     xEnemy->setCoordinates(getClosestValidTile(xEnemy->getCoordinates()));
-    //     enemies[xEnemy->getCoordinates()] = xEnemy;
-    // }
+void WorldModel::createXEnemeies(unsigned int xEnemiesNumber) {
+    for (unsigned int i = 0; i < xEnemiesNumber; ++i) {
+        Coordinates coord;
+        do {
+            coord = Coordinates(rand() % width, rand() % height);
+        } while (!isValidCoordinate(coord));
+        enemies[coord] = std::make_shared<XEnemy>(coord.getX(), coord.getY(), getTileValue(coord));
+    }
+
+        for(auto& enemy : enemies) {
+        std::cout << enemy.second->getTileType() << std::endl;
+    }
 }
 
 // Utility Methods
-std::shared_ptr<Tile> WorldModel::getTileAt(Coordinates coord) {
+std::shared_ptr<Tile> WorldModel::getTileAt(Coordinates coord) const{
     return tiles[coord.getX() + coord.getY() * getWidth()];
 }
 
-float WorldModel::getTileValue(Coordinates coord) {
+float WorldModel::getTileValue(Coordinates coord) const{
     if (enemies.find(coord) != enemies.end()) {
         return enemies.at(coord)->getValue();
     } else if (healthPacks.find(coord) != healthPacks.end()) {
@@ -85,7 +93,7 @@ Tile::Type WorldModel::getTileType(Coordinates coord) const {
     } else if (healthPacks.find(coord) != healthPacks.end()) {
         return healthPacks.at(coord)->getTileType();
     }
-    return tiles[coord.getX() + coord.getY() * width]->getTileType();
+    return getTileAt(coord)->getTileType();
 }
 
 std::shared_ptr<Enemy> WorldModel::getEnemyAt(Coordinates coord) const {
@@ -96,7 +104,7 @@ std::shared_ptr<Tile> WorldModel::getHealthPackAt(Coordinates coord) const {
     return healthPacks.at(coord);
 }
 
-std::shared_ptr<Enemy> WorldModel::getEnemyAtIndex(size_t index) {
+std::shared_ptr<Enemy> WorldModel::getEnemyAtIndex(size_t index) const {
     if (index >= enemies.size()) {
         return nullptr;
     }
@@ -105,7 +113,7 @@ std::shared_ptr<Enemy> WorldModel::getEnemyAtIndex(size_t index) {
     return it->second;
 }
 
-std::shared_ptr<Tile> WorldModel::getHealthPackAtIndex(size_t index) {
+std::shared_ptr<Tile> WorldModel::getHealthPackAtIndex(size_t index) const{
     if (index >= healthPacks.size()) {
         return nullptr;
     }
@@ -136,7 +144,7 @@ bool WorldModel::isOutOfBounds(Coordinates coord) const {
 }
 
 bool WorldModel::isProtagonistAlive() const {
-    return (protagonist->getHealth() > 0 && protagonist->getEnergy() > 0);
+    return protagonist->isAlive();
 }
 
 bool WorldModel::isGameWon() const {

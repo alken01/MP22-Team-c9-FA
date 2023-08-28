@@ -23,11 +23,9 @@ class MainWindow : public QMainWindow {
     public:
         MainWindow(QWidget* parent);
         void changeScene();
-        void updateImage(int, QComboBox* comboBox, QLabel* label);
         void goToPath(int x, int y);
         void updatePath(QString input);
         void pressEntered();
-        void initCamera();
         std::vector<QString> pathToText(std::vector<std::pair<int, int>> path);
 
     private:
@@ -46,7 +44,8 @@ class MainWindow : public QMainWindow {
         QStringList filteredCommands;
 
         void activateNewWorld(QString mapName);
-        unsigned int XENEMY_NR = 15;  // change this
+        unsigned int XENEMY_NR = 10;  
+
         QString mapPath = ":/resources/world_images/";
         QStringList mapNameList = {"maze1", "maze2", "maze3", "worldmap",
                                    "worldmap4"};

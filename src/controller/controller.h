@@ -17,29 +17,33 @@
 #include "xenemy.h"
 
 class Controller {
-public:
-    Controller(std::shared_ptr<WorldModel> world);
+    public:
+        Controller(std::shared_ptr<WorldModel> world);
 
-    void handleInput(QString input);
-    void setAnimationSpeed(int newSpeed);
-    void setWorld(std::shared_ptr<WorldModel> world);
+        int handleInput(QString input);
+        void setWorld(std::shared_ptr<WorldModel> world);
 
-private:
-    int checkMove(Coordinates coord);
-    void handleMovement(const Coordinates &direction);
-    void handleTileInteraction(const Coordinates &coord);
-    void handleEnemyInteraction(std::shared_ptr<Enemy> enemy);
-    void handleHealthPackInteraction(std::shared_ptr<Tile> healthpack);
+        static const int MOVE = 0;
+        static const int FIGHT = 1;
+        static const int XFIGHT = 2;
+        static const int POISON = 3;
+        static const int HEAL = 4;
+        static const int DIE = -1;
 
-    std::shared_ptr<WorldModel> world;
-    QTimer delayTimer;
 
-    int animationSpeed, delaySwitch;
+    private:
+        int handleMovement(const Coordinates& direction);
+        int handleTileInteraction(const Coordinates& coord);
+        int handleEnemyInteraction(std::shared_ptr<Enemy> enemy);
+        int handleHealthPackInteraction(std::shared_ptr<Tile> healthpack);
 
-    static const int POISON_DAMAGE = 5;
-    static const int POISON_RESISTANCE_PER_TURN = 1;
-    static const int MAX_ENERGY = 100;
-    static const int TILE_MAX = 1; // set it between 1 and 0
+        std::shared_ptr<WorldModel> world;
+        QTimer delayTimer;
+
+        static const int POISON_DAMAGE = 5;
+        static const int POISON_RESISTANCE_PER_TURN = 1;
+        static const int MAX_ENERGY = 100;
+        static const int TILE_MAX = 1;  // set it between 1 and 0
 };
 
 #endif  // CONTROLLER_H

@@ -10,11 +10,10 @@
 
 class TextView : public View {
     public:
-        TextView();
-
-        void draw(std::shared_ptr<WorldModel> worldModel,
+        TextView(std::shared_ptr<WorldModel> worldModel,
                   std::shared_ptr<QGraphicsView> textView);
-        void renderMap();
+
+        void draw();
         void setHealed();
         void setFighting();
         void setPoisoned();
@@ -30,9 +29,7 @@ class TextView : public View {
         void updateText();
         void updateView();
         void resetBackgroundColor();
-        void protagonistDies();
         void changeSignAtCoord(Coordinates coord, QChar input);
-        QChar grayscaleToASCII(float intensity);
         void setTextViewState(const QColor& color);
 
         void populateTiles();

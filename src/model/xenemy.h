@@ -12,7 +12,7 @@ class WORLDSHARED_EXPORT XEnemy : public Enemy {
         XEnemy(int xPosition, int yPosition, float strength);
         float getEnergyLevel() const;
         void setEnergyLevel(float newEnergy);
-        Tile::Type getTileType() const;
+        Tile::Type getTileType() const ;
 
     private:
         float energy;

@@ -6,27 +6,30 @@ QFont TEXT_FONT("SF Mono");
 QFont TEXT_FONT("Monospace");
 #endif
 
-TextView::TextView() {
+TextView::TextView(std::shared_ptr<WorldModel> worldModel,
+                   std::shared_ptr<QGraphicsView> textView) {
     textScene = new QGraphicsScene();
-}
-
-void TextView::draw(std::shared_ptr<WorldModel> worldModel,
-                    std::shared_ptr<QGraphicsView> textView) {
     this->worldModel = worldModel;
     outputView = textView;
+    outputView->setScene(textScene);
     initializeMap();
+    setupTimers();  // Call the timer setup function here
+}
+void TextView::draw() {
+    updateView();
     populateWorldMap();
     updateVisibleMap();
     combineLinesToString();
     updateText();
-    textView->setScene(textScene);
 }
+
 void TextView::setupTimers() {
     poisonedEffectTimer.setInterval(Constants::TIMER_ANIMATION * 2);
-    healthFightTimer.isSingleShot();
+    poisonedEffectTimer.setSingleShot(true);  // Correct the statement
     healthFightTimer.setInterval(Constants::TIMER_ANIMATION);
+    healthFightTimer.setSingleShot(true);  // Set the timer to single-shot mode
     connect(&poisonedEffectTimer, &QTimer::timeout, this,
-            &TextView::setPoisoned);
+            &TextView::resetBackgroundColor);
     connect(&healthFightTimer, &QTimer::timeout, this,
             &TextView::resetBackgroundColor);
 }
@@ -68,13 +71,13 @@ void TextView::populateHealthPacks() {
     for (const auto& healthPackPair : worldModel->getHealthPacks()) {
         const std::shared_ptr<Tile>& healthPack = healthPackPair.second;
         changeSignAtCoord(healthPack->getCoordinates(),
-                          Constants::HEALTHPACK_SYMBOL);
+                          Constants::getSymbol(healthPack->getTileType()));
     }
 }
 
 void TextView::populateProtagonist() {
     Coordinates coord = worldModel->getProtagonist()->getCoordinates();
-    changeSignAtCoord(coord, Constants::PROTAGONIST_SYMBOL);
+    changeSignAtCoord(coord, Constants::getSymbol(Tile::Protagonist));
 }
 
 void TextView::combineLinesToString() {
@@ -82,13 +85,6 @@ void TextView::combineLinesToString() {
     for (const auto& line : visibleVectorMap) {
         combinedMap->append(line);
     }
-}
-
-void TextView::renderMap() {
-    updateView();
-    updateVisibleMap();
-    combineLinesToString();
-    updateText();
 }
 
 void TextView::updateVisibleMap() {
@@ -116,14 +112,6 @@ void TextView::updateVisibleMap() {
 
 void TextView::changeSignAtCoord(Coordinates coord, QChar input) {
     vectorMap[coord.getY()][coord.getX()] = input;
-}
-
-void TextView::protagonistDies() {
-    Coordinates coord = worldModel->getProtagonist()->getCoordinates();
-    changeSignAtCoord(coord, Constants::DEAD_SYMBOL);
-    updateVisibleMap();
-    // updateText();
-    updateView();
 }
 
 void TextView::setHealed() {
