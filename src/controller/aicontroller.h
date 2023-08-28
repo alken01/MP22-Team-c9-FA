@@ -1,36 +1,40 @@
-#ifndef AI_CONTROLLER_H
-#define AI_CONTROLLER_H
+#ifndef AICONTROLLER_H
+#define AICONTROLLER_H
 
+#include <QStringList>
+#include <QTimer>
 #include <iostream>
-#include <memory>
+#include <vector>
 #include "astar.h"
-#include "commandsmap.h"
-#include "graphicalview.h"
-#include "textview.h"
 #include "worldmodel.h"
 
 class AIController {
     public:
         AIController(std::shared_ptr<WorldModel> world);
-        void setWhiteValue(float newWhiteValue) { whiteValue = newWhiteValue; }
 
-        void getPath(int x, int y);
-        int goToEnemy();
+        std::vector<QString> gotoHelper(QString input);
         int goToHealthpack();
-        void gotoHelper(QString input);
-        std::vector<QString> pathToText(std::vector<std::pair<int, int>> path);
-        void goToPath(std::vector<std::pair<int, int>> path);
-        float pathCost(std::vector<std::pair<int, int>> path);
-        void autoPlayLoop();
+        int goToEnemy();
+        std::vector<QString> getPath(int x, int y);
         void autoPlay();
-        void makePathMoves(vector<QString> textPath);
-        void setAnimationSpeed(int newSpeed) { animationSpeed = newSpeed; }
+        void autoPlayLoop();
+
+        void setWhiteValue(float whiteValue);
+        void setAnimationSpeed(int animationSpeed);
+        int getAnimation();
+        void setWorld(std::shared_ptr<WorldModel> world);
 
     private:
+        std::shared_ptr<AStar> astar;
         std::shared_ptr<WorldModel> world;
         float whiteValue;
         int animationSpeed;
         int move;
+        float pathCost(const std::vector<std::pair<int, int>>& path);
+        void goToPath(const std::vector<std::pair<int, int>>& path);
+        void makePathMoves(const std::vector<QString>& textPath);
+        std::vector<QString> pathToText(
+        const std::vector<Coordinates> path);
 };
 
-#endif  // AI_CONTROLLER_H
+#endif  // AICONTROLLER_H

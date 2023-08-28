@@ -37,6 +37,7 @@ void MainWindow::activateNewWorld(QString mapName) {
     if (worldList.find(mapName) != worldList.end()) {
         activeWorld = worldList[mapName];
     } else {
+        std::cout << "Map not found" << std::endl;
     }
 }
 
@@ -133,9 +134,20 @@ void MainWindow::pressEntered() {
     QString input = commandTerminalInput->text();
     int moveResult = Controller::MOVE;
     if (input.size() >= 4 && input.left(4) == "goto") {
-        aiController->gotoHelper(input);
+        std::vector<QString> path = aiController->gotoHelper(input);
+        if (path.size() > 0) {
+            for (QString coord : path) {
+                controller->handleInput(coord);
+                viewController->render();
+                // wait for animation to finish
+                QEventLoop loop;
+                QTimer::singleShot(aiController->getAnimation(), &loop, SLOT(quit()));
+                loop.exec();
+            }
+        }
+        
     } else {
-        int moveResult = controller->handleInput(input);
+        moveResult = controller->handleInput(input);
     }
 
     viewController->render();
@@ -198,6 +210,7 @@ void MainWindow::mapChanged() {
 
     controller->setWorld(activeWorld);
     viewController->setWorld(activeWorld);
+    aiController->setWorld(activeWorld);
 
     viewController->drawWorlds();
 

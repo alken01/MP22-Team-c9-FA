@@ -16,10 +16,10 @@ SOURCES += \
     src/view/graphicalview.cpp \
     src/view/textview.cpp \
     src/view/constants.cpp \
+    src/pathfinder/astar.cpp \
     src/controller/controller.cpp \
     src/controller/viewcontroller.cpp \
     src/controller/aicontroller.cpp \
-    src/pathfinder/astar.cpp \
     src/mainwindow.cpp \
     src/main.cpp 
 

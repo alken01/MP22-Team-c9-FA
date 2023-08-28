@@ -1,89 +1,89 @@
 #include "astar.h"
-#include <limits>  // Include for using std::numeric_limits
 
-vector<pair<int, int>> astar(shared_ptr<WorldModel>& world, Tile start,
-                             Tile end, float white_value) {
+AStar::AStar(std::shared_ptr<WorldModel> world) : world(world) {}
 
-    int startX = start.getXPos();
-    int startY = start.getYPos();
-    int endX = end.getXPos();
-    int endY = end.getYPos();
+void AStar::setWorld(std::shared_ptr<WorldModel>& newWorld) {
+    world = newWorld;
+}
 
-    int cols = world->getWidth();
-    int rows = world->getHeight();
+std::vector<Coordinates> AStar::findPath(Coordinates start, Coordinates end,
+                                         float white_value) {
+    std::vector<Coordinates> path;
+    std::priority_queue<Node, std::vector<Node>, CompareNode> openSet;
+    std::unordered_map<Coordinates, bool> closedSet;
+    std::unordered_map<Coordinates, Coordinates> parentMap;
 
-    const float WHITE_THRESHOLD = 0.99;
-    const float MAX_COST = 1.0;
-    
-    std::cout << "startX: " << startX << std::endl;
-    std::cout << "startY: " << startY << std::endl;
-    std::cout << "endX: " << endX << std::endl;
-    std::cout << "endY: " << endY << std::endl;
+    openSet.push(Node(start, 0.0f, calculateHeuristic(start, end)));
 
-    std::cout << "white_value: " << white_value << std::endl;
-    vector<vector<float>> grid(cols, vector<float>(rows));
+    // A* algorithm
+    while (!openSet.empty()) {
+        // Get the node with the lowest cost
+        Node current = openSet.top();
+        openSet.pop();
+        // Check if we have reached the end
+        if (current.coordinates == end) {
+            Coordinates currentCoords = end;
+            // Reconstruct the path
+            while (!(currentCoords == start)) {
+                // Add the current coordinates to the path
+                path.push_back(currentCoords);
+                currentCoords = parentMap[currentCoords];
+            }
+            // Reverse the path so it is in the correct order
+            std::reverse(path.begin(), path.end());
+            return path;
+        }
 
-    // Set the grid elements
-    for (int col = 0; col < cols; col++) {
-        for (int row = 0; row < rows; row++) {
-            Coordinates coord(col, row);
+        // Add the current node to the closed set
+        closedSet[current.coordinates] = true;
 
-            float tileValue = world->getTileValue(coord);
-            if (tileValue != std::numeric_limits<float>::infinity()) {
-                if (white_value > WHITE_THRESHOLD) {
-                    grid[col][row] = MAX_COST;
-                } else {
-                    grid[col][row] = MAX_COST - tileValue; // Flip the value
+        // Get the neighbors of the current node
+        std::vector<Coordinates> neighbors = {
+        {current.coordinates.getX() - 1, current.coordinates.getY()},
+        {current.coordinates.getX() + 1, current.coordinates.getY()},
+        {current.coordinates.getX(), current.coordinates.getY() - 1},
+        {current.coordinates.getX(), current.coordinates.getY() + 1}};
+
+        // Loop through the neighbors
+        for (const auto neighbor : neighbors) {
+            // Check if the neighbor is out of bounds or in the closed set
+            if (!world->isValidCoordinate(neighbor)) continue;
+
+            // Check if the neighbor is in the open set
+            if (world->getTileValue(neighbor) < white_value && !closedSet[neighbor]) {
+                float newCost =
+                current.cost + calculateCost(current.coordinates, neighbor);
+
+                if (newCost < current.cost ||
+                    parentMap.find(neighbor) == parentMap.end()) {
+                    parentMap[neighbor] = current.coordinates;
+                    openSet.push(
+                    Node(neighbor, newCost, calculateHeuristic(neighbor, end)));
                 }
-            } else {
-                grid[col][row] = tileValue;
             }
         }
     }
 
+    std::cerr << "No path found." << std::endl;
+    return path;
+}
 
-    vector<vector<float>> dist(rows, vector<float>(cols, std::numeric_limits<float>::infinity()));
-    vector<vector<pair<int, int>>> path(rows, vector<pair<int, int>>(cols));
-    priority_queue<Node, vector<Node>, NodeComparator> pq;
+float AStar::calculateCost(const Coordinates from, const Coordinates to) {
+    return abs(from.getX() - to.getX()) + abs(from.getY() - to.getY());
+}
 
-    pq.push(Node(startX, startY, grid[startX][startY]));
-    dist[startX][startY] = grid[startX][startY];
+AStar::Node::Node(const Coordinates coords, float gCost, float hCost)
+    : coordinates(coords), cost(gCost), heuristic(hCost) {}
 
-    vector<pair<int, int>> moves = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
-    vector<pair<int, int>> result = {};
+float AStar::Node::getTotalCost() const {
+    return cost + heuristic;
+}
 
-    while (!pq.empty()) {
-        Node curr = pq.top();
-        pq.pop();
+bool AStar::CompareNode::operator()(const Node& a, const Node& b) {
+    return a.getTotalCost() > b.getTotalCost();
+}
 
-        if (curr.x == endX && curr.y == endY) {
-            pair<int, int> position = make_pair(curr.x, curr.y);
-            while (position.first != startX || position.second != startY) {
-                result.push_back(position);
-                position = make_pair(path[position.first][position.second].first,
-                                     path[position.first][position.second].second);
-            }
-            result.push_back(make_pair(startX, startY));
-            reverse(result.begin(), result.end());
-            break;
-        }
-
-        for (auto move : moves) {
-            int nx = curr.x + move.first;
-            int ny = curr.y + move.second;
-
-            if (nx < 0 || nx >= cols || ny < 0 || ny >= rows) continue;
-            if (grid[nx][ny] == std::numeric_limits<float>::infinity()) continue;
-
-            if (dist[nx][ny] == std::numeric_limits<float>::infinity() ||
-                dist[nx][ny] > dist[curr.x][curr.y] + grid[nx][ny]) {
-                dist[nx][ny] = dist[curr.x][curr.y] + grid[nx][ny];
-                pq.push(Node(nx, ny, dist[nx][ny]));
-                path[nx][ny] = make_pair(curr.x, curr.y);
-            }
-        }
-    }
-
-    if (result.empty()) cout << "No path found" << endl;
-    return result;
+float AStar::calculateHeuristic(const Coordinates current,
+                                const Coordinates end) {
+    return abs(current.getX() - end.getX()) + abs(current.getY() - end.getY());
 }

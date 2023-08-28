@@ -1,30 +1,42 @@
 #ifndef ASTAR_H
 #define ASTAR_H
 
-#include <algorithm>
+#include <memory>
 #include <queue>
-#include <utility>
+#include <unordered_map>
 #include <vector>
-#include <iostream>
-#include "world.h"
-#include "worldmodel.h"
 #include "coordinates.h"
+#include "worldmodel.h"
 
-using namespace std;
+class AStar {
+    public:
+        AStar(std::shared_ptr<WorldModel> world);
 
-struct Node {
-        int x, y;  // Position on the grid (x, y)
-        int cost;  // Cost of reaching this position
-        Node(int x, int y, int cost) : x(x), y(y), cost(cost) {}
+        void setWorld(std::shared_ptr<WorldModel>& world);
+
+        std::vector<Coordinates> findPath(Coordinates start, Coordinates end,
+                                          float white_value);
+
+    private:
+        struct Node {
+                Coordinates coordinates;
+                float cost;
+                float heuristic;
+
+                Node(const Coordinates coords, float gCost, float hCost);
+
+                float getTotalCost() const;
+        };
+
+        struct CompareNode {
+                bool operator()(const Node& a, const Node& b);
+        };
+
+        float calculateHeuristic(const Coordinates current,
+                                 const Coordinates end);
+        float calculateCost(const Coordinates from, const Coordinates to);
+
+        std::shared_ptr<WorldModel> world;
 };
 
-struct NodeComparator {
-        bool operator()(const Node& a, const Node& b) {
-            return a.cost > b.cost;
-        }
-};
-
-vector<pair<int, int>> astar(shared_ptr<WorldModel>& world, Tile start,
-                             Tile end, float white_value);
-
-#endif
+#endif  // ASTAR_H
