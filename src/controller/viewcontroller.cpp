@@ -2,8 +2,7 @@
 #include <iostream>
 ViewController::ViewController(std::shared_ptr<WorldModel> world)
     : _QTextView(std::make_shared<QGraphicsView>()),
-      _QGraphicsView(std::make_shared<QGraphicsView>()),
-      animationSpeed(500) {
+      _QGraphicsView(std::make_shared<QGraphicsView>()){
     this->world = world;
 }
 
@@ -44,9 +43,6 @@ void ViewController::resetDelay() {
     delaySwitch = 0;
 }
 
-void ViewController::setAnimationSpeed(int newSpeed) {
-    animationSpeed = newSpeed;
-}
 
 const std::shared_ptr<QGraphicsView>& ViewController::getQTextView() const {
     return _QTextView;

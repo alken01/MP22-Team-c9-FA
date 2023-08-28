@@ -1,22 +1,26 @@
 #include "astar.h"
+#include <limits>  // Include for using std::numeric_limits
 
-
-// A* search function that returns a path to the end position from the start
-// position
 vector<pair<int, int>> astar(shared_ptr<WorldModel>& world, Tile start,
                              Tile end, float white_value) {
-    cout << "Starting algo..." << endl;
-    // TODO:
-    // check if having the end and start positions as variables is quicker than
-    // calling them
-    int sx = start.getXPos();
-    int sy = start.getYPos();
-    int ex = end.getXPos();
-    int ey = end.getYPos();
+
+    int startX = start.getXPos();
+    int startY = start.getYPos();
+    int endX = end.getXPos();
+    int endY = end.getYPos();
 
     int cols = world->getWidth();
     int rows = world->getHeight();
 
+    const float WHITE_THRESHOLD = 0.99;
+    const float MAX_COST = 1.0;
+    
+    std::cout << "startX: " << startX << std::endl;
+    std::cout << "startY: " << startY << std::endl;
+    std::cout << "endX: " << endX << std::endl;
+    std::cout << "endY: " << endY << std::endl;
+
+    std::cout << "white_value: " << white_value << std::endl;
     vector<vector<float>> grid(cols, vector<float>(rows));
 
     // Set the grid elements
@@ -24,70 +28,54 @@ vector<pair<int, int>> astar(shared_ptr<WorldModel>& world, Tile start,
         for (int row = 0; row < rows; row++) {
             Coordinates coord(col, row);
 
-            grid[col][row] = world->getTileValue(coord);
-            if (world->getTileValue(coord) != INFINITY) {
-                if (white_value > 0.99) {
-                    grid[col][row] = 1;
+            float tileValue = world->getTileValue(coord);
+            if (tileValue != std::numeric_limits<float>::infinity()) {
+                if (white_value > WHITE_THRESHOLD) {
+                    grid[col][row] = MAX_COST;
                 } else {
-                    grid[col][row] =
-                    1 + white_value -
-                    grid[col][row];  // if it is not infinte, flip the value
-                                     // around, whiter tiles << darker tiles
+                    grid[col][row] = MAX_COST - tileValue; // Flip the value
                 }
+            } else {
+                grid[col][row] = tileValue;
             }
         }
     }
 
-    vector<vector<float>> dist(
-    rows,
-    vector<float>(cols, -1));  // distances of each cell from the start position
-    vector<vector<pair<int, int>>> path(
-    rows, vector<pair<int, int>>(
-          cols));  // path to reach each cell from the start position
-    priority_queue<Node, vector<Node>, NodeComparator>
-    pq;  // priority queue of Node objects
 
-    // Initialize the priority queue with the start position and its cost
-    pq.push(Node(sx, sy, grid[sx][sy]));
-    dist[sx][sy] = grid[sx][sy];
+    vector<vector<float>> dist(rows, vector<float>(cols, std::numeric_limits<float>::infinity()));
+    vector<vector<pair<int, int>>> path(rows, vector<pair<int, int>>(cols));
+    priority_queue<Node, vector<Node>, NodeComparator> pq;
 
-    // Explore the four possible moves from the current position (right, left,
-    // up, down)
+    pq.push(Node(startX, startY, grid[startX][startY]));
+    dist[startX][startY] = grid[startX][startY];
+
+    vector<pair<int, int>> moves = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
     vector<pair<int, int>> result = {};
 
-    vector<pair<int, int>> moves = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
-
-    // While the priority queue is not empty
     while (!pq.empty()) {
-        // Get the top node (node with the lowest cost) from the queue
         Node curr = pq.top();
         pq.pop();
 
-        // If the current node is the end position, return the path to the end
-        // position
-        if (curr.x == ex && curr.y == ey) {
-            pair<int, int> start = make_pair(curr.x, curr.y);
-            while (start.first != sx || start.second != sy) {
-                result.push_back(start);
-                start = make_pair(path[start.first][start.second].first,
-                                  path[start.first][start.second].second);
+        if (curr.x == endX && curr.y == endY) {
+            pair<int, int> position = make_pair(curr.x, curr.y);
+            while (position.first != startX || position.second != startY) {
+                result.push_back(position);
+                position = make_pair(path[position.first][position.second].first,
+                                     path[position.first][position.second].second);
             }
-            result.push_back(make_pair(sx, sy));
+            result.push_back(make_pair(startX, startY));
             reverse(result.begin(), result.end());
             break;
         }
 
         for (auto move : moves) {
-            int nx = curr.x + move.first;   // New x-coordinate
-            int ny = curr.y + move.second;  // New y-coordinate
+            int nx = curr.x + move.first;
+            int ny = curr.y + move.second;
 
-            // Skip the move if the new position is outside the grid
-            if (nx < 0 || nx >= rows || ny < 0 || ny >= cols) continue;
-            if (grid[nx][ny] == INFINITY) continue;
+            if (nx < 0 || nx >= cols || ny < 0 || ny >= rows) continue;
+            if (grid[nx][ny] == std::numeric_limits<float>::infinity()) continue;
 
-            // Update the minimum cost and the priority queue if the new
-            // position has a lower cost
-            if (dist[nx][ny] == -1 ||
+            if (dist[nx][ny] == std::numeric_limits<float>::infinity() ||
                 dist[nx][ny] > dist[curr.x][curr.y] + grid[nx][ny]) {
                 dist[nx][ny] = dist[curr.x][curr.y] + grid[nx][ny];
                 pq.push(Node(nx, ny, dist[nx][ny]));
@@ -96,8 +84,6 @@ vector<pair<int, int>> astar(shared_ptr<WorldModel>& world, Tile start,
         }
     }
 
-    // If we reach here, it means that there is no path from the start position
-    // to the end position
-    if (result.size() == 0) cout << "No path found" << endl;
+    if (result.empty()) cout << "No path found" << endl;
     return result;
 }

@@ -30,7 +30,6 @@ class ViewController {
 
         const std::shared_ptr<QGraphicsView>& getQGraphicsView() const;
         const std::shared_ptr<QGraphicsView>& getQTextView() const;
-        void setAnimationSpeed(int newSpeed);
         void setWorld(std::shared_ptr<WorldModel> world);        
 
     public slots:
@@ -46,9 +45,8 @@ class ViewController {
 
         std::shared_ptr<QGraphicsView> _QTextView, _QGraphicsView;
         QTimer delayTimer;
-        int animationSpeed;
         int delaySwitch;
-
+        int move;
         void resetDelay();
 };
 

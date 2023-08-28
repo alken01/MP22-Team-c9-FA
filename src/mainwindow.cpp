@@ -43,7 +43,7 @@ void MainWindow::activateNewWorld(QString mapName) {
 void MainWindow::initControllers() {
     controller = std::make_shared<Controller>(activeWorld);
     viewController = std::make_shared<ViewController>(activeWorld);
-    // aiController = std::make_shared<AIController>(controller);
+    aiController = std::make_shared<AIController>(activeWorld);
 }
 
 void MainWindow::setupUIComponents() {
@@ -131,7 +131,12 @@ void MainWindow::pressEntered() {
     if (isGameOver()) return;
 
     QString input = commandTerminalInput->text();
-    int moveResult = controller->handleInput(input);
+    int moveResult = Controller::MOVE;
+    if (input.size() >= 4 && input.left(4) == "goto") {
+        aiController->gotoHelper(input);
+    } else {
+        int moveResult = controller->handleInput(input);
+    }
 
     viewController->render();
     if (moveResult == Controller::POISON) {
@@ -221,13 +226,13 @@ void MainWindow::printTerminal(QString message) {
 }
 
 void MainWindow::setHeuristic() {
-    // aiController->setWhiteValue(ui->heuristicSlider->value() / 10);
+    aiController->setWhiteValue(ui->heuristicSlider->value() / 10);
 }
 
 void MainWindow::autoplay() {
-    // aiController->autoPlay();
+    aiController->autoPlay();
 }
 
 void MainWindow::changeSpeed() {
-    viewController->setAnimationSpeed(ui->animationSlider->value() * 10);
+    aiController->setAnimationSpeed(ui->animationSlider->value() * 10);
 }

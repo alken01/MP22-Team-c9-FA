@@ -3,9 +3,6 @@
 Controller::Controller(std::shared_ptr<WorldModel> world) : world(world) {}
 
 int Controller::handleInput(QString input) {
-    if (input.size() >= 4 && input.left(4) == "goto") {
-        // gotoHelper(input);
-    }
     return handleMovement(CommandsMap::getMoveDirection(input));
 }
 

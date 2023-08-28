@@ -17,7 +17,6 @@ WorldModel::WorldModel(Map map, unsigned int xEnemiesNumber) {
     // Convert unique pointers to shared pointers using the helper function
     enemies = convertToSharedUnorderedMap(enemyUnique);
 
-
     healthPacks = convertToSharedUnorderedMap(healthUnique);
     tiles = convertToSharedVector(tilesUnique);
     protagonist = std::move(protagonistUnique);
@@ -65,20 +64,17 @@ void WorldModel::createXEnemeies(unsigned int xEnemiesNumber) {
         do {
             coord = Coordinates(rand() % width, rand() % height);
         } while (!isValidCoordinate(coord));
-        enemies[coord] = std::make_shared<XEnemy>(coord.getX(), coord.getY(), getTileValue(coord));
-    }
-
-        for(auto& enemy : enemies) {
-        std::cout << enemy.second->getTileType() << std::endl;
+        enemies[coord] = std::make_shared<XEnemy>(coord.getX(), coord.getY(),
+                                                  getTileValue(coord));
     }
 }
 
 // Utility Methods
-std::shared_ptr<Tile> WorldModel::getTileAt(Coordinates coord) const{
+std::shared_ptr<Tile> WorldModel::getTileAt(Coordinates coord) const {
     return tiles[coord.getX() + coord.getY() * getWidth()];
 }
 
-float WorldModel::getTileValue(Coordinates coord) const{
+float WorldModel::getTileValue(Coordinates coord) const {
     if (enemies.find(coord) != enemies.end()) {
         return enemies.at(coord)->getValue();
     } else if (healthPacks.find(coord) != healthPacks.end()) {
@@ -113,7 +109,7 @@ std::shared_ptr<Enemy> WorldModel::getEnemyAtIndex(size_t index) const {
     return it->second;
 }
 
-std::shared_ptr<Tile> WorldModel::getHealthPackAtIndex(size_t index) const{
+std::shared_ptr<Tile> WorldModel::getHealthPackAtIndex(size_t index) const {
     if (index >= healthPacks.size()) {
         return nullptr;
     }

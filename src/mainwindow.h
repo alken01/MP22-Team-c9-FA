@@ -7,8 +7,8 @@
 #include <memory>
 #include "aicontroller.h"
 #include "controller.h"
-#include "map.h"
 #include "viewcontroller.h"
+#include "map.h"
 #include "worldmodel.h"
 
 QT_BEGIN_NAMESPACE
@@ -23,8 +23,6 @@ class MainWindow : public QMainWindow {
     public:
         MainWindow(QWidget* parent);
         void changeScene();
-        void goToPath(int x, int y);
-        void updatePath(QString input);
         void pressEntered();
         std::vector<QString> pathToText(std::vector<std::pair<int, int>> path);
 
@@ -41,6 +39,7 @@ class MainWindow : public QMainWindow {
 
         std::shared_ptr<Controller> controller;
         std::shared_ptr<ViewController> viewController;
+        std::shared_ptr<AIController> aiController;
         QStringList filteredCommands;
 
         void activateNewWorld(QString mapName);
@@ -61,7 +60,6 @@ class MainWindow : public QMainWindow {
         void updateVitals();
         void printHelpCommands();
         bool isGameOver();
-        void showRestartButton(bool show);
         void textEntered();
         void filterCommands();
         void mapChanged();

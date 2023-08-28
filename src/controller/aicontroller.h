@@ -11,10 +11,9 @@
 
 class AIController {
     public:
-        AIController();
+        AIController(std::shared_ptr<WorldModel> world);
         void setWhiteValue(float newWhiteValue) { whiteValue = newWhiteValue; }
 
-    private:
         void getPath(int x, int y);
         int goToEnemy();
         int goToHealthpack();
@@ -25,8 +24,13 @@ class AIController {
         void autoPlayLoop();
         void autoPlay();
         void makePathMoves(vector<QString> textPath);
+        void setAnimationSpeed(int newSpeed) { animationSpeed = newSpeed; }
 
+    private:
+        std::shared_ptr<WorldModel> world;
         float whiteValue;
+        int animationSpeed;
+        int move;
 };
 
 #endif  // AI_CONTROLLER_H
