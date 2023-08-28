@@ -13,44 +13,80 @@ const QString HELP_COMMAND = "help";
 const QString UNRECOGNIZED_INPUT_MESSAGE =
 "Invalid command. Type '" + HELP_COMMAND + "' for options.";
 
-MainWindow::MainWindow(QWidget* parent, std::shared_ptr<Controller> controller,
-                       std::shared_ptr<ViewController> viewController)
+MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
-    this->controller = controller;
-    this->viewController = viewController;
 
-    std::cout << "MainWindow constructor" << std::endl;
+    setupWorlds();
+    initControllers();
 
-    ui->setupUi(this);
-    std::cout << "MainWindow setupUi" << std::endl;
     setupUIComponents();
-    std::cout << "MainWindow setupUIComponents" << std::endl;
     setupConnections();
-    std::cout << "MainWindow setupConnections" << std::endl;
     filterCommands();
-    std::cout << "MainWindow filterCommands" << std::endl;
     ui->comboBox->setCurrentIndex(0);
-    std::cout << "MainWindow constructor end" << std::endl;
     initViews();
-    std::cout << "MainWindow initViews" << std::endl;
+}
+
+void MainWindow::setupWorlds() {
+    std::cout << "MainWindow setupWorlds" << std::endl;
+
+    
+    QString mapPath = ":/resources/world_images/";
+
+    // create Map objects
+    for (auto mapName : mapNameList) {
+        Map map(QString(mapPath + mapName + ".png"), mapName);
+        mapList.push_back(map);
+        std::cout << "MainWindow creating map " << map.getPath().toStdString()
+                  << std::endl;
+    }
+
+    // create WorldModel objects
+
+    unsigned int XENEMY_NR = 15;  // change this
+    for (Map map : mapList) {
+        std::cout << "MainWindow creating world " << map.getName().toStdString()
+                  << std::endl;
+        auto worldModel = std::make_shared<WorldModel>(map, XENEMY_NR);
+        worldList[map.getName()] = worldModel;
+    }
+
+    // Access an activeWorld using a specific key from mapList
+    QString keyToFind = mapList[0].getName();
+    if (worldList.find(keyToFind) != worldList.end()) {
+        activeWorld = worldList[keyToFind];
+        std::cout << "MainWindow activeWorld is " << keyToFind.toStdString()
+                  << std::endl;
+    } else {
+        // Handle the case where the key is not found
+        std::cout << "Key not found" << std::endl;
+    }
+}
+
+void MainWindow::initControllers() {
+    std::cout << "MainWindow initControllers" << std::endl;
+    controller = std::make_shared<Controller>(activeWorld);
+    viewController = std::make_shared<ViewController>(activeWorld);
+    // aiController = std::make_shared<AIController>(controller);
 }
 
 void MainWindow::setupUIComponents() {
+    ui->setupUi(this);
+
     textInput = ui->lineEdit;
     ui->textEdit_4->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     health = ui->progressBar;
     health->setRange(0, 100);
-    health->setValue(controller->getWorld()->getProtagonist()->getHealth());
+    health->setValue(activeWorld->getProtagonist()->getHealth());
 
     energy = ui->progressBar_2;
     energy->setRange(0, 100);
-    energy->setValue(controller->getWorld()->getProtagonist()->getEnergy());
+    energy->setValue(activeWorld->getProtagonist()->getEnergy());
 
     completer = new QCompleter(CommandsMap::getCommands(), this);
     ui->lineEdit->setCompleter(completer);
 
-    ui->comboBox->addItems(controller->getMapList());
+    ui->comboBox->addItems(mapNameList);
 
     viewStatus = TEXT_VIEW;
     changeScene();
@@ -107,7 +143,7 @@ void MainWindow::pressEntered() {
     if (isGameOver()) return;
     QString input = textInput->text();
     std::cout << "MainWindow pressEntered" << std::endl;
-    controller->commandReceived(input);
+    controller->handleInput(input);
     // viewController->movePlayer?? or in controller
     viewController->updateViews();
 
@@ -137,7 +173,7 @@ void MainWindow::textEntered() {
 }
 
 bool MainWindow::isGameOver() {
-    bool isPlayerDead = !controller->isProtagonistAlive();
+    bool isPlayerDead = !activeWorld->isProtagonistAlive();
 
     if (isPlayerDead) {
         // QString message = isGameWon ? WIN_MESSAGE : LOSE_MESSAGE;
@@ -154,7 +190,26 @@ void MainWindow::filterCommands() {
 }
 
 void MainWindow::mapChanged() {
-    viewController->changeMap(ui->comboBox->currentText());
+    auto newMap = ui->comboBox->currentText();
+    std::cout << "MainWindow mapChanged" << std::endl;
+    // active world should point to the new map
+    // activeWorld = worldList[newMap];
+    QString keyToFind = newMap;
+    if (worldList.find(keyToFind) != worldList.end()) {
+        activeWorld = worldList[keyToFind];
+        std::cout << "MainWindow activeWorld is " << keyToFind.toStdString()
+                  << std::endl;
+    } else {
+        // Handle the case where the key is not found
+        std::cout << "Key not found" << std::endl;
+        return;
+    }
+    controller->setWorld(activeWorld);
+    viewController->setWorld(activeWorld);
+    
+    viewController->changeMap();
+    // controller->changeMap(newMap);
+    // viewController->updateViews();
 
     updateVitals();
     ui->textEdit_4->clear();
@@ -166,8 +221,8 @@ void MainWindow::mapChanged() {
 }
 
 void MainWindow::updateVitals() {
-    health->setValue(controller->getWorld()->getProtagonist()->getHealth());
-    energy->setValue(controller->getWorld()->getProtagonist()->getEnergy());
+    health->setValue(activeWorld->getProtagonist()->getHealth());
+    energy->setValue(activeWorld->getProtagonist()->getEnergy());
     // ui->lcdNumber->display(controller->getPoisoned());
 }
 

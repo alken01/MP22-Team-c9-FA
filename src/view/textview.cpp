@@ -110,19 +110,19 @@ void TextView::combineLinesToString() {
 void TextView::moveProtagonist() {
     std::cout << "Moving protagonist" << std::endl;
     Coordinates protCoord = worldModel->getProtagonist()->getCoordinates();
-    
+
     // check for all 6 pos around protagonist
-    // for (int x = std::max(0, protCoord.getX() - 1);
-    //      x <= std::min(worldModel->getWidth() - 1, protCoord.getX() + 1); x++) {
-    //     for (int y = std::max(0, protCoord.getY() - 1);
-    //          y <= std::min(worldModel->getHeight() - 1, protCoord.getY() + 1);
-    //          y++) {
-    //         Coordinates coord = Coordinates(x, y);
-    //         int worldPos = x + y * worldModel->getWidth();
-    //         float tileValue = worldModel->getTiles().at(worldPos)->getValue();
-    //         changeSignAtCoord(coord, grayscaleToASCII(tileValue));
-    //     }
-    // }
+    for (int x = std::max(0, protCoord.getX() - 1);
+         x <= std::min(worldModel->getWidth() - 1, protCoord.getX() + 1); x++) {
+        for (int y = std::max(0, protCoord.getY() - 1);
+             y <= std::min(worldModel->getHeight() - 1, protCoord.getY() + 1);
+             y++) {
+            Coordinates coord = Coordinates(x, y);
+            int worldPos = x + y * worldModel->getWidth();
+            float tileValue = worldModel->getTiles().at(worldPos)->getValue();
+            changeSignAtCoord(coord, grayscaleToASCII(tileValue));
+        }
+    }
     changeSignAtCoord(protCoord, QChar(PROTAGONIST_SYMBOL));
     
     updateVisibleMap();

@@ -10,55 +10,35 @@
 #include <memory>
 
 #include "commandsmap.h"
+#include "coordinates.h"
 #include "graphicalview.h"
 #include "textview.h"
 #include "worldmodel.h"
 #include "xenemy.h"
-#include "coordinates.h"
 
 class Controller {
-    public:
-        Controller();
+public:
+    Controller(std::shared_ptr<WorldModel> world);
 
-        void handleInput();
-        bool isProtagonistAlive();
-        void commandReceived(QString input);
-        void movePlayer(QString input);
-        void fightEnemy(std::shared_ptr<Enemy> enemy);
+    void handleInput(QString input);
+    void setAnimationSpeed(int newSpeed);
+    void setWorld(std::shared_ptr<WorldModel> world);
 
-        const QStringList& getMapList() const;
-        void setAnimationSpeed(int newSpeed);
-        const std::shared_ptr<WorldModel>& getWorld() const;
-        WorldModel& getWorldModel();
+private:
+    int checkMove(Coordinates coord);
+    void handleMovement(const Coordinates &direction);
+    void handleTileInteraction(const Coordinates &coord);
+    void handleEnemyInteraction(std::shared_ptr<Enemy> enemy);
+    void handleHealthPackInteraction(std::shared_ptr<Tile> healthpack);
 
-    private:
-        void initializeWorld();
-        void initWorlds();
-        int checkMove(Coordinates coord);
-        void resetDelay();
-        
-        // CHANGE THIS
-        QStringList mapList = {"maze1", "maze2", "maze3", "worldmap",
-                               "worldmap4"};
-        QString mapPath = ":/resources/world_images/";
-        QString getMapPath(QString mapName) {
-            return mapPath + mapName + ".png";
-        }
+    std::shared_ptr<WorldModel> world;
+    QTimer delayTimer;
 
-        std::shared_ptr<WorldModel> world;
-        QTimer delayTimer;
+    int animationSpeed, delaySwitch;
 
-        int animationSpeed, delaySwitch;
-        std::size_t move, loop;
-
-        const unsigned int ENEMY_NR = 50;
-        const unsigned int HEALTHPACK_NR = 5;
-        const float P_RATIO = 0.25f;
-        const unsigned int XENEMY_NR = 3;
-
-        int POISON_DAMAGE = 5;
-        int POISON_RESISTANCE_PER_TURN = 1;
-        int MAX = 100;
+    static const int POISON_DAMAGE = 5;
+    static const int POISON_RESISTANCE_PER_TURN = 1;
+    static const int MAX_ENERGY = 100;
 };
 
 #endif  // CONTROLLER_H

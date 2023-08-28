@@ -19,7 +19,7 @@
 
 class ViewController {
     public:
-        ViewController(std::shared_ptr<Controller> controller);
+        ViewController(std::shared_ptr<WorldModel> world);
         void drawWorlds();
         void handleInput();
         void update();
@@ -33,33 +33,23 @@ class ViewController {
         const std::shared_ptr<QGraphicsView>& getQTextView() const;
         void setAnimationSpeed(int newSpeed);
 
+        void setWorld(std::shared_ptr<WorldModel> world);
+
     public slots:
         void switchToGraphic();
         void switchToText();
         void switchViews();
         void initWorlds();
         void commandReceived(QString input);
-        void changeMap(QString mapName);
+        void changeMap();
         void restart();
 
     private:
-        QStringList mapList = {"maze1", "maze2", "maze3", "worldmap",
-                               "worldmap4"};
-        QString mapPath = ":/resources/world_images/";
-        QString getMapPath(QString mapName) {
-            return mapPath + mapName + ".png";
-        }
-        const unsigned int ViewENEMY_NR = 50;
-        const unsigned int HEALTHPACK_NR = 5;
+        // const unsigned int ViewENEMY_NR = 50;
+        // const unsigned int HEALTHPACK_NR = 5;
         const float P_RATIO = 0.25f;
         const unsigned int XENEMY_NR = 3;
-
-        int POISON_DAMAGE = 5;
-        int POISON_RESISTANCE_PER_TURN = 1;
         int MAX = 100;
-
-        // std::vector<Map> mapList;
-
         std::shared_ptr<WorldModel> world;
         std::shared_ptr<GraphicalView> graphicalView;
         std::shared_ptr<TextView> textView;
@@ -69,7 +59,6 @@ class ViewController {
         std::shared_ptr<World> newMap;
         int animationSpeed;
         int delaySwitch;
-        std::shared_ptr<Controller> controller;
 
         void initializeWorld();
         void dead();

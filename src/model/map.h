@@ -1,21 +1,56 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include <string>
+#include <QString>
 #include <vector>
 
 class Map {
     public:
-        Map(const std::string& path, int startX, int startY, int endX,
-            int endY);
+        Map(QString mapPath, QString mapName, int startX, int startY, int endX,
+            int endY) {
+            this->mapPath = mapPath;
+            this->mapName = mapName;
+            this->startX = startX;
+            this->startY = startY;
+            this->endX = endX;
+            this->endY = endY;
+        }
 
-        int getStartX() const;
-        int getStartY() const;
-        int getEndX() const;
-        int getEndY() const;
+        Map(QString mapPath, QString mapName) {
+            this->mapPath = mapPath;
+            this->mapName = mapName;
+            this->startX = -1;
+            this->startY = -1;
+            this->endX = -1;
+            this->endY = -1;
+        }
+
+        Map(QString mapPath) {
+            this->mapPath = mapPath;
+            this->mapName = "";
+            this->startX = -1;
+            this->startY = -1;
+            this->endX = -1;
+            this->endY = -1;
+        }
+
+        int getStartX() const { return startX; }
+        int getStartY() const { return startY; }
+        int getEndX() const { return endX; }
+        int getEndY() const { return endY; }
+        QString getPath() const { return mapPath; }
+        QString getName() const { return mapName; }
+
+        void setStartX(int x) { startX = x; }
+        void setStartY(int y) { startY = y; }
+        void setEndX(int x) { endX = x; }
+        void setEndY(int y) { endY = y; }
+        void setPath(QString path) { mapPath = path; }
+        void setName(QString name) { mapName = name; }
 
     private:
-        std::string mapPath;
+        QString mapName;
+        QString mapPath;
         int startX;
         int startY;
         int endX;
@@ -23,6 +58,3 @@ class Map {
 };
 
 #endif  // MAP_H
-
-// mapList = {"maze1", "maze2", "maze3", "worldmap", "worldmap4"};
-// mapPath = ":/resources/world_images/";

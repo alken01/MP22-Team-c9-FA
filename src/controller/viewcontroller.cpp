@@ -1,14 +1,12 @@
 #include "viewcontroller.h"
 #include <iostream>
-ViewController::ViewController(std::shared_ptr<Controller> controller)
+ViewController::ViewController(std::shared_ptr<WorldModel> world)
     : graphicalView(std::make_shared<GraphicalView>()),
       textView(std::make_shared<TextView>()),
       _QTextView(std::make_shared<QGraphicsView>()),
       _QGraphicsView(std::make_shared<QGraphicsView>()),
       animationSpeed(500) {
-    this->controller = controller;
-    this->world = controller->getWorld();
-
+    this->world = world;
     std::cout << "ViewController created" << std::endl;
 }
 
@@ -20,16 +18,10 @@ void ViewController::drawWorlds() {
 }
 
 // mapchanger
-void ::ViewController::changeMap(QString mapName) {
-    QString init_worldmap = getMapPath(mapName);
-    auto newMap = std::make_shared<World>();
-    QPixmap file(init_worldmap);
-    int height = file.height();
-    newMap->createWorld(init_worldmap, height / 2, height / 2, P_RATIO);
-    world = std::make_shared<WorldModel>(newMap, XENEMY_NR);
-    textView->stopTimer();
-    textView->draw(world, _QTextView);
-
+void ::ViewController::changeMap() {
+    std::cout << "viewcontroller changeMap" << std::endl;
+    drawWorlds();
+    updateViews();
 }
 
 
@@ -78,13 +70,6 @@ void ViewController::resetDelay() {
     delaySwitch = 0;
 }
 
-// const std::vector<Map>& ViewController::getMapList() const {
-//     return mapList;
-// }
-
-const QStringList ViewController::getMapList() const {
-    return mapList;
-}
 
 void ViewController::setAnimationSpeed(int newSpeed) {
     animationSpeed = newSpeed;
@@ -98,4 +83,8 @@ const std::shared_ptr<WorldModel>& ViewController::getWorld() const {
 }
 const std::shared_ptr<QGraphicsView>& ViewController::getQGraphicsView() const {
     return _QGraphicsView;
+}
+
+void ViewController::setWorld(std::shared_ptr<WorldModel> world) {
+    this->world = world;
 }

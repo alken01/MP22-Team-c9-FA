@@ -1,9 +1,12 @@
 #include "worldmodel.h"
 
-WorldModel::WorldModel(std::shared_ptr<World> world,
-                       unsigned int xEnemiesNumber) {
+WorldModel::WorldModel(Map map, unsigned int xEnemiesNumber) {
+    // create world given map
+    auto world = std::make_shared<World>();
+    world->createWorld(map.getPath(), ENEMY_NR, HEALTHPACK_NR, P_RATIO);
     width = world->getCols();
     height = world->getRows();
+
     // Get vectors of unique pointers from World
     std::vector<std::unique_ptr<Enemy>> enemyUnique = world->getEnemies();
     std::vector<std::unique_ptr<Tile>> healthUnique = world->getHealthPacks();
@@ -15,6 +18,13 @@ WorldModel::WorldModel(std::shared_ptr<World> world,
     healthPacks = convertToSharedUnorderedMap(healthUnique);
     tiles = convertToSharedVector(tilesUnique);
     protagonist = std::move(protagonistUnique);
+
+    // check protagonist starting point
+    if(map.getStartX() != -1 && map.getStartY() != -1) {
+        protagonist->setCoordinates(Coordinates(map.getStartX(), map.getStartY()));
+    } else {
+        protagonist->setCoordinates(getClosestValidTile(protagonist->getCoordinates()));
+    }
 
     createXEnemeies(xEnemiesNumber);
 }
@@ -111,14 +121,23 @@ std::shared_ptr<Tile> WorldModel::getHealthPackAtIndex(size_t index) {
     return it->second;
 }
 
-Coordinates WorldModel::getClosestValidTile(Coordinates coord){
+Coordinates WorldModel::getClosestValidTile(Coordinates coord) {
     for (int i = 0; i < this->getHeight(); ++i) {
         for (int j = 0; j < this->getWidth(); ++j) {
-            auto tile = this->getTiles()[i*this->getWidth() + j];
+            auto tile = this->getTiles()[i * this->getWidth() + j];
             if (tile->getTileType() == Tile::NormalTile) {
                 return tile->getCoordinates();
             }
         }
     }
     return coord;
+}
+
+bool WorldModel::isValidCoordinate(Coordinates coord) const {
+    // check if the coordinate is within the map and it is not a tile
+    // that is not walkable
+    return (coord.getX() >= 0 && coord.getX() < width && coord.getY() >= 0 &&
+            coord.getY() < height &&
+            tiles[coord.getX() + coord.getY() * width]->getTileType() !=
+            Tile::Wall);
 }

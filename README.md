@@ -28,6 +28,7 @@ The project uses the provided header file `include/world.h` and `include/world_g
 - [x] The prevCoordinate of the protagonist is not updated when the protagonist moves.
 - [ ] The protagonist symbol is not changing to the defeated symbol when the protagonist is defeated. 
 - [ ] Switching from the system's dark mode to light mode does not change the background color of the text-based representation. 
+- [ ] Capitalized commands are not recognized.
 
 #### Other
 - [ ] Update poisoned in mainwindow

@@ -1,12 +1,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QString>
 #include <QtWidgets>
 #include <iostream>
 #include <memory>
 #include "aicontroller.h"
 #include "controller.h"
+#include "map.h"
 #include "viewcontroller.h"
+#include "worldmodel.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -18,8 +21,7 @@ class MainWindow : public QMainWindow {
         Q_OBJECT
 
     public:
-        MainWindow(QWidget* parent, std::shared_ptr<Controller> controller,
-                   std::shared_ptr<ViewController> viewController);
+        MainWindow(QWidget* parent);
         void changeScene();
         void updateImage(int, QComboBox* comboBox, QLabel* label);
         void goToPath(int x, int y);
@@ -39,6 +41,14 @@ class MainWindow : public QMainWindow {
         bool viewStatus;
         QStringList filteredCommands;
 
+        QStringList mapNameList = {"maze1", "maze2", "maze3", "worldmap",
+                                   "worldmap4"};
+        std::vector<Map> mapList;
+        std::unordered_map<QString, std::shared_ptr<WorldModel>> worldList;
+        std::shared_ptr<WorldModel> activeWorld;
+
+        void setupWorlds();
+        void initControllers();
         void initViews();
         void setupUIComponents();
         void setupConnections();
