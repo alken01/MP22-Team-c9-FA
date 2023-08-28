@@ -1,5 +1,6 @@
 #include "worldmodel.h"
 
+// Constructors and Initialization
 WorldModel::WorldModel(Map map, unsigned int xEnemiesNumber) {
     // create world given map
     auto world = std::make_shared<World>();
@@ -20,10 +21,12 @@ WorldModel::WorldModel(Map map, unsigned int xEnemiesNumber) {
     protagonist = std::move(protagonistUnique);
 
     // check protagonist starting point
-    if(map.getStartX() != -1 && map.getStartY() != -1) {
-        protagonist->setCoordinates(Coordinates(map.getStartX(), map.getStartY()));
+    if (map.getStartX() != -1 && map.getStartY() != -1) {
+        protagonist->setCoordinates(
+        Coordinates(map.getStartX(), map.getStartY()));
     } else {
-        protagonist->setCoordinates(getClosestValidTile(protagonist->getCoordinates()));
+        protagonist->setCoordinates(
+        getClosestValidTile(protagonist->getCoordinates()));
     }
 
     createXEnemeies(xEnemiesNumber);
@@ -54,33 +57,103 @@ std::vector<std::unique_ptr<T>>& uniqueVector) {
     return sharedMap;
 }
 
-void WorldModel::createXEnemeies(unsigned int xEnemiesNumber) {
-    // if (xEnemiesNumber > enemies.size()) {
-    //     xEnemiesNumber = enemies.size();
+void WorldModel::createXEnemeies(unsigned int xEnemiesNumber){
+    // for (unsigned int i = 0; i < xEnemiesNumber; ++i) {
+    //     auto xEnemy = std::make_shared<XEnemy>();
+    //     xEnemy->setCoordinates(getClosestValidTile(xEnemy->getCoordinates()));
+    //     enemies[xEnemy->getCoordinates()] = xEnemy;
     // }
-    // for (unsigned int i = 0; i < xEnemiesNumber; i++) {
-    //     // get the position of the first enemies
-    //     int xPos = enemies[i]->getCoordinates().xPos;
-    //     int yPos = enemies[i]->getCoordinates().yPos;
-    //     float strength = enemies[i]->getValue();
-    //     // remove the enemy
-    //     enemies.erase(enemies.begin() + i);
-    //     // add the XEnemy
-    //     enemies.push_back(std::make_shared<XEnemy>(xPos, yPos, strength));
-    // }
+}
+
+// Utility Methods
+std::shared_ptr<Tile> WorldModel::getTileAt(Coordinates coord) {
+    return tiles[coord.getX() + coord.getY() * getWidth()];
+}
+
+float WorldModel::getTileValue(Coordinates coord) {
+    if (enemies.find(coord) != enemies.end()) {
+        return enemies.at(coord)->getValue();
+    } else if (healthPacks.find(coord) != healthPacks.end()) {
+        return healthPacks.at(coord)->getValue();
+    }
+    return getTileAt(coord)->getValue();
+}
+
+Tile::Type WorldModel::getTileType(Coordinates coord) const {
+    if (enemies.find(coord) != enemies.end()) {
+        return enemies.at(coord)->getTileType();
+    } else if (healthPacks.find(coord) != healthPacks.end()) {
+        return healthPacks.at(coord)->getTileType();
+    }
+    return tiles[coord.getX() + coord.getY() * width]->getTileType();
+}
+
+std::shared_ptr<Enemy> WorldModel::getEnemyAt(Coordinates coord) const {
+    return enemies.at(coord);
+}
+
+std::shared_ptr<Tile> WorldModel::getHealthPackAt(Coordinates coord) const {
+    return healthPacks.at(coord);
+}
+
+std::shared_ptr<Enemy> WorldModel::getEnemyAtIndex(size_t index) {
+    if (index >= enemies.size()) {
+        return nullptr;
+    }
+    auto it = enemies.begin();
+    std::advance(it, index);
+    return it->second;
+}
+
+std::shared_ptr<Tile> WorldModel::getHealthPackAtIndex(size_t index) {
+    if (index >= healthPacks.size()) {
+        return nullptr;
+    }
+    auto it = healthPacks.begin();
+    std::advance(it, index);
+    return it->second;
+}
+
+Coordinates WorldModel::getClosestValidTile(Coordinates coord) {
+    for (int i = 0; i < this->getHeight(); ++i) {
+        for (int j = 0; j < this->getWidth(); ++j) {
+            Coordinates tempCoord(i, j);
+            if (getTileType(tempCoord) == Tile::NormalTile) {
+                return tempCoord;
+            }
+        }
+    }
+    return coord;
+}
+
+bool WorldModel::isValidCoordinate(Coordinates coord) const {
+    return !(isOutOfBounds(coord) || getTileType(coord) == Tile::Wall);
+}
+
+bool WorldModel::isOutOfBounds(Coordinates coord) const {
+    return (coord.getX() < 0 || coord.getX() >= width || coord.getY() < 0 ||
+            coord.getY() >= height);
+}
+
+bool WorldModel::isProtagonistAlive() const {
+    return (protagonist->getHealth() > 0 && protagonist->getEnergy() > 0);
+}
+
+bool WorldModel::isGameWon() const {
+    return false;
 }
 
 // Getters
-const std::vector<std::shared_ptr<Tile>>& WorldModel::getTiles() const {
-    return tiles;
-}
-
 int WorldModel::getWidth() const {
     return width;
 }
 
 int WorldModel::getHeight() const {
     return height;
+}
+
+const std::vector<std::shared_ptr<Tile>>& WorldModel::getTiles() const {
+    return tiles;
 }
 
 const std::unordered_map<Coordinates, std::shared_ptr<Enemy>>&
@@ -95,49 +168,4 @@ WorldModel::getHealthPacks() const {
 
 const std::shared_ptr<Protagonist>& WorldModel::getProtagonist() const {
     return protagonist;
-}
-
-float WorldModel::getTileValue(Coordinates coord) {
-    return getTiles()[coord.getX() + coord.getY() * getWidth()]->getValue();
-}
-
-std::shared_ptr<Enemy> WorldModel::getEnemyAtIndex(size_t index) {
-    if (index >= enemies.size()) {
-        return nullptr;
-    }
-
-    auto it = enemies.begin();
-    std::advance(it, index);
-    return it->second;
-}
-
-std::shared_ptr<Tile> WorldModel::getHealthPackAtIndex(size_t index) {
-    if (index >= healthPacks.size()) {
-        return nullptr;
-    }
-
-    auto it = healthPacks.begin();
-    std::advance(it, index);
-    return it->second;
-}
-
-Coordinates WorldModel::getClosestValidTile(Coordinates coord) {
-    for (int i = 0; i < this->getHeight(); ++i) {
-        for (int j = 0; j < this->getWidth(); ++j) {
-            auto tile = this->getTiles()[i * this->getWidth() + j];
-            if (tile->getTileType() == Tile::NormalTile) {
-                return tile->getCoordinates();
-            }
-        }
-    }
-    return coord;
-}
-
-bool WorldModel::isValidCoordinate(Coordinates coord) const {
-    // check if the coordinate is within the map and it is not a tile
-    // that is not walkable
-    return (coord.getX() >= 0 && coord.getX() < width && coord.getY() >= 0 &&
-            coord.getY() < height &&
-            tiles[coord.getX() + coord.getY() * width]->getTileType() !=
-            Tile::Wall);
 }

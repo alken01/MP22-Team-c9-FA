@@ -15,55 +15,37 @@ const QString UNRECOGNIZED_INPUT_MESSAGE =
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
-
     setupWorlds();
     initControllers();
 
     setupUIComponents();
+    changeScene();
     setupConnections();
     filterCommands();
+
     ui->comboBox->setCurrentIndex(0);
     initViews();
 }
 
 void MainWindow::setupWorlds() {
-    std::cout << "MainWindow setupWorlds" << std::endl;
-
-    
-    QString mapPath = ":/resources/world_images/";
-
-    // create Map objects
     for (auto mapName : mapNameList) {
-        Map map(QString(mapPath + mapName + ".png"), mapName);
-        mapList.push_back(map);
-        std::cout << "MainWindow creating map " << map.getPath().toStdString()
-                  << std::endl;
+        mapList.push_back(Map(QString(mapPath + mapName + ".png"), mapName));
     }
-
-    // create WorldModel objects
-
-    unsigned int XENEMY_NR = 15;  // change this
     for (Map map : mapList) {
-        std::cout << "MainWindow creating world " << map.getName().toStdString()
-                  << std::endl;
-        auto worldModel = std::make_shared<WorldModel>(map, XENEMY_NR);
-        worldList[map.getName()] = worldModel;
+        worldList[map.getName()] = std::make_shared<WorldModel>(map, XENEMY_NR);
     }
+    activateNewWorld(mapNameList[0]);
+}
 
-    // Access an activeWorld using a specific key from mapList
-    QString keyToFind = mapList[0].getName();
-    if (worldList.find(keyToFind) != worldList.end()) {
-        activeWorld = worldList[keyToFind];
-        std::cout << "MainWindow activeWorld is " << keyToFind.toStdString()
-                  << std::endl;
+void MainWindow::activateNewWorld(QString mapName) {
+    if (worldList.find(mapName) != worldList.end()) {
+        activeWorld = worldList[mapName];
     } else {
-        // Handle the case where the key is not found
         std::cout << "Key not found" << std::endl;
     }
 }
 
 void MainWindow::initControllers() {
-    std::cout << "MainWindow initControllers" << std::endl;
     controller = std::make_shared<Controller>(activeWorld);
     viewController = std::make_shared<ViewController>(activeWorld);
     // aiController = std::make_shared<AIController>(controller);
@@ -71,25 +53,32 @@ void MainWindow::initControllers() {
 
 void MainWindow::setupUIComponents() {
     ui->setupUi(this);
+    // set up commandTerminalInput
+    commandTerminalInput = ui->lineEdit;
 
-    textInput = ui->lineEdit;
-    ui->textEdit_4->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    health = ui->progressBar;
-    health->setRange(0, 100);
-    health->setValue(activeWorld->getProtagonist()->getHealth());
-
-    energy = ui->progressBar_2;
-    energy->setRange(0, 100);
-    energy->setValue(activeWorld->getProtagonist()->getEnergy());
-
+    // set up command history
+    terminalHistory = ui->textEdit_4;
+    terminalHistory->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    
+    // set up health bar
+    healthBar = ui->progressBar;
+    healthBar->setRange(0, 100);
+    healthBar->setValue(activeWorld->getProtagonist()->getHealth());
+    
+    // set up energy bar
+    energyBar = ui->progressBar_2;
+    energyBar->setRange(0, 100);
+    energyBar->setValue(activeWorld->getProtagonist()->getEnergy());
+    
+    // set up autocompleter
     completer = new QCompleter(CommandsMap::getCommands(), this);
     ui->lineEdit->setCompleter(completer);
-
-    ui->comboBox->addItems(mapNameList);
+    
+    // set up map list
+    mapBoxList = ui->comboBox;
+    mapBoxList->addItems(mapNameList);
 
     viewStatus = TEXT_VIEW;
-    changeScene();
 }
 
 // Set up the signal-slot connections
@@ -118,7 +107,7 @@ void MainWindow::setupConnections() {
 void MainWindow::initViews() {
     ui->verticalLayout_2->addWidget(viewController->getQTextView().get());
     ui->verticalLayout_2->addWidget(viewController->getQGraphicsView().get());
-    viewController->getQGraphicsView().get()->hide();
+
     viewController->drawWorlds();
 }
 
@@ -127,46 +116,43 @@ void MainWindow::changeScene() {
     const bool isTextView = (viewStatus == TEXT_VIEW);
 
     // hide text view and show graphics view
-    viewController->getQTextView().get()->setVisible(isTextView);
-    viewController->getQGraphicsView().get()->setVisible(!isTextView);
+    viewController->switchViews();
 
     // change these elements
     ui->zoomSlider->setVisible(!isTextView);   // hide zoom slider
     ui->lineEdit->setVisible(isTextView);      // hide line edit
     ui->textEdit_11->setVisible(!isTextView);  // show text edit
-    ui->textEdit_4->clear();                   // clear terminal
+    terminalHistory->clear();                  // clear terminal
 
     viewStatus = isTextView ? GRAPHICS_VIEW : TEXT_VIEW;  // flip view status
 }
 
 void MainWindow::pressEntered() {
     if (isGameOver()) return;
-    QString input = textInput->text();
-    std::cout << "MainWindow pressEntered" << std::endl;
+
+    QString input = commandTerminalInput->text();
     controller->handleInput(input);
-    // viewController->movePlayer?? or in controller
     viewController->updateViews();
 
     if (input == HELP_COMMAND) {
         printHelpCommands();
     } else if (!input.isNull() || input.left(4) == "goto") {
         printTerminal(input);
-
     } else {
         printTerminal(UNRECOGNIZED_INPUT_MESSAGE);
     }
-    textInput->clear();
-    getFeedback();
+    commandTerminalInput->clear();
     updateVitals();
 }
 
 void MainWindow::textEntered() {
-    QString input = textInput->text().trimmed();
+    // check if autocomplete
+    QString input = commandTerminalInput->text().trimmed().toLower();
     if (input.length() < 1) return;
     for (const QString& command : filteredCommands) {
         // if the command starts with the input, autocomplete
         if (command.startsWith(input)) {
-            textInput->setText(command);
+            commandTerminalInput->setText(command);
             pressEntered();
         }
     }
@@ -174,10 +160,10 @@ void MainWindow::textEntered() {
 
 bool MainWindow::isGameOver() {
     bool isPlayerDead = !activeWorld->isProtagonistAlive();
-
-    if (isPlayerDead) {
-        // QString message = isGameWon ? WIN_MESSAGE : LOSE_MESSAGE;
-        // printTerminal(message);
+    bool isGameWon = activeWorld->isGameWon();
+    if (isPlayerDead || isGameWon) {
+        QString message = isGameWon ? WIN_MESSAGE : LOSE_MESSAGE;
+        printTerminal(message);
         showRestartButton(true);
         return true;
     }
@@ -190,29 +176,18 @@ void MainWindow::filterCommands() {
 }
 
 void MainWindow::mapChanged() {
-    auto newMap = ui->comboBox->currentText();
-    std::cout << "MainWindow mapChanged" << std::endl;
-    // active world should point to the new map
-    // activeWorld = worldList[newMap];
-    QString keyToFind = newMap;
-    if (worldList.find(keyToFind) != worldList.end()) {
-        activeWorld = worldList[keyToFind];
-        std::cout << "MainWindow activeWorld is " << keyToFind.toStdString()
-                  << std::endl;
-    } else {
-        // Handle the case where the key is not found
-        std::cout << "Key not found" << std::endl;
-        return;
-    }
+    auto newMap = mapBoxList->currentText();
+    activateNewWorld(newMap);
+
     controller->setWorld(activeWorld);
     viewController->setWorld(activeWorld);
-    
+
     viewController->changeMap();
     // controller->changeMap(newMap);
     // viewController->updateViews();
 
     updateVitals();
-    ui->textEdit_4->clear();
+    terminalHistory->clear();
     showRestartButton(false);
 
     // empty line edit after autocomplete
@@ -221,8 +196,8 @@ void MainWindow::mapChanged() {
 }
 
 void MainWindow::updateVitals() {
-    health->setValue(activeWorld->getProtagonist()->getHealth());
-    energy->setValue(activeWorld->getProtagonist()->getEnergy());
+    healthBar->setValue(activeWorld->getProtagonist()->getHealth());
+    energyBar->setValue(activeWorld->getProtagonist()->getEnergy());
     // ui->lcdNumber->display(controller->getPoisoned());
 }
 
@@ -240,14 +215,7 @@ void MainWindow::showRestartButton(bool show) {
 }
 
 void MainWindow::printTerminal(QString message) {
-    ui->textEdit_4->append(message);
-}
-
-void MainWindow::getFeedback() {
-    // auto message = controller->getTerminalOut();
-    // if (message.isNull()) return;
-    // printTerminal(message);
-    // controller->setTerminalOut(NULL);
+    terminalHistory->append(message.trimmed().toLower());
 }
 
 void MainWindow::setHeuristic() {

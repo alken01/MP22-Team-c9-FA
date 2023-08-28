@@ -31,16 +31,23 @@ class MainWindow : public QMainWindow {
         std::vector<QString> pathToText(std::vector<std::pair<int, int>> path);
 
     private:
+        // UI ELEMENTS
         Ui::MainWindow* ui;
-        QLineEdit* textInput;
+        QLineEdit* commandTerminalInput;
+        QTextEdit* terminalHistory;
+        QGraphicsView textView;
+        QProgressBar *healthBar, *energyBar;
+        QCompleter* completer;
+        QComboBox* mapBoxList;
+        bool viewStatus;
+
         std::shared_ptr<Controller> controller;
         std::shared_ptr<ViewController> viewController;
-        QGraphicsView textView;
-        QProgressBar *health, *energy;
-        QCompleter* completer;
-        bool viewStatus;
         QStringList filteredCommands;
 
+        void activateNewWorld(QString mapName);
+        unsigned int XENEMY_NR = 15;  // change this
+        QString mapPath = ":/resources/world_images/";
         QStringList mapNameList = {"maze1", "maze2", "maze3", "worldmap",
                                    "worldmap4"};
         std::vector<Map> mapList;
@@ -59,7 +66,6 @@ class MainWindow : public QMainWindow {
         void textEntered();
         void filterCommands();
         void mapChanged();
-        void getFeedback();
         void setHeuristic();
         void autoplay();
         void changeSpeed();

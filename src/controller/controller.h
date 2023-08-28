@@ -39,6 +39,7 @@ private:
     static const int POISON_DAMAGE = 5;
     static const int POISON_RESISTANCE_PER_TURN = 1;
     static const int MAX_ENERGY = 100;
+    static const int TILE_MAX = 1; // set it between 1 and 0
 };
 
 #endif  // CONTROLLER_H

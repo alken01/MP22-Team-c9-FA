@@ -11,10 +11,9 @@ ViewController::ViewController(std::shared_ptr<WorldModel> world)
 }
 
 void ViewController::drawWorlds() {
-    std::cout << "viewcontroller drawWorlds" << std::endl;
     textView->draw(world, _QTextView);
     // graphicalView->draw(world, _QGraphicsView);
-    std::cout << "drawWorlds done" << std::endl;
+    switchToText();
 }
 
 // mapchanger
@@ -53,12 +52,12 @@ void ViewController::fightEnemy(std::shared_ptr<Enemy> enemy) {
 
 void ViewController::updateViews() {
     // graphicalView->updateView();
-    textView->moveProtagonist();
-    textView->updateView();
+    textView->draw(world, _QTextView);
+    textView->renderMap();
 }
 
 void ViewController::dead() {
-    textView->protagonistDies();
+    // textView->protagonistDies();
     textView->stopTimer();
 }
 
@@ -78,13 +77,31 @@ void ViewController::setAnimationSpeed(int newSpeed) {
 const std::shared_ptr<QGraphicsView>& ViewController::getQTextView() const {
     return _QTextView;
 }
-const std::shared_ptr<WorldModel>& ViewController::getWorld() const {
-    return world;
-}
 const std::shared_ptr<QGraphicsView>& ViewController::getQGraphicsView() const {
     return _QGraphicsView;
 }
 
 void ViewController::setWorld(std::shared_ptr<WorldModel> world) {
     this->world = world;
+}
+
+void ViewController::switchToGraphic() {
+    std::cout << "switchToGraphic" << std::endl;
+    _QGraphicsView.get()->setVisible(true);
+    _QTextView.get()->setVisible(false);
+}
+
+void ViewController::switchToText() {
+    std::cout << "switchToText" << std::endl;
+    _QGraphicsView.get()->setVisible(false);
+    _QTextView.get()->setVisible(true);
+}
+
+void ViewController::switchViews() {
+    bool isTextView = _QTextView.get()->isVisible();
+    if (isTextView) {
+        switchToGraphic();
+    } else {
+        switchToText();
+    }    
 }

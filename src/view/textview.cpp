@@ -6,56 +6,25 @@ QFont TEXT_FONT("SF Mono");
 QFont TEXT_FONT("Monospace");
 #endif
 
-const QColor POISONED_COLOR = QColor("purple");
-const QColor HEALED_COLOR = QColor("green");
-const QColor FIGHTING_COLOR = QColor("orange");
-const int TIMER_ANIMATION = 1000;
-
-const QChar WALL_SYMBOL = QChar(0x2588);     // █
-const QChar DARKEST_SYMBOL = QChar(0x2593);  // ▓
-const QChar DARKER_SYMBOL = QChar(0x2592);   // ▒
-const QChar DARK_SYMBOL = QChar(0x2591);     // ░
-const QChar EMPTY_SYMBOL = QChar(' ');       // _
-
-const QChar PROTAGONIST_SYMBOL = QChar(0x263A);  // ☺
-const QChar HEALTHPACK_SYMBOL = QChar(0x2665);   // ♥
-const QChar ENEMY_SYMBOL = QChar(0x263B);        // ☻
-const QChar PENEMY_SYMBOL = QChar(0x263C);       // ☼
-const QChar XENEMY_SYMBOL = QChar(0x263D);       // ☽
-const QChar DEAD_SYMBOL = QChar(0x2620);         // ☠
-
-const int TOTAL_ROWS = 18;
-const int TOTAL_COLUMNS = 60;
-const int Y_OFFSET = 5;
-const int X_OFFSET = 7;
-
 TextView::TextView() {
-    std::cout << "Creating text view" << std::endl;
-    healthFightTimer.isSingleShot();
     textScene = new QGraphicsScene();
 }
 
 void TextView::draw(std::shared_ptr<WorldModel> worldModel,
                     std::shared_ptr<QGraphicsView> textView) {
     this->worldModel = worldModel;
-
     outputView = textView;
-    textScene->clear();
-    textScene->setBackgroundBrush(Qt::transparent);
-    setupTimers();
     initializeMap();
     populateWorldMap();
-
     updateVisibleMap();
     combineLinesToString();
-
     updateText();
     textView->setScene(textScene);
 }
-
 void TextView::setupTimers() {
-    poisonedEffectTimer.setInterval(TIMER_ANIMATION * 2);
-    healthFightTimer.setInterval(TIMER_ANIMATION);
+    poisonedEffectTimer.setInterval(Constants::TIMER_ANIMATION * 2);
+    healthFightTimer.isSingleShot();
+    healthFightTimer.setInterval(Constants::TIMER_ANIMATION);
     connect(&poisonedEffectTimer, &QTimer::timeout, this,
             &TextView::setPoisoned);
     connect(&healthFightTimer, &QTimer::timeout, this,
@@ -63,43 +32,49 @@ void TextView::setupTimers() {
 }
 
 void TextView::initializeMap() {
-    // make vectorMap empty
+    // make vectorMap the size of the world and fill it with empty spaces
     vectorMap.clear();
-    // make vectorMap the size of the world
     vectorMap.resize(worldModel->getHeight());
-    // fill vectorMap with empty spaces
     for (int i = 0; i < worldModel->getHeight(); i++) {
         vectorMap[i].resize(worldModel->getWidth());
-        vectorMap[i].fill(EMPTY_SYMBOL);
+        vectorMap[i].fill(Constants::EMPTY_SYMBOL);
     }
 }
 
 void TextView::populateWorldMap() {
-    for (const std::shared_ptr<Tile>& tile : worldModel->getTiles()) {
-        Coordinates coord = tile->getCoordinates();
-        changeSignAtCoord(coord, grayscaleToASCII(tile->getValue()));
-    }
+    populateTiles();
+    populateEnemies();
+    populateHealthPacks();
+    populateProtagonist();
+}
 
+void TextView::populateTiles() {
+    for (const std::shared_ptr<Tile>& tile : worldModel->getTiles()) {
+        QChar symbol = Constants::grayscaleToASCII(tile->getValue());
+        changeSignAtCoord(tile->getCoordinates(), symbol);
+    }
+}
+
+void TextView::populateEnemies() {
     for (const auto& enemyPair : worldModel->getEnemies()) {
         const std::shared_ptr<Enemy>& enemy = enemyPair.second;
         Coordinates coord = enemy->getCoordinates();
-        Tile::Type enemyType = enemy->getTileType();
-        if (enemyType == Tile::Enemy) {
-            changeSignAtCoord(coord, ENEMY_SYMBOL);
-        } else if (enemyType == Tile::PEnemy) {
-            changeSignAtCoord(coord, PENEMY_SYMBOL);
-        } else if (enemyType == Tile::XEnemy) {
-            changeSignAtCoord(coord, XENEMY_SYMBOL);
-        }
+        QChar symbol = Constants::getSymbol(enemy->getTileType());
+        changeSignAtCoord(coord, symbol);
     }
+}
 
+void TextView::populateHealthPacks() {
     for (const auto& healthPackPair : worldModel->getHealthPacks()) {
         const std::shared_ptr<Tile>& healthPack = healthPackPair.second;
-        changeSignAtCoord(healthPack->getCoordinates(), HEALTHPACK_SYMBOL);
+        changeSignAtCoord(healthPack->getCoordinates(),
+                          Constants::HEALTHPACK_SYMBOL);
     }
+}
 
+void TextView::populateProtagonist() {
     Coordinates coord = worldModel->getProtagonist()->getCoordinates();
-    changeSignAtCoord(coord, PROTAGONIST_SYMBOL);
+    changeSignAtCoord(coord, Constants::PROTAGONIST_SYMBOL);
 }
 
 void TextView::combineLinesToString() {
@@ -109,26 +84,8 @@ void TextView::combineLinesToString() {
     }
 }
 
-// This code will be used in controller / changed so it gets input from
-// controller
-void TextView::moveProtagonist() {
-    std::cout << "Moving protagonist" << std::endl;
-    Coordinates protCoord = worldModel->getProtagonist()->getCoordinates();
-
-    // check for all 6 pos around protagonist
-    for (int x = std::max(0, protCoord.getX() - 1);
-         x <= std::min(worldModel->getWidth() - 1, protCoord.getX() + 1); x++) {
-        for (int y = std::max(0, protCoord.getY() - 1);
-             y <= std::min(worldModel->getHeight() - 1, protCoord.getY() + 1);
-             y++) {
-            Coordinates coord = Coordinates(x, y);
-            int worldPos = x + y * worldModel->getWidth();
-            float tileValue = worldModel->getTiles().at(worldPos)->getValue();
-            changeSignAtCoord(coord, grayscaleToASCII(tileValue));
-        }
-    }
-    changeSignAtCoord(protCoord, QChar(PROTAGONIST_SYMBOL));
-
+void TextView::renderMap() {
+    updateView();
     updateVisibleMap();
     combineLinesToString();
     updateText();
@@ -138,19 +95,21 @@ void TextView::updateVisibleMap() {
     Coordinates protCoord = worldModel->getProtagonist()->getCoordinates();
 
     // Calculate the top position of the view (number of rows to skip)
-    int viewTop = protCoord.getY() - Y_OFFSET + 1;
+    int viewTop = protCoord.getY() - Constants::Y_OFFSET + 1;
     int rowSkip = (viewTop > 0) ? 0 : viewTop;
 
     // Extract the relevant portion of the world map based on the viewTop position
-    QVector<QString> tempMap = vectorMap.mid(viewTop, TOTAL_ROWS - rowSkip);
+    QVector<QString> tempMap =
+    vectorMap.mid(viewTop, Constants::TOTAL_ROWS - rowSkip);
 
     // Calculate the left position of the view (number of columns to skip)
-    int viewLeft = protCoord.getX() - X_OFFSET + 1;
+    int viewLeft = protCoord.getX() - Constants::X_OFFSET + 1;
     int colSkip = (viewLeft > 0) ? 0 : viewLeft;
 
     // Adjust each line in the tempMap to show the visible portion of the world map
     for (int i = 0; i < tempMap.size(); i++) {
-        tempMap[i] = tempMap[i].mid(viewLeft, TOTAL_COLUMNS - colSkip) + "\n";
+        tempMap[i] =
+        tempMap[i].mid(viewLeft, Constants::TOTAL_COLUMNS - colSkip) + "\n";
     }
     visibleVectorMap = tempMap;
 }
@@ -159,35 +118,26 @@ void TextView::changeSignAtCoord(Coordinates coord, QChar input) {
     vectorMap[coord.getY()][coord.getX()] = input;
 }
 
-QChar TextView::grayscaleToASCII(float intensity) {
-    if (intensity == INFINITY) return WALL_SYMBOL;
-    if (intensity > 1) return HEALTHPACK_SYMBOL;
-    if (intensity < 0.2) return DARKEST_SYMBOL;
-    if (intensity < 0.5) return DARKER_SYMBOL;
-    if (intensity < 0.8) return DARK_SYMBOL;
-    return EMPTY_SYMBOL;
-}
-
 void TextView::protagonistDies() {
     Coordinates coord = worldModel->getProtagonist()->getCoordinates();
-    changeSignAtCoord(coord, DEAD_SYMBOL);
+    changeSignAtCoord(coord, Constants::DEAD_SYMBOL);
     updateVisibleMap();
     // updateText();
     updateView();
 }
 
 void TextView::setHealed() {
-    setTextViewState(HEALED_COLOR);
+    setTextViewState(Constants::HEALED_COLOR);
     healthFightTimer.start();
 }
 
 void TextView::setFighting() {
-    setTextViewState(FIGHTING_COLOR);
+    setTextViewState(Constants::FIGHTING_COLOR);
     healthFightTimer.start();
 }
 
 void TextView::setPoisoned() {
-    setTextViewState(POISONED_COLOR);
+    setTextViewState(Constants::POISONED_COLOR);
     poisonedEffectTimer.start();
 }
 
@@ -201,7 +151,6 @@ void TextView::updateText() {
 }
 
 void TextView::updateView() {
-    moveProtagonist();
     outputView->scene()->update();
 }
 

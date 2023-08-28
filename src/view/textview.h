@@ -1,9 +1,11 @@
 #ifndef TEXTVIEW_H
 #define TEXTVIEW_H
+
 #include <QFontMetrics>
 #include <QTimer>
-#include "view.h"
+#include "constants.h"
 #include "coordinates.h"
+#include "view.h"
 #include "worldmodel.h"
 
 class TextView : public View {
@@ -12,9 +14,7 @@ class TextView : public View {
 
         void draw(std::shared_ptr<WorldModel> worldModel,
                   std::shared_ptr<QGraphicsView> textView);
-        void moveProtagonist();
-        void updateView();
-        void protagonistDies();
+        void renderMap();
         void setHealed();
         void setFighting();
         void setPoisoned();
@@ -25,13 +25,20 @@ class TextView : public View {
         void setupTimers();
         void initializeMap();
         void populateWorldMap();
-        void combineLinesToString();
-        QChar grayscaleToASCII(float intensity);
-        void changeSignAtCoord(Coordinates coord, QChar input);
         void updateVisibleMap();
+        void combineLinesToString();
         void updateText();
+        void updateView();
         void resetBackgroundColor();
+        void protagonistDies();
+        void changeSignAtCoord(Coordinates coord, QChar input);
+        QChar grayscaleToASCII(float intensity);
         void setTextViewState(const QColor& color);
+
+        void populateTiles();
+        void populateEnemies();
+        void populateHealthPacks();
+        void populateProtagonist();
 
         QVector<QString> vectorMap, visibleVectorMap;
         std::shared_ptr<QString> combinedMap;

@@ -14,6 +14,7 @@ SOURCES += \
     src/model/xenemy.cpp \
     src/view/graphicalview.cpp \
     src/view/textview.cpp \
+    src/view/constants.cpp \
     src/controller/controller.cpp \
     src/controller/viewcontroller.cpp \
     src/controller/aicontroller.cpp \
@@ -32,6 +33,7 @@ HEADERS += \
     src/view/textview.h \
     src/view/view.h \
     src/view/image_widget.h \
+    src/view/constants.h \
     src/controller/controller.h \
     src/controller/viewcontroller.h \
     src/controller/aicontroller.h \

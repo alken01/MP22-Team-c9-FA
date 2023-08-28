@@ -25,15 +25,10 @@ class ViewController {
         void update();
         void updateViews();
         void fightEnemy(std::shared_ptr<Enemy> enemy);
-
-        // const std::vector<Map>& getMapList() const;
-        const QStringList getMapList() const;
-        const std::shared_ptr<WorldModel>& getWorld() const;
         const std::shared_ptr<QGraphicsView>& getQGraphicsView() const;
         const std::shared_ptr<QGraphicsView>& getQTextView() const;
         void setAnimationSpeed(int newSpeed);
-
-        void setWorld(std::shared_ptr<WorldModel> world);
+        void setWorld(std::shared_ptr<WorldModel> world);        
 
     public slots:
         void switchToGraphic();

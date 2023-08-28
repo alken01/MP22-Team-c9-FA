@@ -23,6 +23,7 @@ void Controller::handleMovement(const Coordinates& direction) {
 
     if (world->getTileType(newCoord) == Tile::Wall) {
         newCoord = world->getClosestValidTile(newCoord);
+        return;
     }
 
     world->getProtagonist()->setCoordinates(newCoord);
@@ -31,13 +32,14 @@ void Controller::handleMovement(const Coordinates& direction) {
 
 void Controller::handleTileInteraction(const Coordinates& coord) {
     Tile::Type tileType = world->getTileType(coord);
+    std::cout << "Tile type: " << tileType << std::endl;
 
     if (world->getProtagonist()->getPoison() > 0) {
         world->getProtagonist()->decreasePoison(POISON_RESISTANCE_PER_TURN);
         world->getProtagonist()->decreaseHealth(POISON_DAMAGE);
     }
-
-    world->getProtagonist()->decreaseEnergy(1 - world->getTileValue(coord));
+    // MAYBE CONSTANTS?
+    world->getProtagonist()->decreaseEnergy(TILE_MAX - world->getTileValue(coord));
 
     if (tileType == Tile::Enemy) {
         handleEnemyInteraction(world->getEnemyAt(coord));
@@ -48,12 +50,14 @@ void Controller::handleTileInteraction(const Coordinates& coord) {
 
 void Controller::handleEnemyInteraction(std::shared_ptr<Enemy> enemy) {
     if (enemy->getDefeated()) return;
-
+    std::cout << "Fighting enemy" << std::endl;
     float enemyValue = enemy->getValue();
     Tile::Type enemyType = enemy->getTileType();
-    std::shared_ptr<Protagonist> protagonist = world->getProtagonist();
-    protagonist->decreaseHealth(enemyValue);
 
+    std::shared_ptr<Protagonist> protagonist = world->getProtagonist();
+    std::cout << "Protagonist health: " << protagonist->getHealth() << std::endl;
+    protagonist->decreaseHealth(enemyValue);
+    std::cout << "Protagonist health: " << protagonist->getHealth() << std::endl;
     if (enemyType == Tile::XEnemy) {
         float xEnemyEnergy =
         std::dynamic_pointer_cast<XEnemy>(enemy)->getEnergyLevel();
@@ -61,11 +65,8 @@ void Controller::handleEnemyInteraction(std::shared_ptr<Enemy> enemy) {
     } else if (enemyType == Tile::PEnemy) {
         protagonist->increasePoison(enemyValue);
     }
-
-    if (!world->isProtagonistAlive()) {
-        return;
-    }
-
+    
+    if (!world->isProtagonistAlive()) return;
     protagonist->setEnergy(MAX_ENERGY);
     std::dynamic_pointer_cast<Enemy>(enemy)->setDefeated(true);
 }
@@ -76,10 +77,7 @@ void Controller::handleHealthPackInteraction(std::shared_ptr<Tile> healthpack) {
     std::shared_ptr<Protagonist> protagonist = world->getProtagonist();
     protagonist->increaseHealth(healthpack->getValue());
     healthpack->setValue(-1);
-}
-
-void Controller::setAnimationSpeed(int newSpeed) {
-    animationSpeed = newSpeed;
+    std::cout << "Healthpack used" << std::endl;
 }
 
 void Controller::setWorld(std::shared_ptr<WorldModel> world) {
